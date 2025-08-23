@@ -2,6 +2,8 @@
 
 # dependencies
 /node_modules
+/admin/node_modules/
+/web/node_modules/
 /.pnp
 .pnp.*
 .yarn/*
@@ -14,6 +16,8 @@
 /coverage
 
 # next.js
+/admin/.next/
+/web/.next/
 /.next/
 /out/
 
