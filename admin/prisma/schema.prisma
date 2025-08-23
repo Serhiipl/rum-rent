@@ -1,0 +1,237 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum RentalStatus {
+  PENDING // Оренда створена, очікує підтвердження
+  ACTIVE // Оренда в дії
+  RETURNED // Інструмент повернуто
+  CANCELLED // Оренду скасовано
+  OVERDUE // Протермінована оренда
+}
+
+model User {
+  id            String    @id @default(cuid()) @map("_id")
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  premium       Boolean   @default(false)
+  role          String    @default("user")
+  banned        Boolean   @default(false)
+  banReason     String?
+  banExpires    Int? /// Unix timestamp for ban expiration
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+
+  Rental Rental[]
+}
+
+model Session {
+  id             String   @id @default(cuid()) @map("_id")
+  userId         String
+  token          String
+  expiresAt      DateTime
+  ipAddress      String?
+  userAgent      String?
+  impersonatedBy String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Account {
+  id                    String    @id @default(cuid()) @map("_id")
+  userId                String
+  accountId             String
+  providerId            String
+  accessToken           String?
+  refreshToken          String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Verification {
+  id         String   @id @default(cuid()) @map("_id")
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Service {
+  serviceId    String    @id @default(cuid()) @map("_id")
+  name         String
+  description  String
+  rentalPrice  Float // Ціна за оренду (наприклад, за день)
+  deposit      Float? // Застава, яку потрібно залишити
+  available    Boolean   @default(true) // Чи доступний інструмент зараз
+  quantity     Int       @default(1) // Кількість доступних одиниць
+  condition    String? // Стан інструменту (новий, вживаний, потребує ремонту)
+  usageNotes   String? // Інструкції по використанню
+  rentalPeriod Int? // Мінімальний термін оренди в днях
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+  deletedBy    String?
+
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id])
+
+  // Відносини
+  images       Image[]
+  seo          Seo?
+  analytics    ServiceAnalytics?
+  rentals      Rental[] // Список оренд цього інструменту
+  discount     Discount[]
+  ServiceStaff ServiceStaff[]
+
+  @@index([name])
+  @@index([categoryId])
+  @@index([available])
+  @@index([createdAt])
+}
+
+model Rental {
+  id         String       @id @default(cuid()) @map("_id")
+  serviceId  String
+  userId     String
+  startDate  DateTime
+  endDate    DateTime
+  totalPrice Float
+  returned   Boolean      @default(false)
+  status     RentalStatus @default(PENDING)
+
+  service Service @relation(fields: [serviceId], references: [serviceId], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([serviceId])
+  @@index([userId])
+  @@index([startDate])
+}
+
+model Category {
+  id        String    @id @default(cuid()) @map("_id") // Unique identifier for the category
+  name      String    @unique // Category name (e.g., "Brows", "Lashes")
+  slug      String    @unique // URL-friendly identifier for the category
+  createdAt DateTime  @default(now()) // Timestamp when the category was created
+  updatedAt DateTime  @updatedAt // Timestamp when the category was last updated
+  deletedAt DateTime? // Timestamp when the category was deleted (soft delete)
+  services  Service[] // One-to-many relation with services
+}
+
+model Image {
+  id        String   @id @default(cuid()) @map("_id") // Unique image identifier
+  serviceId String // Foreign key for service
+  service   Service  @relation(fields: [serviceId], references: [serviceId], onDelete: Cascade)
+  url       String // URL of the image
+  createdAt DateTime @default(now()) // Timestamp when the image was added
+
+  @@index([serviceId])
+}
+
+model Discount {
+  id              String    @id @default(cuid()) @map("_id") // Unique discount identifier
+  serviceId       String    @unique // Foreign key for service (One-to-One)
+  service         Service   @relation(fields: [serviceId], references: [serviceId], onDelete: Cascade)
+  discountPrice   Float // Discounted price
+  discountEndDate DateTime? // End date for the discount
+
+  @@index([discountEndDate])
+}
+
+model Seo {
+  id             String   @id @default(cuid()) @map("_id") // Unique SEO identifier
+  serviceId      String   @unique // Foreign key for service (One-to-One)
+  service        Service  @relation(fields: [serviceId], references: [serviceId], onDelete: Cascade)
+  seoTitle       String? // SEO-friendly title for the service
+  seoDescription String? // SEO meta description for better search engine visibility
+  slug           String?  @unique // URL-friendly identifier for the service (e.g., "permanent-makeup")
+  tags           String[] // Search tags to improve discoverability
+}
+
+model ServiceAnalytics {
+  id           String  @id @default(cuid()) @map("_id") // Unique identifier
+  serviceId    String  @unique // Foreign key for service (One-to-One)
+  service      Service @relation(fields: [serviceId], references: [serviceId], onDelete: Cascade)
+  views        Int     @default(0) // Number of times the service has been viewed
+  rating       Float? // Average rating of the service from customer reviews
+  reviewsCount Int     @default(0) // Number of reviews received
+
+  @@index([views])
+  @@index([rating])
+}
+
+model ServiceStaff {
+  id        String @id @default(cuid()) @map("_id") // Unique identifier for the relationship
+  serviceId String // Foreign key to Service
+  staffId   String // Foreign key to Staff
+
+  service Service @relation(fields: [serviceId], references: [serviceId], onDelete: Cascade)
+  staff   Staff   @relation(fields: [staffId], references: [id], onDelete: Cascade)
+
+  @@unique([serviceId, staffId])
+  @@index([serviceId])
+  @@index([staffId])
+}
+
+model Staff {
+  id        String   @id @default(cuid()) @map("_id") // Unique staff identifier
+  name      String // Full name of the staff member
+  email     String   @unique // Contact email
+  phone     String? // Phone number (optional)
+  role      String // Role (e.g., "Brow Artist", "Lash Technician")
+  imageUrl  String? // Profile picture
+  createdAt DateTime @default(now()) // Timestamp when the staff member was added
+  updatedAt DateTime @updatedAt // Timestamp when the staff member's info was last updated
+
+  // Relations
+  services ServiceStaff[] // Many-to-many relation with services
+
+  @@index([name])
+}
+
+// model Review {
+//   id        String   @id @default(cuid()) @map("_id") // Unique review identifier
+//   serviceId String // Foreign key for service
+//   userId    String // Foreign key for user
+//   rating    Int // Rating out of 5
+//   comment   String? // Optional comment
+//   createdAt DateTime @default(now()) // Timestamp when the review was created
+
+//   service Service @relation(fields: [serviceId], references: [serviceId], onDelete: Cascade)
+//   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+//   @@index([serviceId])
+// }
+model Banner {
+  id          String   @id @default(cuid()) @map("_id")
+  title       String
+  description String?
+  ctaText     String?
+  ctaLink     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  imageUrl    String
+}
