@@ -71,7 +71,7 @@ export default function SignUp() {
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-3xl font-bold text-center text-gray-800">
-            Create Account
+            Utwórz konto
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -106,12 +106,12 @@ export default function SignUp() {
                   )}
                 />
               ))}
-              <LoadingButton pending={pending}>Sign up</LoadingButton>
+              <LoadingButton pending={pending}>Zarejestruj się</LoadingButton>
             </form>
           </Form>
           <div className="mt-4 text-center text-sm">
             <Link href="/sign-in" className="text-primary hover:underline">
-              Already have an account? Sign in
+              Masz już konto? Zaloguj się
             </Link>
           </div>
         </CardContent>

@@ -16,11 +16,9 @@ const EmptyState: React.FC = () => (
       </svg>
     </div>
     <h3 className="text-lg font-medium text-gray-900 mb-2">
-      Немає доступних послуг
+      Brak dostępnych usług
     </h3>
-    <p className="text-gray-500">
-      Додайте свою першу послугу, щоб почати роботу
-    </p>
+    <p className="text-gray-500">Dodaj swoją pierwszą usługę, aby rozpocząć</p>
   </div>
 );
 export default EmptyState;

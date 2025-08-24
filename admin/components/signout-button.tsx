@@ -27,7 +27,7 @@ export default function SignOutButton() {
   };
   return (
     <LoadingButton pending={pending} onClick={handleSingOut}>
-      Sign Out
+      Wyloguj się
     </LoadingButton>
   );
 }

@@ -6,14 +6,14 @@ export default function usersDashboard() {
     <main className="flex flex-col">
       <div className="flex flex-col gap-4 max-w-7xl mx-auto w-full">
         <div className="flex flex-col gap-2 mb-8">
-          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+          <h1 className="text-3xl font-bold">Panel Administracyjny</h1>
           <p className="text-muted-foreground">
-            Manage users and view system statistics
+            Zarządzaj użytkownikami i przeglądaj statystyki systemu
           </p>
         </div>
         <Card>
           <CardHeader>
-            <CardTitle>Users</CardTitle>
+            <CardTitle>Użytkownicy</CardTitle>
           </CardHeader>
           <CardContent>
             <UsersTable />

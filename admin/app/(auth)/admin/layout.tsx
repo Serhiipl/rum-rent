@@ -81,7 +81,6 @@ function DesktopNav() {
           href="https://vercel.com/templates/next.js/admin-dashboard-tailwind-postgres-react-nextjs"
           className="group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base"
         >
-          {/* <VercelLogo className="h-3 w-3 transition-all group-hover:scale-110" /> */}
           <span className="sr-only">Acme Inc</span>
         </Link>
 
@@ -93,11 +92,7 @@ function DesktopNav() {
           <ShoppingCart className="h-5 w-5" />
         </NavItem>
 
-        <NavItem
-          href="/admin/dashboard/services"
-          label="Usługi"
-          // userRole={userRole}
-        >
+        <NavItem href="/admin/dashboard/services" label="Usługi">
           <ClipboardList className="h-5 w-5" />
         </NavItem>
 
@@ -150,35 +145,35 @@ function MobileNav() {
             className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
           >
             <Home className="h-5 w-5" />
-            Dashboard
+            Panel Administracyjny
           </Link>
           <Link
             href="#"
             className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
           >
             <ShoppingCart className="h-5 w-5" />
-            Orders
+            Zamówienia
           </Link>
           <Link
             href="#"
             className="flex items-center gap-4 px-2.5 text-foreground"
           >
             <Package className="h-5 w-5" />
-            Products
+            Produkty
           </Link>
           <Link
             href="#"
             className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
           >
             <Users2 className="h-5 w-5" />
-            Customers
+            Klienci
           </Link>
           <Link
             href="#"
             className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
           >
             <LineChart className="h-5 w-5" />
-            Settings
+            Ustawienia
           </Link>
         </nav>
       </SheetContent>

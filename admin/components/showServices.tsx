@@ -56,12 +56,12 @@ const ShowServices: React.FC<ShowServicesProps> = ({
     setIsMounted(true);
   }, [loadData, serviceCategories]);
 
-  // Показуємо null до монтування (для SSR)
+  // Show null before mounting (for SSR)
   if (!isMounted) {
     return null;
   }
 
-  // Використовуємо передані послуги замість тих, що зі store
+  // Use the passed services instead of those from the store
   const servicesToDisplay = filteredServices || [];
 
   return (

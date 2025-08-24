@@ -56,8 +56,8 @@ export default function SingIn() {
         },
         onError: (ctx: ErrorContext) => {
           toast({
-            title: "Something went wrong",
-            description: ctx.error.message ?? "Something went wrong.",
+            title: "Coś poszło nie tak =(",
+            description: ctx.error.message ?? "Coś poszło nie tak =(",
             variant: "destructive",
           });
         },
@@ -80,8 +80,8 @@ export default function SingIn() {
         },
         onError: (ctx: ErrorContext) => {
           toast({
-            title: "Something went wrong",
-            description: ctx.error.message ?? "Something went wrong.",
+            title: "Coś poszło nie tak =(",
+            description: ctx.error.message ?? "Coś poszło nie tak =(",
             variant: "destructive",
           });
         },
@@ -94,7 +94,7 @@ export default function SingIn() {
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-3xl font-bold text-center text-gray-800">
-            Sign In
+            Zaloguj się
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -129,7 +129,7 @@ export default function SingIn() {
                 />
               ))}
               <LoadingButton pending={pendingCredentials}>
-                Sign In
+                Zaloguj się
               </LoadingButton>
             </form>
           </Form>
@@ -139,7 +139,7 @@ export default function SingIn() {
               onClick={handleSignInWithGithub}
             >
               <GithubIcon className="w-4 h-4 mr-2" />
-              Continue with Github
+              Kontynuuj z Github
             </LoadingButton>
           </div>
           <div className="mt-4 text-center text-sm">
@@ -147,7 +147,7 @@ export default function SingIn() {
               href="/forgot-password"
               className="text-primary hover:underline"
             >
-              Forgot password?
+              Zapomniałeś hasła?
             </Link>
           </div>
         </CardContent>

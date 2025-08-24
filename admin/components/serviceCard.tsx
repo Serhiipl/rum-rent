@@ -19,7 +19,7 @@ const ShownCellAction: React.FC<{ data: ServiceProps; className?: string }> = ({
 
   return <CellAction data={data} className={className} />;
 };
-// Компонент для відображення статусу послуги
+// Komponent do wyświetlania statusu usługi
 const ServiceStatus: React.FC<{ active: boolean }> = ({ active }) => (
   <span
     className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
@@ -111,7 +111,7 @@ const ServiceCard: React.FC<{
           )}
         </div>
       </li>
-      {/* Pop-up для десктопу */}
+      {/* Okno pop-up dla pulpitu */}
       {!isMobile && showModal && (
         <ServiceModalPopup
           service={service}

@@ -33,7 +33,7 @@ const HeroCarousel: React.FC<HeroCarouselProps> = () => {
   if (!banners.length) {
     return (
       <div className="w-full h-96 flex items-center justify-center text-gray-500">
-        No banners available
+        Brak dostępnych banerów
       </div>
     );
   }
@@ -61,7 +61,7 @@ const HeroCarousel: React.FC<HeroCarouselProps> = () => {
               />
             ) : (
               <div className="w-full h-[600px] bg-gray-100 flex items-center justify-center text-gray-500 text-xl">
-                No image
+                Brak obrazu
               </div>
             )}
             <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-center items-center text-center text-white px-4">

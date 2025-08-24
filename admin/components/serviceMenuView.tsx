@@ -52,7 +52,7 @@ const ServiceMenuView: React.FC = () => {
                 onClick={() => setActiveCategoryId(null)}
                 className="w-full"
               >
-                Всі
+                Wszystkie
               </Button>
               {serviceCategories.map((cat) => (
                 <Button

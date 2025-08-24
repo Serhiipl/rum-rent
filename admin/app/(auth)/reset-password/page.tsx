@@ -39,7 +39,7 @@ function ResetPasswordContent() {
     setIsPending(true);
 
     try {
-      const token = searchParams.get("token"); // Отримуємо токен із URL
+      const token = searchParams.get("token"); // Getting a token from a URL
 
       if (!data.password || !data.confirmPassword) {
         toast({
@@ -63,13 +63,15 @@ function ResetPasswordContent() {
 
       const response = await authClient.resetPassword({
         newPassword: data.password,
-        token, // Додаємо токен у запит
+        token,
       });
 
       if (response?.error) {
         toast({
           title: "Error",
-          description: response.error.message || "An unknown error occurred.",
+          description:
+            response.error.message ||
+            "Wystąpił nieznany błąd. Spróbuj ponownie.",
           variant: "destructive",
         });
 
@@ -77,7 +79,7 @@ function ResetPasswordContent() {
       } else {
         toast({
           title: "Success",
-          description: "Password reset successfully",
+          description: "Pomyślnie zresetowano hasło",
         });
         router.push("/sign-in");
       }
@@ -85,7 +87,7 @@ function ResetPasswordContent() {
       console.error("Password reset error:", err);
       toast({
         title: "Error",
-        description: "Something went wrong. Please try again.",
+        description: "Coś poszło nie tak. Spróbuj ponownie.",
         variant: "destructive",
       });
     } finally {
@@ -99,13 +101,13 @@ function ResetPasswordContent() {
         <Card className="w-full max-w-full">
           <CardHeader>
             <CardTitle className="text-3xl font-bold text-center text-gray-800">
-              Invalid Reset Link
+              Nieprawidłowy link
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-center text-gray-600">
-              The reset link is invalid or has expired. Please request a new
-              one.
+              Link do resetowania jest nieprawidłowy lub wygasł. Sprobuj
+              ponownie.
             </p>
           </CardContent>
         </Card>
@@ -118,7 +120,7 @@ function ResetPasswordContent() {
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-3xl font-bold text-center text-gray-800">
-            Reset Password
+            Zresetuj hasło
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -129,11 +131,11 @@ function ResetPasswordContent() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>New Password</FormLabel>
+                    <FormLabel>Nowe hasło</FormLabel>
                     <FormControl>
                       <Input
                         type="password"
-                        placeholder="Enter your new password"
+                        placeholder="Wprowadź nowe hasło"
                         {...field}
                       />
                     </FormControl>
@@ -147,11 +149,11 @@ function ResetPasswordContent() {
                 name="confirmPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Confirm Password</FormLabel>
+                    <FormLabel>Potwierdź hasło</FormLabel>
                     <FormControl>
                       <Input
                         type="password"
-                        placeholder="Confirm your new password"
+                        placeholder="Potwierdź nowe hasło"
                         {...field}
                       />
                     </FormControl>
@@ -160,7 +162,7 @@ function ResetPasswordContent() {
                 )}
               />
 
-              <LoadingButton pending={isPending}>Reset Password</LoadingButton>
+              <LoadingButton pending={isPending}>Zresetuj hasło</LoadingButton>
             </form>
           </Form>
         </CardContent>
