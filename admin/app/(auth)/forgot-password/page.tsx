@@ -42,8 +42,9 @@ export default function ForgotPassword() {
       });
     } else {
       toast({
-        title: "Success",
-        description: "Check your email for a reset link",
+        title: "Sukces =)",
+        description:
+          "Sprawdź swoją skrzynkę e-mail, aby uzyskać link resetujący",
       });
     }
     setIsPending(false);
@@ -54,7 +55,7 @@ export default function ForgotPassword() {
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-3xl font-bold text-center text-gray-800">
-            Forgot Password
+            Zapomniałem hasła
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -65,11 +66,11 @@ export default function ForgotPassword() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>E-mail</FormLabel>
                     <FormControl>
                       <Input
                         type="Email"
-                        placeholder="Type your Email"
+                        placeholder="Wpisz swój e-mail"
                         {...field}
                       />
                     </FormControl>
@@ -77,7 +78,9 @@ export default function ForgotPassword() {
                   </FormItem>
                 )}
               />
-              <LoadingButton pending={isPending}>Send Reset Link</LoadingButton>
+              <LoadingButton pending={isPending}>
+                Wyslij link resetujacy
+              </LoadingButton>
             </form>
           </Form>
         </CardContent>
