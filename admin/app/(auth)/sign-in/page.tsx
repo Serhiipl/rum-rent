@@ -89,6 +89,16 @@ export default function SingIn() {
     );
     setPendingGithub(false);
   };
+
+  const fieldNames = {
+    email: "Adres e-mail",
+    password: "Hasło",
+  };
+  const placeholders = {
+    email: "Wprowadź swój adres e-mail",
+    password: "Wprowadź swoje hasło",
+  };
+
   return (
     <div className="flex items-center justify-center p-4 grow">
       <Card className="w-full max-w-md">
@@ -111,12 +121,14 @@ export default function SingIn() {
                   render={({ field: fieldProps }) => (
                     <FormItem>
                       <FormLabel>
-                        {field.charAt(0).toUpperCase() + field.slice(1)}
+                        {fieldNames[field as keyof typeof fieldNames]}
                       </FormLabel>
                       <FormControl>
                         <Input
                           type={field === "password" ? "password" : "email"}
-                          placeholder={`Enter your ${field}`}
+                          placeholder={`${
+                            placeholders[field as keyof typeof placeholders]
+                          }`}
                           {...fieldProps}
                           autoComplete={
                             field === "password" ? "current-password" : "email"

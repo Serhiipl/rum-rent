@@ -39,9 +39,9 @@ export default function SignUp() {
   const onSubmit = async (values: z.infer<typeof signUpSchema>) => {
     await authClient.signUp.email(
       {
+        name: values.name,
         email: values.email,
         password: values.password,
-        name: values.name,
       },
       {
         onRequest: () => {
@@ -49,35 +49,47 @@ export default function SignUp() {
         },
         onSuccess: () => {
           toast({
-            title: "Account created",
+            title: "Konto utworzone",
             description:
-              "Your account has been created. Check your email for a verification link.",
+              "Twoje konto zostało utworzone. Sprawdź link weryfikacyjny wysłany na twoją skrzynkę e-mail.",
           });
         },
         onError: (ctx) => {
           console.log("error", ctx);
           toast({
-            title: "Something went wrong",
-            description: ctx.error.message ?? "Something went wrong.",
+            title: "Coś poszło nie tak =(",
+            description: ctx.error.message ?? "Coś poszło nie tak.",
           });
         },
       }
     );
     setPending(false);
   };
-
+  const fields = ["name", "email", "password", "confirmPassword"];
+  const placeholders = {
+    name: "Wprowadź swoje imię",
+    email: "Wprowadź swój adres e-mail",
+    password: "Wprowadź swoje hasło",
+    confirmPassword: "Potwierdź swoje hasło",
+  };
+  const fieldNames = {
+    name: "Imię",
+    email: "Adres e-mail",
+    password: "Hasło",
+    confirmPassword: "Potwierdź hasło",
+  };
   return (
     <div className="grow flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-3xl font-bold text-center text-gray-800">
-            Utwórz konto
+            Utwórz nowe konto
           </CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {["name", "email", "password", "confirmPassword"].map((field) => (
+              {fields.map((field) => (
                 <FormField
                   control={form.control}
                   key={field}
@@ -85,18 +97,20 @@ export default function SignUp() {
                   render={({ field: fieldProps }) => (
                     <FormItem>
                       <FormLabel>
-                        {field.charAt(0).toUpperCase() + field.slice(1)}
+                        {fieldNames[field as keyof typeof fieldNames]}
                       </FormLabel>
                       <FormControl>
                         <Input
                           type={
-                            field.includes("password")
+                            field === "password" || field === "confirmPassword"
                               ? "password"
                               : field === "email"
                               ? "email"
                               : "text"
                           }
-                          placeholder={`Enter your ${field}`}
+                          placeholder={`${
+                            placeholders[field as keyof typeof placeholders]
+                          }`}
                           {...fieldProps}
                           autoComplete="off"
                         />

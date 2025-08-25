@@ -44,7 +44,7 @@ function ResetPasswordContent() {
       if (!data.password || !data.confirmPassword) {
         toast({
           title: "Error",
-          description: "Please fill in all required fields.",
+          description: "Wypełnij wszystkie wymagane pola.",
           variant: "destructive",
         });
         setIsPending(false);
@@ -54,7 +54,7 @@ function ResetPasswordContent() {
       if (!token) {
         toast({
           title: "Error",
-          description: "Invalid or missing reset token.",
+          description: "Invalid or missing reset token. Please try again.",
           variant: "destructive",
         });
         setIsPending(false);
