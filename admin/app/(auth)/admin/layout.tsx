@@ -13,16 +13,7 @@ import {
   Presentation,
 } from "lucide-react";
 
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-  // BreadcrumbPage,
-  // BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
@@ -59,11 +50,11 @@ export default function DashboardLayout({
         <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
           <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
             <MobileNav />
-            <DashboardBreadcrumb />
+            {/* <DashboardBreadcrumb /> */}
             {/* <SearchInput /> */}
             {/* <User /> */}
           </header>
-          <main className="grid flex-1 items-start gap-2 p-4 sm:px-6 sm:py-0 md:gap-4 bg-muted/40">
+          <main className="grid flex-1 items-start gap-1 p-2 sm:px-6 sm:py-0 md:gap-4 bg-muted/40">
             {children}
           </main>
         </div>
@@ -92,15 +83,15 @@ function DesktopNav() {
           <ShoppingCart className="h-5 w-5" />
         </NavItem>
 
-        <NavItem href="/admin/dashboard/services" label="Usługi">
+        <NavItem href="/admin/services" label="Usługi">
           <ClipboardList className="h-5 w-5" />
         </NavItem>
 
-        <NavItem href="/admin/dashboard/users" label="Users">
+        <NavItem href="/admin/users" label="Users">
           <Users2 className="h-5 w-5" />
         </NavItem>
 
-        <NavItem href="/admin/dashboard/banners" label="Banners">
+        <NavItem href="/admin/banners" label="Banners">
           <Presentation className="h-5 w-5" />
         </NavItem>
       </nav>
@@ -178,29 +169,5 @@ function MobileNav() {
         </nav>
       </SheetContent>
     </Sheet>
-  );
-}
-
-function DashboardBreadcrumb() {
-  return (
-    <Breadcrumb className="hidden md:flex">
-      <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbLink asChild>
-            <Link href="/admin/dashboard">Dashboard</Link>
-          </BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator />
-        <BreadcrumbItem>
-          <BreadcrumbLink asChild>
-            <Link href="/admin/dashboard/services">Usługi</Link>
-          </BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator />
-        <BreadcrumbItem>
-          <BreadcrumbPage>Usługi i kategorie</BreadcrumbPage>
-        </BreadcrumbItem>
-      </BreadcrumbList>
-    </Breadcrumb>
   );
 }

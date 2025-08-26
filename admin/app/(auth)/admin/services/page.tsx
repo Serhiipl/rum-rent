@@ -3,9 +3,9 @@
 import React, { useState, useEffect } from "react";
 import AddService from "./components/addService";
 import { ServiceProps } from "@/lib/serviceStore";
-import ShowServices from "../../../../../components/showServices";
-import CategoryFilter from "../../../../../components/modals/categoryFilter";
 import useServiceStore from "@/lib/serviceStore";
+import CategoryFilter from "./components/categoryFilter";
+import ShowServices from "@/components/showServices";
 
 // Компонент завантаження
 const LoadingState = () => (
@@ -63,13 +63,13 @@ const AddServicePage = () => {
   }
 
   return (
-    <div className="flex flex-col gap-4 p-4 max-w-7xl mx-auto">
+    <div className="flex flex-col gap-2 sm:gap-4 p-1 sm:p-4 max-w-7xl mx-auto">
       {/* Заголовок */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
           Dodawanie usług
         </h1>
-        <p className="text-gray-600">
+        <p className="text-sm sm:text-xl text-gray-600">
           Tutaj możesz dodać nową usługę do swojego pulpitu i zarządzać
           istniejącymi.
         </p>
@@ -94,13 +94,13 @@ const AddServicePage = () => {
       <ShowServices services={filteredServices} />
 
       {/* Дебаг інформація (тільки в режимі розробки) */}
-      {process.env.NODE_ENV === "development" && (
+      {/* {process.env.NODE_ENV === "development" && (
         <div className="mt-4 p-4 bg-gray-100 rounded text-sm">
           <p>Debug: Всього послуг: {services?.length || 0}</p>
           <p>Debug: Показано послуг: {filteredServices?.length || 0}</p>
           <p>Debug: Категорій: {serviceCategories?.length || 0}</p>
         </div>
-      )}
+      )} */}
     </div>
   );
 };
