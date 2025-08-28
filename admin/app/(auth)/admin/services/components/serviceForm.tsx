@@ -42,9 +42,12 @@ const ServiceForm = () => {
     defaultValues: {
       name: "",
       description: "",
-      price: 0,
-      duration: 0,
-      active: true,
+      rentalPrice: 0,
+      deposit: 0,
+      quantity: 1,
+      rentalPeriod: 1,
+      condition: "",
+      available: true,
       categoryId: "",
       images: [],
     },
@@ -109,15 +112,15 @@ const ServiceForm = () => {
               </FormItem>
             )}
           />
-          <div className="flex flex-col bg-gray-100 sm:flex-row gap-2">
+          <div className="flex flex-wrap bg-gray-100 sm:flex-row gap-2">
             <FormField
               name="name"
               control={form.control}
               render={({ field }) => (
                 <FormItem className="w-full bg-white md:w-1/2">
-                  {/* <FormLabel>Nazwa usługi</FormLabel> */}
+                  <FormLabel className="text-xs/3">Nazwa towaru</FormLabel>
                   <FormControl>
-                    <Input placeholder="Nazwa usługi:" {...field} />
+                    <Input placeholder="Nazwa towaru:" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -125,15 +128,16 @@ const ServiceForm = () => {
             />
 
             <FormField
-              name="price"
+              name="rentalPrice"
               control={form.control}
               render={({ field }) => (
-                <FormItem className="w-full bg-white md:w-1/4">
-                  {/* <FormLabel>Cena (zł)</FormLabel> */}
+                <FormItem className="w-full text-xs bg-white md:w-1/4">
+                  <FormLabel className="text-xs/3">Cena wynajmu (zł)</FormLabel>
                   <FormControl>
                     <Input
+                      className="text-xs"
                       type="text"
-                      placeholder="podaj cenę"
+                      placeholder="Cena wynajmu (zł)"
                       {...field}
                       value={field.value || ""} // показувати пустий string замість 0
                       onChange={(e) => field.onChange(e.target.value)}
@@ -144,19 +148,76 @@ const ServiceForm = () => {
               )}
             />
             <FormField
-              name="duration"
+              name="deposit"
               control={form.control}
               render={({ field }) => (
-                <FormItem className="w-full bg-white md:w-1/4">
-                  {/* <FormLabel>Czas (min)</FormLabel> */}
+                <FormItem className="w-full text-xs bg-white md:w-1/4">
+                  <FormLabel className="text-xs/3">Kaucja (zł)</FormLabel>
                   <FormControl>
                     <Input
+                      className="text-xs"
                       type="text"
-                      placeholder="czas realizacji"
+                      placeholder="Kaucja (zł)"
                       {...field}
                       value={field.value || ""} // показувати пустий string замість 0
                       onChange={(e) => field.onChange(e.target.value)}
                     />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              name="quantity"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem className="w-full text-xs bg-white md:w-1/4">
+                  <FormLabel className="text-xs/3">
+                    Ilość na stanie (szt.)
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      className="text-xs"
+                      type="number"
+                      placeholder="Ilość na stanie"
+                      {...field}
+                      value={field.value as number} // показувати пустий string замість 0
+                      onChange={(e) => field.onChange(e.target.value)}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              name="rentalPeriod"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem className="w-full bg-white md:w-1/4">
+                  <FormLabel className="text-xs/3 bg-transparent">
+                    Min. Czas wynajmu (dni)
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Min. Czas wynajmu (dni)"
+                      {...field}
+                      value={field.value as number} // показувати пустий string замість 0
+                      onChange={(e) => field.onChange(e.target.value)}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              name="condition"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem className="w-full bg-white md:w-1/2">
+                  <FormLabel className="text-xs/3">Stan towaru</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Stan towaru:" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -165,7 +226,7 @@ const ServiceForm = () => {
           </div>
           <div className="flex flex-col sm:flex-row gap-2">
             <FormField
-              name="active"
+              name="available"
               control={form.control}
               render={({ field }) => (
                 <FormItem className="flex items-center gap-2">
@@ -177,7 +238,7 @@ const ServiceForm = () => {
                       className="w-4 h-4"
                     />
                   </FormControl>
-                  <FormLabel className="!m-0">Aktywna</FormLabel>
+                  <FormLabel className="!m-0">Dostępny</FormLabel>
                   <FormMessage />
                 </FormItem>
               )}
@@ -216,11 +277,11 @@ const ServiceForm = () => {
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Opis usługi</FormLabel>
+                <FormLabel>Opis towaru</FormLabel>
                 <FormControl>
                   <textarea
                     {...field}
-                    placeholder="Opis usługi..."
+                    placeholder="Opis towaru..."
                     rows={4}
                     className="w-full rounded-sm px-2 py-1 resize-none shadow-md focus:outline-none focus:border-black-400 border border-gray-300"
                   />

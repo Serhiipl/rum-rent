@@ -4,20 +4,26 @@ export interface ServiceProps {
   serviceId: string;
   name: string;
   description: string;
-  price: number;
-  duration: number;
+  rentalPrice: number;
+  deposit: number;
+  quantity: number;
+  rentalPeriod: number;
+  condition: string;
   images: Image[];
-  active: boolean;
+  available: boolean;
   categoryId: string;
 }
 // Тип для створення нової послуги (без serviceId)
 export interface CreateServiceData {
   name: string;
   description: string;
-  price: number;
-  duration: number;
+  rentalPrice: number;
+  deposit: number;
+  quantity: number;
+  rentalPeriod: number; //
+  condition: string;
   images: { url: string }[];
-  active: boolean;
+  available: boolean;
   categoryId: string;
 }
 export interface Image {

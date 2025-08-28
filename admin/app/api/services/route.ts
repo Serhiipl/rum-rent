@@ -19,8 +19,18 @@ export async function POST(request: Request) {
     const userId = session.data?.user.id;
 
     const body = await request.json();
-    const { name, description, price, duration, active, images, categoryId } =
-      body;
+    const {
+      name,
+      description,
+      rentalPrice,
+      rentalPeriod,
+      deposit,
+      quantity,
+      condition,
+      available,
+      images,
+      categoryId,
+    } = body;
 
     if (!userId) {
       return new NextResponse("Unauthenticated", { status: 401 });
@@ -32,20 +42,32 @@ export async function POST(request: Request) {
     if (!description) {
       return new NextResponse("Description is required", { status: 400 });
     }
-    if (price == null) {
-      return new NextResponse("Price is required", { status: 400 });
+    if (rentalPrice == null) {
+      return new NextResponse("Rental price is required", { status: 400 });
     }
-    if (!duration) {
-      return new NextResponse("Time is required", { status: 400 });
+    if (!rentalPeriod) {
+      return new NextResponse("Rental period is required", { status: 400 });
+    }
+    if (deposit == null) {
+      return new NextResponse("Deposit is required", { status: 400 });
+    }
+    if (quantity == null) {
+      return new NextResponse("Quantity is required", { status: 400 });
+    }
+    if (!condition) {
+      return new NextResponse("Condition is required", { status: 400 });
     }
 
     const service = await prisma.service.create({
       data: {
         name,
         description,
-        price,
-        duration,
-        active,
+        rentalPrice,
+        rentalPeriod,
+        deposit,
+        quantity,
+        condition,
+        available,
         images:
           Array.isArray(images) && images.length > 0
             ? {

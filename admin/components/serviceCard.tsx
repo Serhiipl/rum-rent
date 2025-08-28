@@ -7,6 +7,7 @@ import { useIsMobile } from "@/hooks/useIsMobile";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import ServiceModalPopup from "./modals/serviceModalPopup";
+import { Button } from "./ui/button";
 
 const ShownCellAction: React.FC<{ data: ServiceProps; className?: string }> = ({
   data,
@@ -20,18 +21,18 @@ const ShownCellAction: React.FC<{ data: ServiceProps; className?: string }> = ({
   return <CellAction data={data} className={className} />;
 };
 // Komponent do wyświetlania statusu usługi
-const ServiceStatus: React.FC<{ active: boolean }> = ({ active }) => (
+const ServiceStatus: React.FC<{ available: boolean }> = ({ available }) => (
   <span
     className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-      active ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+      available ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
     }`}
   >
     <span
       className={`w-2 h-2 rounded-full mr-1 ${
-        active ? "bg-green-400" : "bg-red-400"
+        available ? "bg-green-400" : "bg-red-400"
       }`}
     />
-    {active ? "Aktywna" : "Nieaktywna"}
+    {available ? "Dostępny" : "Niedostępny"}
   </span>
 );
 
@@ -76,31 +77,41 @@ const ServiceCard: React.FC<{
             </div>
             {/* Зображення послуги */}
             {service.images.length > 0 && (
-              <div
-                className="mb-3 mr-6 overflow-hidden rounded-lg aspect-square  h-10 object-cover
-            group-hover:scale-105 transition-transform duration-300"
-              >
-                <Image
-                  src={service.images[0].url}
-                  alt={service.name}
-                  width={600}
-                  height={400}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                />
-              </div>
+              //   <div
+              //     className="mb-3 mr-6 overflow-hidden rounded-lg aspect-square  h-25 object-cover
+              // group-hover:scale-105 transition-transform duration-300"
+              //   >
+              <Image
+                src={service.images[0].url}
+                alt={service.name}
+                width={400}
+                height={300}
+                className="max-w-40 mb-3 mr-6 rounded-lg overflow-hidden aspect-square object-cover transition-transform duration-300 group-hover:scale-105"
+              />
+              // </div>
             )}
           </div>
           {/* Основна інформація */}
           <div className="flex justify-between items-center mb-3">
             <div className="flex items-center space-x-4">
               <p className="text-sm font-normal text-slate-950">
-                Cena: <span className="font-bold">{service.price}</span> zł
+                <span className="font-bold">{service.rentalPrice}</span> zł.
+                Dzień
               </p>
-              <span className="text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded">
-                {service.duration} min
-              </span>
+              <p className="text-sm font-normal text-slate-950">
+                Min. period wypożyczenia
+                <span className="font-bold"> {service.rentalPeriod}</span> (dni)
+              </p>
+
+              <p className="text-sm font-normal text-slate-950">
+                Stan <span className="font-bold">{service.condition}</span>
+              </p>
+              <p className="text-sm font-normal text-slate-950">
+                Dostępność
+                <span className="font-bold"> {service.quantity} </span> szt.
+              </p>
             </div>
-            <ServiceStatus active={service.active} />
+            <ServiceStatus available={service.available} />
           </div>
 
           {/* Опис */}
@@ -110,6 +121,9 @@ const ServiceCard: React.FC<{
             </p>
           )}
         </div>
+        <Button variant="outline" className="m-4 w-auto" onClick={handleClick}>
+          Zobacz szczegóły
+        </Button>
       </li>
       {/* Okno pop-up dla pulpitu */}
       {!isMobile && showModal && (

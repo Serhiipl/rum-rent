@@ -45,17 +45,29 @@ export const resetPasswordSchema = object({
 export const serviceFormSchema = object({
   name: string().min(1, "Nazwa jest wymagana"),
   description: string().min(1, "Opis jest wymagany"),
-  price: string()
+  rentalPrice: string()
     .min(1, "Cena jest wymagana")
     .transform((val) => parseFloat(val))
     .refine((val) => !isNaN(val) && val > 0, "Cena musi być większa niż 0"),
-  duration: string()
-    .min(1, "Czas jest wymagany")
+  deposit: string()
+    .min(1, "Kaucja jest wymagana")
+    .transform((val) => parseFloat(val))
+    .refine((val) => !isNaN(val) && val > 0, "Kaucja musi być większa niż 0"),
+  quantity: string()
+    .min(1, "Ilość na stanie jest wymagana")
     .transform((val) => parseInt(val))
     .refine(
-      (val) => !isNaN(val) && val >= 5,
-      "Czas realizacji musi być co najmniej 5 minut"
+      (val) => !isNaN(val) && val > 0,
+      "Ilość na stanie musi być większa niż 0"
     ),
+  rentalPeriod: string()
+    .min(1, "Minimum jeden dzień")
+    .transform((val) => parseInt(val))
+    .refine(
+      (val) => !isNaN(val) && val > 0,
+      "Czas najmu musi być co najmniej 1 dzień"
+    ),
+  condition: string().min(1, "Nazwa jest wymagana"),
   // images: object({ url: string() }).array(),
   images: z
     .array(
@@ -64,7 +76,7 @@ export const serviceFormSchema = object({
       })
     )
     .default([]),
-  active: boolean().default(true),
+  available: boolean().default(true),
   categoryId: string().min(1, "Kategoria jest wymagana"), // 🔥 Додано
 });
 

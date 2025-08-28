@@ -94,13 +94,13 @@ const AddServicePage = () => {
       <ShowServices services={filteredServices} />
 
       {/* Дебаг інформація (тільки в режимі розробки) */}
-      {/* {process.env.NODE_ENV === "development" && (
+      {process.env.NODE_ENV === "development" && (
         <div className="mt-4 p-4 bg-gray-100 rounded text-sm">
           <p>Debug: Всього послуг: {services?.length || 0}</p>
           <p>Debug: Показано послуг: {filteredServices?.length || 0}</p>
           <p>Debug: Категорій: {serviceCategories?.length || 0}</p>
         </div>
-      )} */}
+      )}
     </div>
   );
 };

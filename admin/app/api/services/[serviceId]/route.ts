@@ -104,41 +104,61 @@ export async function GET(request: Request, { params }: RouteParams) {
 export async function PATCH(request: Request, { params }: RouteParams) {
   try {
     const body = await request.json();
-    const { name, description, price, duration, active } = body;
+    const {
+      name,
+      description,
+      rentalPrice,
+      rentalPeriod,
+      deposit,
+      quantity,
+      condition,
+      available,
+    } = body;
     const { serviceId } = await params;
 
-    if (!name || !description || price == null || !duration) {
+    if (
+      !name ||
+      !description ||
+      rentalPrice == null ||
+      !rentalPeriod ||
+      deposit == null ||
+      quantity == null ||
+      !condition
+    ) {
       return NextResponse.json(
         { error: "All fields are required" },
         { status: 400 }
       );
     }
 
-    const parsedPrice = parseFloat(price);
-    const parsedDuration = parseInt(duration);
+    // const parsedPrice = parseFloat(price);
+    // const parsedDuration = parseInt(duration);
 
-    if (isNaN(parsedPrice)) {
-      return NextResponse.json(
-        { error: "Invalid price format" },
-        { status: 400 }
-      );
-    }
+    // if (isNaN(parsedPrice)) {
+    //   return NextResponse.json(
+    //     { error: "Invalid price format" },
+    //     { status: 400 }
+    //   );
+    // }
 
-    if (isNaN(parsedDuration)) {
-      return NextResponse.json(
-        { error: "Invalid duration format" },
-        { status: 400 }
-      );
-    }
+    // if (isNaN(parsedDuration)) {
+    //   return NextResponse.json(
+    //     { error: "Invalid duration format" },
+    //     { status: 400 }
+    //   );
+    // }
 
     const service = await prisma.service.update({
       where: { serviceId },
       data: {
         name,
         description,
-        price: parsedPrice,
-        duration: parsedDuration,
-        active,
+        rentalPrice,
+        rentalPeriod,
+        deposit,
+        quantity,
+        condition,
+        available,
       },
     });
 
