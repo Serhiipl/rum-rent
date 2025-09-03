@@ -57,8 +57,8 @@ export const serviceFormSchema = object({
     .min(1, "Ilość na stanie jest wymagana")
     .transform((val) => parseInt(val))
     .refine(
-      (val) => !isNaN(val) && val > 0,
-      "Ilość na stanie musi być większa niż 0"
+      (val) => !isNaN(val) && val >= 0,
+      "Fajnie było b gdy bym ilość na stanie była większa niż 0"
     ),
   rentalPeriod: string()
     .min(1, "Minimum jeden dzień")

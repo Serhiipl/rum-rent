@@ -33,7 +33,7 @@ export default function Home() {
     loadData();
   }, [fetchServices, fetchServiceCategories, fetchBanners]);
   return (
-    <div className="flex flex-col items-center  min-h-screen py-2">
+    <div className="flex flex-col items-center bg-stone-700 border border-amber-500 rounded-xl min-h-screen py-2">
       <main className="flex flex-col items-center justify-center w-full flex-1 md:px-20 py-10 text-center">
         <HeroCarousel banners={banners} />
         <ServiceMenuView />

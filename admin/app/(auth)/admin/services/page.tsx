@@ -63,7 +63,8 @@ const AddServicePage = () => {
   }
 
   return (
-    <div className="flex flex-col gap-2 sm:gap-4 p-1 sm:p-4 max-w-7xl mx-auto">
+    <div className="flex flex-col gap-2 sm:gap-4 p-1 sm:p-4 max-w-7xl mx-auto bg-stone-700 border-[2px] border-yellow-500">
+      {/* <div className="flex flex-col gap-2 sm:gap-4 p-1 sm:p-4 max-w-7xl mx-auto "> */}
       {/* Заголовок */}
       <div className="mb-6">
         <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">

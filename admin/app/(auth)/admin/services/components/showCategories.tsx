@@ -28,7 +28,7 @@ export const ShowCategories: React.FC = () => {
           {serviceCategories.map((category) => (
             <li
               key={category.id}
-              className="py-1 px-4 bg-cyan-50 rounded-full min-w-fit hover:bg-cyan-100 shadow-md relative transition-colors duration-200 ease-in-out"
+              className="py-1 px-4 bg-stone-300 rounded-sm min-w-fit hover:bg-stone-500 shadow-md relative transition-colors duration-200 ease-in-out"
             >
               <CellActionCategory
                 className="absolute right-1 top-1/2 transform -translate-y-1/2"

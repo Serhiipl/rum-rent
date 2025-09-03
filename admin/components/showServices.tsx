@@ -4,7 +4,7 @@ import useServiceStore from "@/lib/serviceStore";
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 // import CellAction from "./cellAction";
 import { ServiceCategory, ServiceProps } from "@/lib/serviceStore";
-import ServiceCard from "@/components/serviceCard";
+import ServiceCard from "@/components/product-card";
 import EmptyState from "@/components/emptyItemState";
 import LoadingState from "./loadingItemState";
 
@@ -65,15 +65,16 @@ const ShowServices: React.FC<ShowServicesProps> = ({
   const servicesToDisplay = filteredServices || [];
 
   return (
-    <div className="bg-slate-50 p-2 rounded-xl">
+    <div className="bg-stone-600 p-2 rounded-xl border-[2px] border-yellow-500">
+      {/* <div className="bg-slate-50 p-2 rounded-xl"> */}
       {/* Заголовок */}
       <div className="flex items-center justify-between mb-6">
-        <div className="flex gap-2 items-center">
+        {/* <div className="flex gap-2 items-center">
           <h2 className="text-2xl font-bold text-gray-800">Usługi:</h2>
           <p className="text-gray-600 mt-1 text-sm">
             Znaleziono: {servicesToDisplay.length}...
           </p>
-        </div>
+        </div> */}
 
         {/* Кнопка оновлення */}
         {/* <button
@@ -122,7 +123,7 @@ const ShowServices: React.FC<ShowServicesProps> = ({
       {isLoading ? (
         <LoadingState />
       ) : servicesToDisplay.length > 0 ? (
-        <ul className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <ul className="grid grid-cols-1 place-items-center  items-center md:grid-cols-2 xl:grid-cols-3 gap-6">
           {servicesToDisplay.map((service: ServiceProps) => (
             <ServiceCard
               key={service.serviceId}

@@ -57,7 +57,7 @@ export const ServiceCategoryChangeModal: React.FC<
   return (
     <Modal
       title="Edycja kategorii"
-      description="Zmień dane."
+      description="Zmień dane"
       isOpen={isOpen}
       onClose={onClose}
     >
@@ -77,10 +77,10 @@ export const ServiceCategoryChangeModal: React.FC<
             onChange={handleChange}
             placeholder="Nazwa kategorii"
             required
-            className="w-full rounded-sm px-2 py-1 shadow-md shadow-red-100 border border-red-100 focus:outline-none focus:border-red-400"
+            className="w-full rounded-sm px-2 py-1 shadow-md shadow-stone-100 border border-stone-100 focus:outline-none focus:border-stone-400"
           />
         </div>
-        <Button className="bg-red-300" type="submit">
+        <Button className="bg-stone-600" type="submit">
           Zapisz zmiany
         </Button>
       </form>

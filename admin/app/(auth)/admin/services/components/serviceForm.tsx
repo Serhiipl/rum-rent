@@ -75,10 +75,9 @@ const ServiceForm = () => {
 
   return (
     <div className="flex flex-col items-center sm:items-start justify-center my-3 rounded-md w-full bg-slate-100 sm:py-4 sm:px-3 text-zinc-600">
-      <h2 className="text-base sm:text-xl m-2 font-semibold">Dodaj usługe</h2>
+      <h2 className="text-base sm:text-xl m-2 font-semibold">Dodaj Element</h2>
       <p className="text-center text-sm text-muted-foreground m-2">
-        Wypełnij poniższe dane i kliknij <b>Dodaj Usługe!</b>, aby utworzyć nową
-        usługę.
+        Wypełnij poniższe dane i kliknij <b>Dodaj!</b>
       </p>
       <Form {...form}>
         <form
@@ -89,8 +88,10 @@ const ServiceForm = () => {
             control={form.control}
             name="images"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Images</FormLabel>
+              <FormItem className="relative p-2 border  border-gray-300 w-1/2 rounded-sm">
+                <FormLabel className="absolute -top-3 left-2 px-1  bg-slate-100 text-sm font-medium text-gray-600">
+                  Zdjęcia towaru
+                </FormLabel>
                 <FormControl>
                   <ImageUpload
                     value={field.value.map((image) => image.url)}
@@ -112,15 +113,17 @@ const ServiceForm = () => {
               </FormItem>
             )}
           />
-          <div className="flex flex-wrap bg-gray-100 sm:flex-row gap-2">
+          <div className="flex flex-wrap bg-gray-100 sm:flex-row gap-3">
             <FormField
               name="name"
               control={form.control}
               render={({ field }) => (
-                <FormItem className="w-full bg-white md:w-1/2">
-                  <FormLabel className="text-xs/3">Nazwa towaru</FormLabel>
+                <FormItem className="relative p-2 border  border-gray-300 rounded-sm w-1/2  ">
+                  <FormLabel className="absolute -top-3 left-2 px-1  bg-slate-100 text-sm font-medium text-gray-600 ">
+                    Nazwa towaru
+                  </FormLabel>
                   <FormControl>
-                    <Input placeholder="Nazwa towaru:" {...field} />
+                    <Input placeholder="Nazwa towaru" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -131,13 +134,15 @@ const ServiceForm = () => {
               name="rentalPrice"
               control={form.control}
               render={({ field }) => (
-                <FormItem className="w-full text-xs bg-white md:w-1/4">
-                  <FormLabel className="text-xs/3">Cena wynajmu (zł)</FormLabel>
+                <FormItem className="w-full relative p-2 border  border-gray-300 rounded-sm md:w-1/4">
+                  <FormLabel className="absolute -top-3 left-2 px-1  bg-slate-100 text-sm font-medium text-gray-600">
+                    Cena za dzień (zł)
+                  </FormLabel>
                   <FormControl>
                     <Input
                       className="text-xs"
                       type="text"
-                      placeholder="Cena wynajmu (zł)"
+                      placeholder="Wpisz cene"
                       {...field}
                       value={field.value || ""} // показувати пустий string замість 0
                       onChange={(e) => field.onChange(e.target.value)}
@@ -151,8 +156,10 @@ const ServiceForm = () => {
               name="deposit"
               control={form.control}
               render={({ field }) => (
-                <FormItem className="w-full text-xs bg-white md:w-1/4">
-                  <FormLabel className="text-xs/3">Kaucja (zł)</FormLabel>
+                <FormItem className="w-full relative p-1 border  border-gray-300 rounded-sm md:w-1/4">
+                  <FormLabel className="text-xs/3 absolute -top-3 left-2 px-1 bg-slate-100 sm:text-sm font-medium text-gray-600">
+                    Kaucja (zł)
+                  </FormLabel>
                   <FormControl>
                     <Input
                       className="text-xs"
@@ -171,9 +178,9 @@ const ServiceForm = () => {
               name="quantity"
               control={form.control}
               render={({ field }) => (
-                <FormItem className="w-full text-xs bg-white md:w-1/4">
-                  <FormLabel className="text-xs/3">
-                    Ilość na stanie (szt.)
+                <FormItem className="w-full relative p-1 border  border-gray-300 rounded-sm md:w-1/4">
+                  <FormLabel className="text-xs/3 absolute -top-3 left-2 px-1 bg-slate-100 sm:text-sm font-medium text-gray-600">
+                    Ilość w magazynie
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -193,8 +200,8 @@ const ServiceForm = () => {
               name="rentalPeriod"
               control={form.control}
               render={({ field }) => (
-                <FormItem className="w-full bg-white md:w-1/4">
-                  <FormLabel className="text-xs/3 bg-transparent">
+                <FormItem className="w-full  relative p-1 border  border-gray-300 rounded-sm md:min-w-fit md:w-1/4">
+                  <FormLabel className="text-xs/3 absolute -top-3 left-2 px-1 bg-slate-100 sm:text-sm font-medium text-gray-600">
                     Min. Czas wynajmu (dni)
                   </FormLabel>
                   <FormControl>
@@ -214,8 +221,10 @@ const ServiceForm = () => {
               name="condition"
               control={form.control}
               render={({ field }) => (
-                <FormItem className="w-full bg-white md:w-1/2">
-                  <FormLabel className="text-xs/3">Stan towaru</FormLabel>
+                <FormItem className="w-full relative p-1 border  border-gray-300 rounded-sm md:w-1/2">
+                  <FormLabel className="text-xs/3 absolute -top-3 left-2 px-1 bg-slate-100 sm:text-sm font-medium text-gray-600">
+                    Stan towaru
+                  </FormLabel>
                   <FormControl>
                     <Input placeholder="Stan towaru:" {...field} />
                   </FormControl>
@@ -292,11 +301,11 @@ const ServiceForm = () => {
           />
 
           <Button
-            className="w-full sm:w-44 ml-auto"
+            className="w-full font-semibold text-lg sm:w-44 ml-auto"
             type="submit"
             disabled={isLoading}
           >
-            {isLoading ? "Dodawanie..." : "Dodaj Usługe!"}
+            {isLoading ? "Dodawanie..." : "Dodaj!"}
           </Button>
         </form>
       </Form>
