@@ -1,12 +1,14 @@
 import { notFound } from "next/navigation";
-import Image from "next/image";
+import Gallery from "@/components/galery-tab";
 import { BackButton } from "@/components/back-button";
 import { NextPage } from "next";
+import ContactForm from "@/components/contact-form";
 
-interface ServicePageProps {
+//komponent strony usługi dla telefonów
+interface ProductPageProps {
   params: Promise<{ serviceId: string }>;
 }
-const ServicePage: NextPage<ServicePageProps> = async ({ params }) => {
+const ProductPage: NextPage<ProductPageProps> = async ({ params }) => {
   const { serviceId } = await params;
   if (!serviceId) {
     return notFound();
@@ -26,22 +28,9 @@ const ServicePage: NextPage<ServicePageProps> = async ({ params }) => {
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">{service.name}</h1>
-      {service.images?.length > 0 && (
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          {service.images.map(
-            (img: { id?: string | number; url: string }, index: number) => (
-              <Image
-                key={img.id || index}
-                src={img.url}
-                alt={service.name}
-                width={600}
-                height={400}
-                className="rounded-lg object-cover"
-              />
-            )
-          )}
-        </div>
-      )}
+      <div className="mb-4">
+        <Gallery images={service.images} />
+      </div>
       <p className="text-gray-600 mb-4">
         <strong>Kategoria:</strong> {service.category?.name || "Brak kategorii"}
       </p>
@@ -52,8 +41,18 @@ const ServicePage: NextPage<ServicePageProps> = async ({ params }) => {
         <strong>Trwanie:</strong> {service.duration} min
       </p>
       <p className="text-gray-600">{service.description}</p>
+
+      <div className="mt-8">
+        <h2 className="text-xl font-semibold mb-3">Skontaktuj się z nami</h2>
+        <ContactForm
+          productName={service.name}
+          productId={service.serviceId || service.id}
+          productImageUrl={service.images?.[0]?.url}
+          receiverEmail={process.env.NEXT_PUBLIC_CONTACT_RECEIVER}
+        />
+      </div>
       <BackButton />
     </div>
   );
 };
-export default ServicePage;
+export default ProductPage;

@@ -83,3 +83,27 @@ export const serviceFormSchema = object({
 export const serviceCategorySchema = object({
   name: string().min(1, "Name is required"),
 });
+
+export const contactFormSchema = z
+  .object({
+    name: z.string().min(2, "Imię jest wymagane"),
+    email: z.string().email("Nieprawidłowy email").optional().or(z.literal("")),
+    phone: z.string().optional().or(z.literal("")),
+    info: z.string().optional().or(z.literal("")),
+  })
+  .superRefine((data, ctx) => {
+    const hasEmail = !!data.email && data.email.trim().length > 0;
+    const hasPhone = !!data.phone && data.phone.trim().length > 0;
+    if (!hasEmail && !hasPhone) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Podaj e-mail lub telefon",
+        path: ["email"],
+      });
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Podaj e-mail lub telefon",
+        path: ["phone"],
+      });
+    }
+  });

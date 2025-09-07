@@ -6,7 +6,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ServiceProps } from "@/lib/serviceStore";
-import Image from "next/image";
+import Gallery from "@/components/galery-tab";
+import PhoneLink from "../phone-link";
+import ContactForm from "../contact-form";
 
 interface ServiceModalPopupProps {
   service: ServiceProps;
@@ -19,46 +21,60 @@ const ServiceModalPopup: React.FC<ServiceModalPopupProps> = ({
 }) => {
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-3xl h-[95vh] my-5 overflow-auto md:my-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">
             {service.name}
           </DialogTitle>
         </DialogHeader>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-          {/* Зображення */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 border border-gray-400 p-2 rounded-md">
+          <div className="w-full space-y-3 border  p-4 rounded-md">
+            <Gallery images={service.images} />
+          </div>
 
-          {service.images?.length > 0 && (
-            <div className="flex overflow-x-auto gap-4 pb-2">
-              {service.images.map((img, index) => (
-                <div
-                  key={img.id || index}
-                  className="min-w-[300px] aspect-video overflow-hidden rounded-md flex-shrink-0"
-                >
-                  <Image
-                    src={img.url}
-                    alt={`${service.name} ${index + 1}`}
-                    width={800}
-                    height={600}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ))}
+          <div className="text-gray-700 space-y-3 border border-amber-400 p-4 rounded-md">
+            <p>
+              <strong>Cena wynajmu:</strong> {service.rentalPrice} zł/doba
+            </p>
+            <p>
+              <strong>Min. czas wypożyczenia:</strong> {service.rentalPeriod}{" "}
+              {service.rentalPeriod === 1 ? "dzień" : "dni"}
+            </p>
+            <p>
+              <strong>Stan:</strong> {service.condition}
+            </p>
+            <p>
+              <strong>Depozyt:</strong> {service.deposit} zł
+            </p>
+            <p>
+              <strong>Ilość na magazynie:</strong> {service.quantity}
+            </p>
+            <div className="flex flex-col items-center space-y-2 w-full pt-2 border-t border-gray-300">
+              <p className="text-sm text-gray-600 ">
+                Zadzwoń i zapytaj o dostępność:
+              </p>
+              <PhoneLink />
             </div>
-          )}
-
-          {/* Інформація */}
-          <div className="text-gray-700 space-y-3">
-            <p>
-              <strong>Ціна:</strong> {service.price} zł
+          </div>
+          <div className="flex flex-col text-gray-700 space-y-2 w-full border border-amber-400 p-4 rounded-md md:col-span-2">
+            <span className="font-semibold mx-auto">Opis produktu:</span>
+            <p className="text-sm w-full leading-relaxed">
+              {service.description || "Brak opisu."}
             </p>
-            <p>
-              <strong>Тривалість:</strong> {service.duration} хв
-            </p>
-            <p className="text-sm leading-relaxed">
-              {service.description || "Опис послуги відсутній."}
-            </p>
+          </div>
+          <div className="flex flex-col items-center justify-center w-full border border-amber-400 p-4 rounded-md md:col-span-2">
+            <span className="font-semibold mb-2">Chcesz wypożyczyć?</span>
+            <div className="flex flex-row  w-full space-y-4 md:space-y-0 md:space-x-4">
+              <div className="flex-col items-center space-y-2 w-full">
+                <ContactForm
+                  productName={service.name}
+                  productId={service.serviceId}
+                  productImageUrl={service.images?.[0]?.url}
+                  receiverEmail={process.env.NEXT_PUBLIC_CONTACT_RECEIVER}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </DialogContent>

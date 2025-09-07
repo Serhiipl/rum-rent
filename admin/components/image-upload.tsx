@@ -71,7 +71,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
               onClick={onClick}
             >
               <ImagePlus className="h-4 w-4 mr-2" />
-              Upload an image
+              Upload an images
             </Button>
           );
         }}
@@ -92,7 +92,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
             onClick={() => open()}
           >
             <ImagePlus className="h-4 w-4 mr-2" />
-            Prześlij obraz(y)
+            Dodaj obraz(y)
           </Button>
         )}
       </CldUploadWidget>

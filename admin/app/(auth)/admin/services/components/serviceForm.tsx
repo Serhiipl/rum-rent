@@ -88,7 +88,7 @@ const ServiceForm = () => {
             control={form.control}
             name="images"
             render={({ field }) => (
-              <FormItem className="relative p-2 border  border-gray-300 w-1/2 rounded-sm">
+              <FormItem className="relative p-2 border  border-gray-300 w-full rounded-sm">
                 <FormLabel className="absolute -top-3 left-2 px-1  bg-slate-100 text-sm font-medium text-gray-600">
                   Zdjęcia towaru
                 </FormLabel>
@@ -96,12 +96,12 @@ const ServiceForm = () => {
                   <ImageUpload
                     value={field.value.map((image) => image.url)}
                     disabled={isLoading}
-                    onChange={(url) =>
-                      field.onChange([...field.value, { url }])
-                    }
                     // onChange={(url) =>
-                    //   field.onChange((field.value = [...field.value, { url }]))
+                    //   field.onChange([...field.value, { url }])
                     // }
+                    onChange={(url) =>
+                      field.onChange((field.value = [...field.value, { url }]))
+                    }
                     onRemove={(url) =>
                       field.onChange(
                         field.value.filter((img) => img.url !== url)
