@@ -1,3 +1,5 @@
+"use client";
+
 import useServiceStore, { ServiceProps } from "@/lib/serviceStore";
 import {
   Sheet,
@@ -10,6 +12,7 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { useCallback } from "react";
+import { usePathname } from "next/navigation";
 import PhoneLink from "./phone-link";
 
 export const filterServicesByCategory = (
@@ -21,6 +24,11 @@ export const filterServicesByCategory = (
 const NavLinks = () => {
   const { serviceCategories, activeCategoryId, setActiveCategoryId } =
     useServiceStore();
+  const pathname = usePathname();
+  const isServicePage = /^\/services\/[^/]+$/.test(pathname || "");
+  const isAdminPage = /^\/admin(\/|$)/.test(pathname || "");
+  const isSignInPage = /^\/sign-in(\/|$)/.test(pathname || "");
+  const isSignUpPage = /^\/sign-up(\/|$)/.test(pathname || "");
 
   const handleCategoryChange = useCallback(
     (value: string) => {
@@ -60,58 +68,60 @@ const NavLinks = () => {
       </div>
 
       {/* Mobile Sheet */}
-      <div className="sm:hidden flex justify-end mb-4">
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button
-              variant="ghost"
-              className="flex bg-amber-600 border border-stone-900 text-white items-center"
-            >
-              MENU
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left">
-            <SheetHeader>
-              <SheetTitle className="sr-only">Kategorie</SheetTitle>
-            </SheetHeader>
-            <div className="space-y-3 mt-4">
-              <SheetClose asChild>
-                <Button
-                  variant={activeCategoryId === null ? "default" : "ghost"}
-                  onClick={() => handleCategoryChange("all")}
-                  aria-pressed={activeCategoryId === null}
-                  className="w-full"
-                >
-                  Wszystkie
-                </Button>
-              </SheetClose>
-              {serviceCategories.map((cat) => (
-                <SheetClose asChild key={cat.id}>
+      {!isServicePage && !isAdminPage && !isSignInPage && !isSignUpPage && (
+        <div className="sm:hidden flex justify-end mb-4">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button
+                variant="ghost"
+                className="flex bg-amber-600 border border-stone-900 text-white items-center"
+              >
+                MENU
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left">
+              <SheetHeader>
+                <SheetTitle className="sr-only">Kategorie</SheetTitle>
+              </SheetHeader>
+              <div className="space-y-3 mt-4">
+                <SheetClose asChild>
                   <Button
-                    variant={
-                      activeCategoryId === cat.id ? "default" : "ghost"
-                    }
-                    onClick={() => handleCategoryChange(cat.id)}
-                    aria-pressed={activeCategoryId === cat.id}
-                    className={`w-full bg-amber-500  ${
-                      activeCategoryId === cat.id ? "bg-amber-500" : ""
-                    }`}
+                    variant={activeCategoryId === null ? "default" : "ghost"}
+                    onClick={() => handleCategoryChange("all")}
+                    aria-pressed={activeCategoryId === null}
+                    className="w-full"
                   >
-                    {cat.name}
+                    Wszystkie
                   </Button>
                 </SheetClose>
-              ))}
-              <div className="mt-6 flex flex-col items-center gap-3">
-                <hr className="my-2 border-t border-stone-500" />
-                <p className="text-sm text-center text-gray-500">
-                  Skontaktuj się z nami:
-                </p>
-                <PhoneLink />
+                {serviceCategories.map((cat) => (
+                  <SheetClose asChild key={cat.id}>
+                    <Button
+                      variant={
+                        activeCategoryId === cat.id ? "default" : "ghost"
+                      }
+                      onClick={() => handleCategoryChange(cat.id)}
+                      aria-pressed={activeCategoryId === cat.id}
+                      className={`w-full bg-amber-500  ${
+                        activeCategoryId === cat.id ? "bg-amber-500" : ""
+                      }`}
+                    >
+                      {cat.name}
+                    </Button>
+                  </SheetClose>
+                ))}
+                <div className="mt-6 flex flex-col items-center gap-3">
+                  <hr className="my-2 border-t border-stone-500" />
+                  <p className="text-sm text-center text-gray-500">
+                    Skontaktuj się z nami:
+                  </p>
+                  <PhoneLink />
+                </div>
               </div>
-            </div>
-          </SheetContent>
-        </Sheet>
-      </div>
+            </SheetContent>
+          </Sheet>
+        </div>
+      )}
     </>
   );
 };
