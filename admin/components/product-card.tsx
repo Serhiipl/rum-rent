@@ -9,20 +9,6 @@ import { useState } from "react";
 import ServiceModalPopup from "./modals/serviceModalPopup";
 import { Button } from "./ui/button";
 import noImage from "@/public/no-image.jpg";
-// const noImage = "/no-image.jpg";
-
-// const ShownCellAction: React.FC<{ data: ServiceProps; className?: string }> = ({
-//   data,
-//   className,
-// }) => {
-//   const isAdmin = useIsAdmin();
-//   if (!isAdmin) {
-//     return null;
-//   }
-
-//   return <CellAction data={data} className={className} />;
-// };
-// Komponent do wyświetlania statusu usługi
 
 const ItemQuantity: React.FC<{ service: ServiceProps }> = ({ service }) => (
   <span

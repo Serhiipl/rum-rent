@@ -76,7 +76,7 @@ export const ServiceChangeModal: React.FC<ServiceChangeModalProps> = ({
             className="w-full rounded-sm px-2 py-1 shadow-md shadow-red-100 border border-red-100 focus:outline-none focus:border-red-400"
             type="text"
             name="price"
-            value={formData.price}
+            value={formData.rentalPrice}
             onChange={handleChange}
             placeholder="Cena usługi"
             required
@@ -90,7 +90,7 @@ export const ServiceChangeModal: React.FC<ServiceChangeModalProps> = ({
             className="w-full rounded-sm px-2 py-1 shadow-md shadow-red-100 border border-red-100 focus:outline-none focus:border-red-400"
             type="text"
             name="duration"
-            value={formData.duration}
+            value={formData.rentalPeriod}
             onChange={handleChange}
             placeholder="Czas na wykonanie"
             required
@@ -116,7 +116,7 @@ export const ServiceChangeModal: React.FC<ServiceChangeModalProps> = ({
             className="checked:bg-red-300"
             name="active"
             type="checkbox"
-            checked={formData.active}
+            checked={formData.available}
             onChange={handleChange}
           />
         </label>
