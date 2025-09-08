@@ -2,6 +2,7 @@
 
 import useServiceStore from "@/lib/serviceStore";
 import React, { useEffect, useState, useMemo, useCallback } from "react";
+import { filterServicesByCategory } from "@/components/nav-links";
 // import CellAction from "./cellAction";
 import { ServiceCategory, ServiceProps } from "@/lib/serviceStore";
 import ServiceCard from "@/components/product-card";
@@ -10,15 +11,16 @@ import LoadingState from "./loadingItemState";
 
 interface ShowServicesProps {
   services: ServiceProps[];
+  activeCategoryId: string | null;
 }
 
 const ShowServices: React.FC<ShowServicesProps> = ({
-  services: filteredServices,
+  services,
+  activeCategoryId,
 }) => {
   const {
     serviceCategories,
     fetchServiceCategories,
-    fetchServices,
     isLoading,
     error,
   } = useServiceStore();
@@ -29,11 +31,11 @@ const ShowServices: React.FC<ShowServicesProps> = ({
 
   const loadData = useCallback(async () => {
     try {
-      await Promise.all([fetchServiceCategories(), fetchServices()]);
+      await fetchServiceCategories();
     } catch (err) {
       console.error("Error loading data:", err);
     }
-  }, [fetchServiceCategories, fetchServices]);
+  }, [fetchServiceCategories]);
 
   // Мемоізована мапа категорій для швидкого пошуку
   const categoryMap = useMemo(() => {
@@ -56,13 +58,16 @@ const ShowServices: React.FC<ShowServicesProps> = ({
     setIsMounted(true);
   }, [loadData, serviceCategories]);
 
+  // Compute filtered services locally using the helper (must be before any early returns)
+  const servicesToDisplay = useMemo(
+    () => filterServicesByCategory(services, activeCategoryId),
+    [services, activeCategoryId]
+  );
+
   // Show null before mounting (for SSR)
   if (!isMounted) {
     return null;
   }
-
-  // Use the passed services instead of those from the store
-  const servicesToDisplay = filteredServices || [];
 
   return (
     <div className="bg-stone-600 p-2 rounded-xl border-[2px] border-yellow-500">
