@@ -7,13 +7,14 @@ import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
-import useServiceStore, { Banner } from "@/lib/serviceStore";
+import useServiceStore from "@/lib/serviceStore";
+// import useServiceStore, { Banner } from "@/lib/serviceStore";
 
-interface HeroCarouselProps {
-  banners: Banner[];
-}
+// interface HeroCarouselProps {
+//   banners: Banner[];
+// }
 
-const HeroCarousel: React.FC<HeroCarouselProps> = () => {
+const HeroCarousel: React.FC = () => {
   const { fetchBanners, isLoading, banners } = useServiceStore();
 
   useEffect(() => {
@@ -38,7 +39,7 @@ const HeroCarousel: React.FC<HeroCarouselProps> = () => {
     );
   }
   return (
-    <section className="relative w-full h-96 overflow-hidden rounded-lg shadow-lg">
+    <section className="relative w-full h-[30rem] my-5 overflow-hidden rounded-lg shadow-lg">
       <Swiper
         spaceBetween={0}
         slidesPerView={1}
@@ -47,7 +48,7 @@ const HeroCarousel: React.FC<HeroCarouselProps> = () => {
         pagination={{ clickable: true }}
         navigation
         modules={[Autoplay, Pagination, Navigation]}
-        className="w-full h-full"
+        className="w-full h-full [--swiper-navigation-color:#fe9a00] [--swiper-pagination-color:#fe9a00]"
       >
         {banners.map((banner) => (
           <SwiperSlide key={banner.id} className="relative">
@@ -74,7 +75,7 @@ const HeroCarousel: React.FC<HeroCarouselProps> = () => {
               {banner.ctaText && banner.ctaLink && (
                 <a
                   href={banner.ctaLink}
-                  className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded transition"
+                  className="inline-block bg-amber-600 hover:bg-amber-700 text-white font-semibold px-6 py-2 rounded transition"
                 >
                   {banner.ctaText}
                 </a>

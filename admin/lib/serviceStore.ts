@@ -35,6 +35,7 @@ export interface Image {
 export interface ServiceCategory {
   id: string;
   name: string;
+  slug: string;
 }
 export interface Banner {
   id: string;
@@ -58,6 +59,8 @@ interface ServiceStore {
   banners: Banner[];
   services: ServiceProps[];
   serviceCategories: ServiceCategory[];
+  activeCategoryId: string | null;
+  setActiveCategoryId: (id: string | null) => void;
   fetchBanners: () => Promise<void>;
   fetchServices: () => Promise<void>;
   servicesFetched: boolean; // Додаємо прапорець для перевірки, чи були послуги завантажені
@@ -185,6 +188,7 @@ const useServiceStore = create<ServiceStore>((set, get) => ({
   banners: [],
   services: [],
   serviceCategories: [],
+  activeCategoryId: null,
   isLoading: false,
   error: null,
   bannersFetched: false, // Додаємо прапорець для перевірки, чи були банери завантажені
@@ -196,6 +200,7 @@ const useServiceStore = create<ServiceStore>((set, get) => ({
 
   setLoading: (loading: boolean) => set({ isLoading: loading }),
   setError: (error: string | null) => set({ error }),
+  setActiveCategoryId: (id: string | null) => set({ activeCategoryId: id }),
 
   fetchBanners: () => fetchBanners(set, get),
   fetchServices: () => fetchServices(set, get),
@@ -416,6 +421,7 @@ const useServiceStore = create<ServiceStore>((set, get) => ({
       banners: [],
       services: [],
       serviceCategories: [],
+      activeCategoryId: null,
       isLoading: false,
       error: null,
       servicesFetchedAt: null,

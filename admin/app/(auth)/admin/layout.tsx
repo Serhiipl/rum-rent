@@ -8,14 +8,18 @@ import {
   Package2,
   PanelLeft,
   Settings,
-  ShoppingCart,
   Users2,
   Presentation,
 } from "lucide-react";
 
-
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import {
   Tooltip,
   TooltipContent,
@@ -79,9 +83,9 @@ function DesktopNav() {
           <Home className="h-5 w-5" />
         </NavItem>
 
-        <NavItem href="#" label="Orders">
+        {/* <NavItem href="#" label="Orders">
           <ShoppingCart className="h-5 w-5" />
-        </NavItem>
+        </NavItem> */}
 
         <NavItem href="/admin/services" label="Usługi">
           <ClipboardList className="h-5 w-5" />
@@ -123,6 +127,9 @@ function MobileNav() {
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="sm:max-w-xs">
+        <SheetHeader>
+          <SheetTitle className="sr-only">Navigation</SheetTitle>
+        </SheetHeader>
         <nav className="grid gap-6 text-lg font-medium">
           <Link
             href="#"
@@ -138,13 +145,13 @@ function MobileNav() {
             <Home className="h-5 w-5" />
             Panel Administracyjny
           </Link>
-          <Link
+          {/* <Link
             href="#"
             className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
           >
             <ShoppingCart className="h-5 w-5" />
             Zamówienia
-          </Link>
+          </Link> */}
           <Link
             href="#"
             className="flex items-center gap-4 px-2.5 text-foreground"

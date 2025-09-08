@@ -105,8 +105,8 @@ const ContactForm: React.FC<ContactFormProps> = ({
           message: "Nie udało się wysłać wiadomości.",
         });
       }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
+      console.error("Error sending contact form email:", error);
       setStatus({ type: "error", message: "Wystąpił błąd podczas wysyłki." });
     } finally {
       setSubmitting(false);

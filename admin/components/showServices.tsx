@@ -2,7 +2,6 @@
 
 import useServiceStore from "@/lib/serviceStore";
 import React, { useEffect, useState, useMemo, useCallback } from "react";
-import { filterServicesByCategory } from "@/components/nav-links";
 // import CellAction from "./cellAction";
 import { ServiceCategory, ServiceProps } from "@/lib/serviceStore";
 import ServiceCard from "@/components/product-card";
@@ -11,18 +10,19 @@ import LoadingState from "./loadingItemState";
 
 interface ShowServicesProps {
   services: ServiceProps[];
-  activeCategoryId: string | null;
+  activeCategoryId?: string | null;
 }
 
 const ShowServices: React.FC<ShowServicesProps> = ({
   services,
-  activeCategoryId,
+  activeCategoryId: activeCategoryIdProp = null,
 }) => {
   const {
     serviceCategories,
     fetchServiceCategories,
     isLoading,
     error,
+    activeCategoryId: storeCategoryId,
   } = useServiceStore();
 
   const [isMounted, setIsMounted] = useState(false);
@@ -58,11 +58,18 @@ const ShowServices: React.FC<ShowServicesProps> = ({
     setIsMounted(true);
   }, [loadData, serviceCategories]);
 
-  // Compute filtered services locally using the helper (must be before any early returns)
-  const servicesToDisplay = useMemo(
-    () => filterServicesByCategory(services, activeCategoryId),
-    [services, activeCategoryId]
-  );
+  // Compute filtered services locally without external dependencies
+  const effectiveCategoryId =
+    activeCategoryIdProp !== null && activeCategoryIdProp !== undefined
+      ? activeCategoryIdProp
+      : storeCategoryId;
+
+  const servicesToDisplay = useMemo(() => {
+    if (!Array.isArray(services)) return [];
+    return effectiveCategoryId
+      ? services.filter((s) => s.categoryId === effectiveCategoryId)
+      : services;
+  }, [services, effectiveCategoryId]);
 
   // Show null before mounting (for SSR)
   if (!isMounted) {
@@ -72,37 +79,10 @@ const ShowServices: React.FC<ShowServicesProps> = ({
   return (
     <div className="bg-stone-600 p-2 rounded-xl border-[2px] border-yellow-500">
       {/* <div className="bg-slate-50 p-2 rounded-xl"> */}
-      {/* Заголовок */}
-      <div className="flex items-center justify-between mb-6">
-        {/* <div className="flex gap-2 items-center">
-          <h2 className="text-2xl font-bold text-gray-800">Usługi:</h2>
-          <p className="text-gray-600 mt-1 text-sm">
-            Znaleziono: {servicesToDisplay.length}...
-          </p>
-        </div> */}
-
-        {/* Кнопка оновлення */}
-        {/* <button
-          onClick={loadData}
-          disabled={isLoading}
-          className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-        >
-          <svg
-            className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-            />
-          </svg>
-          <span>Aktualizuj</span>
-        </button> */}
-      </div>
+      <h2 className="text-2xl text-yellow-400 mb-4 font-semibold">
+        {" "}
+        wymysl h2
+      </h2>
 
       {/* Обробка помилок */}
       {error && (

@@ -17,8 +17,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Dashboard App",
-  description: "Dashboard App with BetterAuth",
+  title: "Rum Rent",
+  description: "Najlepszy wynajem narzędzi w Polsce",
 };
 
 export default async function RootLayout({

@@ -1,22 +1,23 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import AddService from "./components/addService";
 import { ServiceProps } from "@/lib/serviceStore";
 import useServiceStore from "@/lib/serviceStore";
 import CategoryFilter from "./components/categoryFilter";
 import ShowServices from "@/components/showServices";
+import ServiceForm from "./components/serviceForm";
+import ServiceCategoryForm from "./components/serviceCategory";
 
-// Компонент завантаження
+// Komponent dla stanu ładowania
 const LoadingState = () => (
   <div className="flex justify-center items-center py-8">
     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-    <span className="ml-2 text-gray-600">Завантаження...</span>
+    <span className="ml-2 text-gray-600">Ładowanie danych...</span>
   </div>
 );
 
 const AddServicePage = () => {
-  // Отримуємо дані зі store
+  // Otrzymujemy dane ze store
   const {
     services = [],
     serviceCategories = [],
@@ -25,7 +26,7 @@ const AddServicePage = () => {
     isLoading,
   } = useServiceStore();
 
-  // Локальний стан для фільтрованих послуг
+  // Lokalny stan dla filtrowanych usług
   const [filteredServices, setFilteredServices] = useState<ServiceProps[]>([]);
 
   // Завантажуємо дані при монтуванні компонента
@@ -77,8 +78,9 @@ const AddServicePage = () => {
       </div>
 
       {/* Форма додавання послуги */}
-      <div className="mb-8">
-        <AddService />
+      <div className="w-full flex flex-col sm:flex-row bg-white px-2 text-zinc-600 rounded-lg shadow-sm">
+        <ServiceCategoryForm />
+        <ServiceForm />
       </div>
 
       {/* Фільтр категорій - показуємо тільки якщо є категорії */}

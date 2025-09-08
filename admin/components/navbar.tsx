@@ -1,5 +1,7 @@
+"use client";
 import Link from "next/link";
 import AuthButtons from "@/components/auth-buttons";
+import NavLinks from "./nav-links";
 
 export default function Navbar() {
   return (
@@ -7,6 +9,7 @@ export default function Navbar() {
       <Link href="/" className="text-xl font-bold">
         Główna
       </Link>
+      <NavLinks />
       <AuthButtons />
     </nav>
   );
