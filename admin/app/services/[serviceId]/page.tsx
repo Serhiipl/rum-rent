@@ -27,7 +27,9 @@ const ProductPage: NextPage<ProductPageProps> = async ({ params }) => {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">{service.name}</h1>
+      <h1 className="text-2xl font-bold border-b border-amber-600 mb-4">
+        {service.name}
+      </h1>
       <div className="mb-4">
         <Gallery images={service.images} />
       </div>

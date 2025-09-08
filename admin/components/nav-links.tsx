@@ -1,17 +1,16 @@
 import useServiceStore, { ServiceProps } from "@/lib/serviceStore";
-// import Link from "next/link";
-// import Link from "next/link";
 import {
   Sheet,
   SheetContent,
   SheetTrigger,
   SheetHeader,
   SheetTitle,
+  SheetClose,
 } from "@/components/ui/sheet";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
 import { useCallback } from "react";
+import PhoneLink from "./phone-link";
 
 export const filterServicesByCategory = (
   services: ServiceProps[],
@@ -34,7 +33,7 @@ const NavLinks = () => {
   return (
     <>
       {/* Desktop Tabs */}
-      <div className="hidden text-lg bg-transparent sm:flex flex-row sm:top-20 sm:z-20  mb-6">
+      <div className="hidden text-lg bg-transparent sm:flex flex-row  sm:z-20 ">
         <Tabs value={currentValue} onValueChange={handleCategoryChange}>
           <TabsList
             className="bg-stone-700 border h-12  border-yellow-500 rounded-lg"
@@ -64,8 +63,11 @@ const NavLinks = () => {
       <div className="sm:hidden flex justify-end mb-4">
         <Sheet>
           <SheetTrigger asChild>
-            <Button variant="outline">
-              <Menu className="w-5 h-5 mr-2" /> MENU
+            <Button
+              variant="ghost"
+              className="flex bg-amber-600 border border-stone-900 text-white items-center"
+            >
+              MENU
             </Button>
           </SheetTrigger>
           <SheetContent side="left">
@@ -73,25 +75,39 @@ const NavLinks = () => {
               <SheetTitle className="sr-only">Kategorie</SheetTitle>
             </SheetHeader>
             <div className="space-y-3 mt-4">
-              <Button
-                variant={activeCategoryId === null ? "default" : "ghost"}
-                onClick={() => handleCategoryChange("all")}
-                aria-pressed={activeCategoryId === null}
-                className="w-full"
-              >
-                Wszystkie
-              </Button>
-              {serviceCategories.map((cat) => (
+              <SheetClose asChild>
                 <Button
-                  key={cat.id}
-                  variant={activeCategoryId === cat.id ? "default" : "ghost"}
-                  onClick={() => handleCategoryChange(cat.id)}
-                  aria-pressed={activeCategoryId === cat.id}
+                  variant={activeCategoryId === null ? "default" : "ghost"}
+                  onClick={() => handleCategoryChange("all")}
+                  aria-pressed={activeCategoryId === null}
                   className="w-full"
                 >
-                  {cat.name}
+                  Wszystkie
                 </Button>
+              </SheetClose>
+              {serviceCategories.map((cat) => (
+                <SheetClose asChild key={cat.id}>
+                  <Button
+                    variant={
+                      activeCategoryId === cat.id ? "default" : "ghost"
+                    }
+                    onClick={() => handleCategoryChange(cat.id)}
+                    aria-pressed={activeCategoryId === cat.id}
+                    className={`w-full bg-amber-500  ${
+                      activeCategoryId === cat.id ? "bg-amber-500" : ""
+                    }`}
+                  >
+                    {cat.name}
+                  </Button>
+                </SheetClose>
               ))}
+              <div className="mt-6 flex flex-col items-center gap-3">
+                <hr className="my-2 border-t border-stone-500" />
+                <p className="text-sm text-center text-gray-500">
+                  Skontaktuj się z nami:
+                </p>
+                <PhoneLink />
+              </div>
             </div>
           </SheetContent>
         </Sheet>
