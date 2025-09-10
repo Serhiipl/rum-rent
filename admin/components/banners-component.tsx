@@ -39,7 +39,7 @@ const HeroCarousel: React.FC = () => {
     );
   }
   return (
-    <section className="relative w-full h-[30rem] my-5 overflow-hidden rounded-lg shadow-lg">
+    <section className="relative w-full h-64 sm:h-[30rem] mb-3 sm:my-5 overflow-hidden rounded-lg shadow-lg">
       <Swiper
         spaceBetween={0}
         slidesPerView={1}

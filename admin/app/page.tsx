@@ -37,8 +37,8 @@ export default function Home() {
   }, [services]);
 
   return (
-    <div className="flex flex-col items-center bg-stone-700 border border-amber-500 rounded-xl min-h-screen py-2">
-      <main className="flex flex-col items-center justify-center w-full flex-1 md:px-20 py-10 text-center">
+    <div className="flex flex-col items-center bg-stone-700 border border-amber-500 rounded-xl min-h-screen sm:py-2">
+      <main className="flex flex-col items-center justify-center w-full flex-1 md:px-20 sm:py-10 text-center">
         <HeroCarousel />
         <ShowServices services={filteredServices} />
       </main>
