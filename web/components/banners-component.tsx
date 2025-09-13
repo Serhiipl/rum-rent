@@ -7,7 +7,7 @@ import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
-import useServiceStore from "@/lib/serviceStore";
+import { Banner } from "@/lib/types";
 // import useServiceStore, { Banner } from "@/lib/serviceStore";
 
 // interface HeroCarouselProps {
@@ -15,13 +15,24 @@ import useServiceStore from "@/lib/serviceStore";
 // }
 
 const HeroCarousel: React.FC = () => {
-  const { fetchBanners, isLoading, banners } = useServiceStore();
+  const [banners, setBanners] = React.useState<Banner[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
 
   useEffect(() => {
-    fetchBanners().catch((error) =>
-      console.error("Error fetching banners:", error)
-    );
-  }, [fetchBanners]);
+    const load = async () => {
+      try {
+        const res = await fetch("/api/banners", { cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data: Banner[] = await res.json();
+        setBanners(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error("Error fetching banners:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    load();
+  }, []);
 
   if (isLoading) {
     return (
