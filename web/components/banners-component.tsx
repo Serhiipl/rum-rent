@@ -50,7 +50,7 @@ const HeroCarousel: React.FC = () => {
     );
   }
   return (
-    <section className="relative w-full h-64 sm:h-[30rem] mb-3 sm:my-5 overflow-hidden rounded-lg shadow-lg">
+    <section className="relative w-full h-72 sm:h-[30rem] mb-3 sm:my-5 overflow-hidden rounded-lg shadow-lg">
       <Swiper
         spaceBetween={0}
         slidesPerView={1}
@@ -62,21 +62,22 @@ const HeroCarousel: React.FC = () => {
         className="w-full h-full [--swiper-navigation-color:#fe9a00] [--swiper-pagination-color:#fe9a00]"
       >
         {banners.map((banner) => (
-          <SwiperSlide key={banner.id} className="relative">
+          <SwiperSlide key={banner.id} className="relative ">
             {banner.imageUrl ? (
               <Image
                 src={banner.imageUrl}
                 alt={banner.title}
-                width={1920}
-                height={600}
-                className="w-full h-full object-cover"
+                fill
+                priority
+                sizes="80vw"
+                className="object-contain h-72 sm:h-[30rem] w-full"
               />
             ) : (
               <div className="w-full h-[600px] bg-gray-100 flex items-center justify-center text-gray-500 text-xl">
                 Brak obrazu
               </div>
             )}
-            <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-center items-center text-center text-white px-4">
+            <div className="absolute inset-0  flex flex-col justify-center items-center text-center text-white px-4">
               <h2 className="text-3xl md:text-4xl font-bold mb-2">
                 {banner.title}
               </h2>

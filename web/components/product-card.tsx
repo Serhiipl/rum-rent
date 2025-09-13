@@ -1,4 +1,5 @@
-import { ServiceProps } from "@/lib/serviceStore";
+"use client";
+
 // import CellAction from "../app/(auth)/admin/services/components/cellAction";
 import Image from "next/image";
 // import { useIsAdmin } from "@/hooks/user-role";
@@ -8,7 +9,29 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import ServiceModalPopup from "./modals/serviceModalPopup";
 import { Button } from "./ui/button";
-import noImage from "@/public/no-image.jpg";
+// Use public asset path to avoid Turbopack static import issues
+const NO_IMAGE_SRC = "/no-image.jpg";
+
+export interface ServiceProps {
+  serviceId: string;
+  name: string;
+  description: string;
+  rentalPrice: number;
+  deposit: number;
+  quantity: number;
+  rentalPeriod: number;
+  condition: string;
+  images: Image[];
+  available: boolean;
+  categoryId: string;
+}
+
+export interface Image {
+  id: string;
+  serviceId: string;
+  url: string;
+  createdAt: string;
+}
 
 const ItemQuantity: React.FC<{ service: ServiceProps }> = ({ service }) => (
   <span
@@ -74,7 +97,7 @@ const ServiceCard: React.FC<{
                 Brak zdjęcia
               </span> */}
               <Image
-                src={noImage}
+                src={NO_IMAGE_SRC}
                 alt="Brak zdjęcia"
                 width={300}
                 height={200}

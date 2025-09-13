@@ -1,22 +1,16 @@
-// Prisma Client helper for MongoDB
-import type { PrismaClient as PrismaClientType } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
-declare global {
-  // eslint-disable-next-line no-var
-  var prisma: PrismaClientType | undefined;
-}
+const prismaClientSingleton = () => {
+  return new PrismaClient();
+};
 
-export async function getPrismaClient() {
-  // Lazy import to keep this file tree-shakeable if Prisma isn't installed
-  const { PrismaClient } = await import("@prisma/client");
+declare const globalThis: {
+  prismaGlobal: ReturnType<typeof prismaClientSingleton>;
+} & typeof global;
 
-  if (process.env.NODE_ENV === "development") {
-    if (!global.prisma) {
-      global.prisma = new PrismaClient({ log: process.env.DEBUG_PRISMA ? ["query", "error", "warn"] : ["error"] });
-    }
-    return global.prisma;
-  }
+const prisma = globalThis.prismaGlobal ?? prismaClientSingleton();
 
-  return new PrismaClient({ log: ["error"] });
-}
+export default prisma;
 
+// Ensure the prisma instance is reused across hot reloads in development
+if (process.env.NODE_ENV !== "production") globalThis.prismaGlobal = prisma;

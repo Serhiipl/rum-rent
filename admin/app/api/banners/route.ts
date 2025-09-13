@@ -58,32 +58,3 @@ export async function POST(request: Request) {
     return new NextResponse("Internal server error", { status: 500 });
   }
 }
-
-// DELETE /api/banners/[id]
-// export async function DELETE(request: Request) {
-//   const url = new URL(request.url);
-//   const id = url.searchParams.get("id");
-
-//   const cookieHeader = cookies().toString();
-//   const session = await authClient.getSession({
-//     fetchOptions: { headers: { cookie: cookieHeader } },
-//   });
-
-//   if (!session.data?.user || session.data.user.role !== "admin") {
-//     return new NextResponse("Unauthorized", { status: 401 });
-//   }
-
-//   if (!id) {
-//     return new NextResponse("Missing banner ID", { status: 400 });
-//   }
-
-//   try {
-//     await prisma.banner.delete({
-//       where: { id },
-//     });
-//     return new NextResponse(null, { status: 204 });
-//   } catch (error) {
-//     console.error("Error deleting banner:", error);
-//     return new NextResponse("Internal server error", { status: 500 });
-//   }
-// }
