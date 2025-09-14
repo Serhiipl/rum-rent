@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-// import { getBanners } from "@/lib/prisma-operations";
 import prisma from "@/lib/prisma";
 
 export const runtime = "nodejs";
+export const revalidate = 300; // 5 minutes
 
 // export async function GET() {
 //   try {
@@ -19,7 +19,12 @@ export async function GET() {
     const banners = await prisma.banner.findMany({
       orderBy: { createdAt: "desc" },
     });
-    return NextResponse.json(banners, { status: 200 });
+    const res = NextResponse.json(banners, { status: 200 });
+    res.headers.set(
+      "Cache-Control",
+      "public, max-age=300, s-maxage=300, stale-while-revalidate=86400"
+    );
+    return res;
   } catch (error) {
     console.error("Error fetching banners:", error);
     return NextResponse.json(

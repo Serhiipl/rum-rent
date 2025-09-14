@@ -14,6 +14,7 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import PhoneLink from "./phone-link";
+import { FolderSymlink, Home } from "lucide-react";
 
 function Hamburger({ open }: { open: boolean }) {
   return (
@@ -47,14 +48,14 @@ export default function NavLinks({ categories }: Props) {
   if (!categories || categories.length === 0) return null;
 
   return (
-    <div className="relative justify-center w-full">
+    <div className="relative flex justify-center">
       {/* Desktop nav */}
-      <div className="hidden text-lg bg-transparent sm:flex flex-row gap-4 sm:z-20">
+      <div className="hidden ml-5 text-md lg:text-lg bg-transparent sm:flex flex-row gap-2 sm:gap-4 sm:z-20">
         {categories.map((c) => (
           <Link
             key={c.id}
             href={`/catalog/${c.slug}`}
-            className="hover:underline"
+            className=" text-amber-500 font-medium border-b-2 border-transparent hover:border-amber-500 transition"
           >
             {c.name}
           </Link>
@@ -79,24 +80,24 @@ export default function NavLinks({ categories }: Props) {
             <SheetHeader>
               <SheetTitle className="sr-only">Kategorie</SheetTitle>
             </SheetHeader>
-            <div className="flex flex-col space-y-3 mt-4">
+            <div className="flex flex-col mx-5 space-y-3 mt-4">
               <SheetClose asChild>
-                {/* <Button
-                  variant={activeCategoryId === null ? "default" : "ghost"}
-                  onClick={() => handleCategoryChange("all")}
-                  aria-pressed={activeCategoryId === null}
-                  className="w-full"
+                <Link
+                  href="/"
+                  className="font-bold text-lg mb-8 hover:underline"
                 >
-                  Wszystkie
-                </Button> */}
+                  <Home className="inline-block mr-3 mb-1 size-5" />
+                  Strona główna
+                </Link>
               </SheetClose>
               {categories.map((cat) => (
                 <SheetClose asChild key={cat.id}>
                   <Link
                     key={cat.id}
                     href={`/catalog/${cat.slug}`}
-                    className="hover:underline"
+                    className="hover:underline border-b border-stone-900 "
                   >
+                    <FolderSymlink className="inline-block mr-3 mb-1 size-5 text-amber-500" />
                     {cat.name}
                   </Link>
                 </SheetClose>

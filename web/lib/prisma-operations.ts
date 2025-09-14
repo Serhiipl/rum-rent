@@ -131,3 +131,26 @@ export async function getBanners(): Promise<Banner[]> {
     updatedAt: b.updatedAt.toISOString(),
   }));
 }
+
+export async function getServiceForSeo(serviceId: string): Promise<{
+  name: string;
+  description?: string | null;
+  rentalPrice: number;
+  quantity: number | null;
+  images: { url: string }[];
+  category: { name: string | null; slug: string | null } | null;
+} | null> {
+  const service = await prisma.service.findUnique({
+    where: { serviceId },
+    select: {
+      name: true,
+      description: true,
+      rentalPrice: true,
+      quantity: true,
+      images: { select: { url: true } },
+      category: { select: { name: true, slug: true } },
+    },
+  });
+  if (!service) return null;
+  return service;
+}

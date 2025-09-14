@@ -4,6 +4,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { ServiceProps } from "@/lib/types";
 import Gallery from "@/components/galery-tab";
@@ -21,14 +22,17 @@ const ServiceModalPopup: React.FC<ServiceModalPopupProps> = ({
 }) => {
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl h-[95vh] my-5 overflow-auto md:my-auto">
+      <DialogContent className="w-full mt-7 sm:max-w-2xl md:max-w-3xl lg:max-w-4xl max-h-9/10  overflow-auto md:my-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">
             {service.name}
           </DialogTitle>
         </DialogHeader>
+        <DialogDescription className="sr-only">
+          Szczegóły usługi, galeria, opis, dostępność i formularz kontaktowy.
+        </DialogDescription>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 border border-gray-400 p-2 rounded-md">
+        <div className="grid grid-cols-1 w-full md:grid-cols-2 gap-6 mt-4 border border-gray-400 p-2 rounded-md">
           <div className="w-full space-y-3 border  p-4 rounded-md">
             <Gallery images={service.images} />
           </div>

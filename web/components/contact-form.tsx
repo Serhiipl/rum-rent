@@ -20,30 +20,6 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { contactFormSchema } from "@/lib/zod";
 
-// const contactFormSchema = z
-//   .object({
-//     name: z.string().min(2, "Imię jest wymagane"),
-//     email: z.string().email("Nieprawidłowy email").optional().or(z.literal("")),
-//     phone: z.string().optional().or(z.literal("")),
-//     info: z.string().optional().or(z.literal("")),
-//   })
-//   .superRefine((data, ctx) => {
-//     const hasEmail = !!data.email && data.email.trim().length > 0;
-//     const hasPhone = !!data.phone && data.phone.trim().length > 0;
-//     if (!hasEmail && !hasPhone) {
-//       ctx.addIssue({
-//         code: z.ZodIssueCode.custom,
-//         message: "Podaj e-mail lub telefon",
-//         path: ["email"],
-//       });
-//       ctx.addIssue({
-//         code: z.ZodIssueCode.custom,
-//         message: "Podaj e-mail lub telefon",
-//         path: ["phone"],
-//       });
-//     }
-//   });
-
 type FormValues = z.infer<typeof contactFormSchema>;
 
 interface ContactFormProps {
@@ -74,6 +50,10 @@ const ContactForm: React.FC<ContactFormProps> = ({
     type: "success" | "error";
     message: string;
   }>(null);
+
+  // Avoid SSR/client hydration mismatches from react-hook-form on initial render
+  const [isMounted, setIsMounted] = React.useState(false);
+  React.useEffect(() => setIsMounted(true), []);
 
   const onSubmit = async (values: FormValues) => {
     setStatus(null);
@@ -113,6 +93,10 @@ const ContactForm: React.FC<ContactFormProps> = ({
     }
   };
 
+  if (!isMounted) {
+    return <div className={cn("w-full", className)} />;
+  }
+
   return (
     <div className={cn("w-full", className)}>
       <div className="mb-4 flex items-center gap-3">
@@ -141,7 +125,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
               name="name"
               render={({ field }) => (
                 <FormItem className="relative p-2 border  border-gray-300 w-full sm:w-1/3 rounded-sm">
-                  <FormLabel className="absolute -top-3 left-2 px-1  bg-slate-100 text-sm font-medium text-gray-600">
+                  <FormLabel className="absolute -top-3 left-2 px-1  bg-yellow-50 text-sm font-medium text-gray-600">
                     Imię
                   </FormLabel>
                   <FormControl>
@@ -158,7 +142,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
                 name="email"
                 render={({ field }) => (
                   <FormItem className="relative p-2 border  border-gray-300 w-full  rounded-sm">
-                    <FormLabel className="absolute -top-3 left-2 px-1  bg-slate-100 text-sm font-medium text-gray-600">
+                    <FormLabel className="absolute -top-3 left-2 px-1  bg-yellow-50 text-sm font-medium text-gray-600">
                       Email
                     </FormLabel>
                     <FormControl>
@@ -177,7 +161,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
                 name="phone"
                 render={({ field }) => (
                   <FormItem className="relative p-2 border  border-gray-300 w-full rounded-sm">
-                    <FormLabel className="absolute -top-3 left-2 px-1  bg-slate-100 text-sm font-medium text-gray-600">
+                    <FormLabel className="absolute -top-3 left-2 px-1  bg-yellow-50 text-sm font-medium text-gray-600">
                       Telefon
                     </FormLabel>
                     <FormControl>
@@ -191,7 +175,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
           </div>
 
           <span>Pola email lub telefon są wymagane</span>
-          <div className="grid grid-cols-1 sm:grid-cols-2 space-y-4">
+          <div className="grid mt-3 grid-cols-1 sm:grid-cols-2 space-y-4">
             <FormField
               control={form.control}
               name="info"
@@ -201,7 +185,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
                   // style to make it full height of the two fields on the left
                   style={{ alignSelf: "center" }}
                 >
-                  <FormLabel className="absolute -top-3 left-2 px-1  bg-slate-100 text-sm font-medium text-gray-600">
+                  <FormLabel className="absolute -top-3 left-2 px-1  bg-yellow-50 text-sm font-medium text-gray-600">
                     Dodatkowe informacje{" "}
                   </FormLabel>
                   <FormControl>

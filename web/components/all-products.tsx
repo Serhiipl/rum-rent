@@ -12,7 +12,7 @@ const AllProducts: React.FC = async () => {
           Error Loading... try to refresh the page.
         </p>
       ) : (
-        <ul className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {services.map((service) => (
             <ServiceCard key={service.serviceId} service={service} />
           ))}

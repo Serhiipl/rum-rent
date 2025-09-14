@@ -8,35 +8,54 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Banner } from "@/lib/types";
-// import useServiceStore, { Banner } from "@/lib/serviceStore";
 
-// interface HeroCarouselProps {
-//   banners: Banner[];
-// }
+// In-memory cache with TTL + in-flight dedupe to reduce API requests
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+let cache: { ts: number; data: Banner[] } | null = null;
+let inflight: Promise<Banner[]> | null = null;
+
+async function fetchBannersOnce(): Promise<Banner[]> {
+  const now = Date.now();
+  if (cache && now - cache.ts < CACHE_TTL) return cache.data;
+  if (inflight) return inflight;
+  inflight = fetch("/api/banners", { cache: "force-cache" })
+    .then((res) => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json() as Promise<Banner[]>;
+    })
+    .then((data) => {
+      const arr = Array.isArray(data) ? data : [];
+      cache = { ts: Date.now(), data: arr };
+      return arr;
+    })
+    .catch((e) => {
+      console.error("Error fetching banners:", e);
+      return [] as Banner[];
+    })
+    .finally(() => {
+      inflight = null;
+    });
+  return inflight;
+}
 
 const HeroCarousel: React.FC = () => {
   const [banners, setBanners] = React.useState<Banner[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
 
   useEffect(() => {
-    const load = async () => {
-      try {
-        const res = await fetch("/api/banners", { cache: "no-store" });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data: Banner[] = await res.json();
-        setBanners(Array.isArray(data) ? data : []);
-      } catch (error) {
-        console.error("Error fetching banners:", error);
-      } finally {
-        setIsLoading(false);
-      }
+    let mounted = true;
+    fetchBannersOnce().then((data) => {
+      if (mounted) setBanners(data);
+      setIsLoading(false);
+    });
+    return () => {
+      mounted = false;
     };
-    load();
   }, []);
 
   if (isLoading) {
     return (
-      <div className="w-full h-96 flex items-center justify-center">
+      <div className="w-full max-w-7xl  h-96 flex items-center justify-center">
         Loading...
       </div>
     );
@@ -44,13 +63,13 @@ const HeroCarousel: React.FC = () => {
 
   if (!banners.length) {
     return (
-      <div className="w-full h-96 flex items-center justify-center text-gray-500">
+      <div className="w-full max-w-7xl h-96 flex items-center justify-center text-gray-500">
         Brak dostępnych banerów
       </div>
     );
   }
   return (
-    <section className="relative w-full h-72 sm:h-[30rem] mb-3 sm:my-5 overflow-hidden rounded-lg shadow-lg">
+    <section className="relative w-full max-w-7xl h-72 sm:h-[32rem] mb-3 sm:my-3 overflow-hidden rounded-lg shadow-lg">
       <Swiper
         spaceBetween={0}
         slidesPerView={1}
@@ -70,7 +89,7 @@ const HeroCarousel: React.FC = () => {
                 fill
                 priority
                 sizes="80vw"
-                className="object-contain h-72 sm:h-[30rem] w-full"
+                className="object-contain h-72 sm:h-[32rem] bg-amber-50  w-full"
               />
             ) : (
               <div className="w-full h-[600px] bg-gray-100 flex items-center justify-center text-gray-500 text-xl">

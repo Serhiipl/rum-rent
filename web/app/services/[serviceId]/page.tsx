@@ -1,13 +1,56 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import Script from "next/script";
 import Gallery from "@/components/galery-tab";
 import { BackButton } from "@/components/back-button";
 import { NextPage } from "next";
 import ContactForm from "@/components/contact-form";
 import PhoneLink from "@/components/phone-link";
+import { getServiceForSeo } from "@/lib/prisma-operations";
+
+export const revalidate = 300; // Cache this page for 5 minutes
 
 //komponent strony usługi dla telefonów
 interface ProductPageProps {
   params: Promise<{ serviceId: string }>;
+}
+
+export async function generateMetadata({
+  params,
+}: ProductPageProps): Promise<Metadata> {
+  const { serviceId } = await params;
+  const base = (process.env.NEXT_PUBLIC_BASE_URL || "").replace(/\/$/, "");
+  const service = await getServiceForSeo(serviceId);
+  if (!service) {
+    return {
+      title: "Usługa nieznaleziona | RumRent",
+      description: "Nie odnaleziono usługi.",
+      alternates: { canonical: `/services/${serviceId}` },
+    };
+  }
+  const title = `${service.name} | RumRent`;
+  const description = service.description || "Szczegóły usługi i wynajmu.";
+  const ogImage = service.images?.[0]?.url || `${base}/no-image.jpg`;
+  const url = `/services/${serviceId}`;
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title,
+      description,
+      url,
+      // Use a valid OpenGraph type supported by Next.js metadata
+      type: "website",
+      images: ogImage ? [{ url: ogImage }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ogImage ? [ogImage] : undefined,
+    },
+  };
 }
 const ProductPage: NextPage<ProductPageProps> = async ({ params }) => {
   const { serviceId } = await params;
@@ -18,13 +61,14 @@ const ProductPage: NextPage<ProductPageProps> = async ({ params }) => {
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/services/${serviceId}`,
     {
       method: "GET",
-      cache: "no-store",
+      next: { revalidate: 300 },
     }
   );
 
   if (!res.ok) return notFound();
 
   const service = await res.json();
+  const seoInfo = await getServiceForSeo(serviceId);
 
   // Local badge to mirror ServiceCard quantity styling
   const QuantityBadge = ({ quantity }: { quantity: number }) => (
@@ -51,8 +95,69 @@ const ProductPage: NextPage<ProductPageProps> = async ({ params }) => {
   );
 
   return (
-    <div className="p-4 sm:p-6">
-      <div className="bg-yellow-50 rounded-lg border border-amber-500 shadow-sm shadow-yellow-400 overflow-hidden">
+    <div className="p-4 h-fit bg-stone-700 sm:p-6">
+      <Script id="ld-product" type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Product",
+          name: service.name,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          image: (service.images || []).map((i: any) => i.url).slice(0, 10),
+          description: service.description,
+          category: service.category?.name,
+          offers: {
+            "@type": "Offer",
+            priceCurrency: "PLN",
+            price: service.rentalPrice,
+            availability:
+              (service.quantity ?? 0) > 0
+                ? "https://schema.org/InStock"
+                : "https://schema.org/OutOfStock",
+            url: `${process.env.NEXT_PUBLIC_BASE_URL || ""}/services/${
+              service.serviceId || service.id
+            }`,
+          },
+        })}
+      </Script>
+      <Script id="ld-breadcrumb-product" type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Strona główna",
+              item: `${process.env.NEXT_PUBLIC_BASE_URL || ""}/`,
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "Katalog",
+              item: `${process.env.NEXT_PUBLIC_BASE_URL || ""}/catalog`,
+            },
+            seoInfo?.category?.slug
+              ? {
+                  "@type": "ListItem",
+                  position: 3,
+                  name: seoInfo.category.name || "Kategoria",
+                  item: `${process.env.NEXT_PUBLIC_BASE_URL || ""}/catalog/${
+                    seoInfo.category.slug
+                  }`,
+                }
+              : undefined,
+            {
+              "@type": "ListItem",
+              position: seoInfo?.category?.slug ? 4 : 3,
+              name: service.name,
+              item: `${process.env.NEXT_PUBLIC_BASE_URL || ""}/services/${
+                service.serviceId || service.id
+              }`,
+            },
+          ].filter(Boolean),
+        })}
+      </Script>
+      <div className="bg-yellow-50 mt-20 rounded-lg border border-amber-500 shadow-sm shadow-yellow-400 overflow-hidden">
         <div className="p-4">
           <h1 className="text-2xl font-semibold text-gray-900 mb-2">
             {service.name}

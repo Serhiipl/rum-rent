@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import ServiceModalPopup from "./modals/serviceModalPopup";
 import { Button } from "./ui/button";
-import noImage from "@/public/no-image.jpg";
+const NO_IMAGE_SRC = "/no-image.jpg";
 
 const ItemQuantity: React.FC<{ service: ServiceProps }> = ({ service }) => (
   <span
@@ -74,7 +74,7 @@ const ServiceCard: React.FC<{
                 Brak zdjęcia
               </span> */}
               <Image
-                src={noImage}
+                src={NO_IMAGE_SRC}
                 alt="Brak zdjęcia"
                 width={300}
                 height={200}

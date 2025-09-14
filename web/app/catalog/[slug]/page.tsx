@@ -5,6 +5,8 @@ import {
   getServicesByCategorySlug,
 } from "@/lib/prisma-operations";
 import ServiceCard from "@/components/product-card";
+import Script from "next/script";
+import type { Metadata } from "next";
 
 export const runtime = "nodejs";
 export const revalidate = 60;
@@ -14,6 +16,22 @@ type Params = { slug: string };
 export async function generateStaticParams() {
   const slugs = await getAllCategorySlugs();
   return slugs.map((slug) => ({ slug }));
+}
+
+export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
+  const { slug } = await params;
+  const { category } = await getServicesByCategorySlug(slug);
+  const title = category ? `${category.name}` : "Kategoria";
+  const description = category
+    ? `Sprawdź dostępne usługi w kategorii ${category.name} w RumRent.`
+    : "Przeglądaj kategorie usług w RumRent.";
+  const url = `/catalog/${slug}`;
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: { title, description, url },
+  };
 }
 
 export default async function CategoryPage({
@@ -34,6 +52,32 @@ export default async function CategoryPage({
             Główna
           </Link>
         </div>
+        <Script id="ld-breadcrumb-category" type="application/ld+json">
+          {JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              {
+                '@type': 'ListItem',
+                position: 1,
+                name: 'Strona główna',
+                item: `${process.env.NEXT_PUBLIC_BASE_URL || ''}/`,
+              },
+              {
+                '@type': 'ListItem',
+                position: 2,
+                name: 'Katalog',
+                item: `${process.env.NEXT_PUBLIC_BASE_URL || ''}/catalog`,
+              },
+              {
+                '@type': 'ListItem',
+                position: 3,
+                name: category.name,
+                item: `${process.env.NEXT_PUBLIC_BASE_URL || ''}/catalog/${category.slug}`,
+              },
+            ],
+          })}
+        </Script>
 
         {services.length === 0 ? (
           <p className="text-stone-500">

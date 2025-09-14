@@ -1,9 +1,7 @@
 "use client";
 
-// import CellAction from "../app/(auth)/admin/services/components/cellAction";
 import Image from "next/image";
-// import { useIsAdmin } from "@/hooks/user-role";
-// import ServiceModal from "./ServiceModal";
+
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -74,14 +72,7 @@ const ServiceCard: React.FC<{
   return (
     <>
       <li className="group bg-yellow-50 space-y-5 p-4 rounded-lg inset-shadow-md inset-shadow-stone-400  shadow-sm shadow-yellow-400 hover:shadow-lg transition-shadow duration-200 overflow-hidden border border-amber-500">
-        {/* <div className="p-4 flex flex-col h-full"> */}
         <div className="aspect-square rounded-xl mx-auto bg-yellow-50  relative ">
-          {/* <CellAction */}
-          {/* <ShownCellAction
-            className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-            data={service}
-          /> */}
-
           {/* Зображення послуги */}
           {service.images.length > 0 ? (
             <Image
@@ -93,9 +84,6 @@ const ServiceCard: React.FC<{
             />
           ) : (
             <div className="flex items-center justify-center w-full h-48 sm:h-64 md:h-72 rounded-lg mx-auto bg-yellow-50 ">
-              {/* <span className="text-gray-500 aspect-square text-lg">
-                Brak zdjęcia
-              </span> */}
               <Image
                 src={NO_IMAGE_SRC}
                 alt="Brak zdjęcia"
