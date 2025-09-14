@@ -1,13 +1,13 @@
 import { ServiceProps } from "@/lib/serviceStore";
 // import CellAction from "../app/(auth)/admin/services/components/cellAction";
 import Image from "next/image";
-// import { useIsAdmin } from "@/hooks/user-role";
-// import ServiceModal from "./ServiceModal";
+import { useIsAdmin } from "@/hooks/user-role";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import ServiceModalPopup from "./modals/serviceModalPopup";
 import { Button } from "./ui/button";
+import CellAction from "@/app/(auth)/admin/services/components/cellAction";
 const NO_IMAGE_SRC = "/no-image.jpg";
 
 const ItemQuantity: React.FC<{ service: ServiceProps }> = ({ service }) => (
@@ -33,12 +33,25 @@ const ItemQuantity: React.FC<{ service: ServiceProps }> = ({ service }) => (
   </span>
 );
 
+const ShownCellAction: React.FC<{ data: ServiceProps; className?: string }> = ({
+  data,
+  className,
+}) => {
+  const isAdmin = useIsAdmin();
+  if (!isAdmin) {
+    return null;
+  }
+
+  return <CellAction data={data} className={className} />;
+};
+
 const ServiceCard: React.FC<{
   service: ServiceProps;
   categoryName?: string;
 }> = ({ service }) => {
   const isMobile = useIsMobile();
   const router = useRouter();
+
   const [showModal, setShowModal] = useState(false);
 
   const handleClick = () => {
@@ -53,11 +66,10 @@ const ServiceCard: React.FC<{
       <li className="group bg-yellow-50 space-y-5 p-4 rounded-lg inset-shadow-md inset-shadow-stone-400  shadow-sm shadow-yellow-400 hover:shadow-lg transition-shadow duration-200 overflow-hidden border border-amber-500">
         {/* <div className="p-4 flex flex-col h-full"> */}
         <div className="aspect-square rounded-xl mx-auto bg-yellow-50  relative ">
-          {/* <CellAction */}
-          {/* <ShownCellAction
-            className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+          <ShownCellAction
+            className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 z-10 transition-opacity duration-200"
             data={service}
-          /> */}
+          />
 
           {/* Зображення послуги */}
           {service.images.length > 0 ? (
