@@ -2,34 +2,41 @@ services:
   web:
     build:
       context: ./web
-    env_file:
-      - ./web/.env
-    expose:
-      - "3000"
-    restart: unless-stopped
-  admin:
-    build:
-      context: ./admin
       dockerfile: Dockerfile
-    container_name: next-app
     env_file:
-      - ./admin/.env.production
+      - ./web/.env.production
+    container_name: next-web
     environment:
       - NODE_ENV=production
+      - PORT=3000
     expose:
       - "3000"
     restart: unless-stopped
 
-nginx:
-  image: nginx:alpine
-  depends_on:
-    - web
-    - admin
-  ports:
-    - "80:80"
-    - "443:443"
-  volumes:
-    - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
-    # розкоментуєш нижче, коли підключиш certbot/серти
-    # - /etc/letsencrypt:/etc/letsencrypt:ro
-  restart: unless-stopped
+  admin:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+    container_name: next-admin
+    env_file:
+      - ./admin/.env.production
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    expose:
+      - "3000"
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    depends_on:
+      - web
+      - admin
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      # Enable when certs are provisioned
+      # - /etc/letsencrypt:/etc/letsencrypt:ro
+    restart: unless-stopped
