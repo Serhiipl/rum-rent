@@ -13,7 +13,7 @@ const LoadingButton = ({
   return (
     <Button
       onClick={onClick}
-      className="w-full"
+      className="w-full bg-amber-600 hover:bg-amber-700 text-white"
       type="submit"
       disabled={pending}
     >
