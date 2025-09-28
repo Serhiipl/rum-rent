@@ -16,7 +16,7 @@ export default function AuthButtons() {
   return !session ? (
     <div className="flex gap-2 justify-center">
       <Link href="/sign-in">
-        <Button>Zaloguj się</Button>
+        <Button>Zaloguj</Button>
       </Link>
       <Link href="/sign-up">
         <Button>Zarejestruj się</Button>

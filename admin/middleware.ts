@@ -13,7 +13,7 @@ const publicRoutes = [
 ];
 const authRoutes = ["/sign-in", "/sign-up"];
 const passwordRoutes = ["/reset-password", "/forgot-password"];
-const adminRoutes = ["/admin", "/admin/dashboard"];
+const adminPrefix = "/admin";
 
 export default async function authMiddleware(request: NextRequest) {
   const pathName = request.nextUrl.pathname;
@@ -23,7 +23,8 @@ export default async function authMiddleware(request: NextRequest) {
   );
   const isAuthRoute = authRoutes.includes(pathName);
   const isPasswordRoute = passwordRoutes.includes(pathName);
-  const isAdminRoute = adminRoutes.includes(pathName);
+  const isAdminRoute =
+    pathName === adminPrefix || pathName.startsWith(`${adminPrefix}/`);
 
   const { data: session } = await betterFetch<Session>(
     "/api/auth/get-session",

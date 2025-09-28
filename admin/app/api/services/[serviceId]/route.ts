@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { authClient } from "@/auth-client";
+import { cookies } from "next/headers";
 
 interface RouteParams {
   params: Promise<{ serviceId: string }>;
@@ -103,6 +105,24 @@ export async function GET(request: Request, { params }: RouteParams) {
 // для оновлення та видалення послуги на пробу , вище залишив закоментовані працюючі функції PATCH та DELETE, якщо вони не потрібні, то можна видалити
 export async function PATCH(request: Request, { params }: RouteParams) {
   try {
+    const cookieStore = await cookies();
+    const cookieHeader = cookieStore.toString();
+    const session = await authClient.getSession({
+      fetchOptions: { headers: { cookie: cookieHeader } },
+    });
+    const user = session.data?.user;
+
+    if (!user?.id) {
+      return NextResponse.json(
+        { error: "Unauthenticated" },
+        { status: 401 }
+      );
+    }
+
+    if (user.role !== "admin") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
     const body = await request.json();
     const {
       name,
@@ -174,6 +194,24 @@ export async function PATCH(request: Request, { params }: RouteParams) {
 
 export async function DELETE(request: Request, { params }: RouteParams) {
   try {
+    const cookieStore = await cookies();
+    const cookieHeader = cookieStore.toString();
+    const session = await authClient.getSession({
+      fetchOptions: { headers: { cookie: cookieHeader } },
+    });
+    const user = session.data?.user;
+
+    if (!user?.id) {
+      return NextResponse.json(
+        { error: "Unauthenticated" },
+        { status: 401 }
+      );
+    }
+
+    if (user.role !== "admin") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
     const { serviceId } = await params;
 
     if (!serviceId) {

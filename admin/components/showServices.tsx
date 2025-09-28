@@ -80,8 +80,7 @@ const ShowServices: React.FC<ShowServicesProps> = ({
     <div className="bg-stone-600 p-2 rounded-xl border-[2px] border-yellow-500">
       {/* <div className="bg-slate-50 p-2 rounded-xl"> */}
       <h2 className="text-2xl text-yellow-400 mb-4 font-semibold">
-        {" "}
-        wymysl h2
+        Lista usług
       </h2>
 
       {/* Обробка помилок */}

@@ -67,11 +67,11 @@ const FilterStats: React.FC<{
   <div className="flex items-center gap-4 text-sm text-gray-600">
     <span>
       Wyświetlono: <strong className="text-blue-600">{filteredServices}</strong>{" "}
-      з {totalServices}
+      z {totalServices}
     </span>
     {(selectedCategories > 0 || hasSearchFilters) && (
       <span>
-        Активних фільтрів:{" "}
+        Aktywnych filtrów:{" "}
         <strong className="text-orange-600">
           {selectedCategories + (hasSearchFilters ? 1 : 0)}
         </strong>
@@ -213,7 +213,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
               onClick={clearAllFilters}
               className="text-sm text-red-600 hover:text-red-700 font-medium transition-colors"
             >
-              Очистити все
+              Wyczyść wszystko
             </button>
           )}
           {isAdmin && (
@@ -349,13 +349,13 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
               onClick={selectAllCategories}
               className="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors"
             >
-              Вибрати все
+              Zaznacz wszystkie
             </button>
             <button
               onClick={clearAllFilters}
               className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
             >
-              Очистити
+              Wyczyść
             </button>
           </div>
 
@@ -375,7 +375,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
               </div>
             ) : (
               <p className="text-gray-500 text-center py-4">
-                Категорії не знайдено
+                Nie znaleziono kategorii
               </p>
             )}
           </div>
@@ -405,7 +405,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
               onClick={() => setIsExpanded(true)}
               className="px-3 py-2 text-sm text-blue-600 border border-blue-200 rounded-full hover:bg-blue-50 transition-colors"
             >
-              +{categories.length - 5} більше
+              +{categories.length - 5} więcej
             </button>
           )}
         </div>

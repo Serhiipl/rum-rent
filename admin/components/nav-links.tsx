@@ -14,6 +14,8 @@ import { Button } from "@/components/ui/button";
 import { useCallback } from "react";
 import { usePathname } from "next/navigation";
 import PhoneLink from "./phone-link";
+import Link from "next/link";
+import { Home } from "lucide-react";
 
 export const filterServicesByCategory = (
   services: ServiceProps[],
@@ -84,6 +86,24 @@ const NavLinks = () => {
                 <SheetTitle className="sr-only">Kategorie</SheetTitle>
               </SheetHeader>
               <div className="space-y-3 mt-4">
+                <SheetClose asChild>
+                  <Link
+                    href="/"
+                    className="flex items-center gap-2 px-2.5 text-xl font-bold left-0 top-1"
+                  >
+                    <Home
+                      size={30}
+                      className="inline-block mr-2 text-yellow-500"
+                    />
+                    Na główną
+                  </Link>
+                </SheetClose>
+                <div className="mt-6 flex flex-col items-center gap-3">
+                  <p className="text-2xl font-bold mt-5 text-center text-gray-700">
+                    Kategorie usług
+                  </p>
+                  <hr className="my-2 border-t border-stone-500 w-full" />
+                </div>
                 <SheetClose asChild>
                   <Button
                     variant={activeCategoryId === null ? "default" : "ghost"}

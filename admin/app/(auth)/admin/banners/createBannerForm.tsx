@@ -26,7 +26,11 @@ export default function CreateBannerForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title || images.length === 0) {
-      alert("Title and at least one image are required.");
+      toast.error("Dodaj nazwę i co najmniej jedno zdjęcie banera.", {
+        position: "top-center",
+        duration: 3000,
+        icon: "⚠️",
+      });
       return;
     }
 

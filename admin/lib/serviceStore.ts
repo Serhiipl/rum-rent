@@ -69,6 +69,9 @@ interface ServiceStore {
   servicesFetchedAt: number | null;
   bannersFetchedAt: number | null;
   categoriesFetchedAt: number | null;
+  isFetchingServices: boolean;
+  isFetchingBanners: boolean;
+  isFetchingCategories: boolean;
   fetchServiceCategories: () => Promise<void>;
   // addService: (newService: ServiceProps) => Promise<void>;
   addService: (newService: CreateServiceData) => Promise<void>;
@@ -95,8 +98,14 @@ const fetchBanners = async (
   const lastFetched = get().bannersFetchedAt;
   const TTL = 5 * 60 * 1000;
   if (lastFetched && now - lastFetched < TTL) return; // Якщо банери вже завантажені, не робимо повторний запит
+  if (get().isFetchingBanners) return;
   try {
-    set((state) => ({ ...state, isLoading: true, error: null }));
+    set((state) => ({
+      ...state,
+      isLoading: true,
+      error: null,
+      isFetchingBanners: true,
+    }));
     const response = await fetch("/api/banners");
     if (!response.ok) throw new Error("Failed to fetch banners");
     const data = await response.json();
@@ -105,7 +114,6 @@ const fetchBanners = async (
       banners: Array.isArray(data) ? data : [],
       bannersFetched: true, // Додаємо прапорець для перевірки, чи були банери завантажені
       bannersFetchedAt: Date.now(),
-      isLoading: false,
     }));
   } catch (error) {
     console.error("Error fetching banners:", error);
@@ -113,6 +121,11 @@ const fetchBanners = async (
       ...state,
       banners: [],
       error: "Не вдалося завантажити банери",
+    }));
+  } finally {
+    set((state) => ({
+      ...state,
+      isFetchingBanners: false,
       isLoading: false,
     }));
   }
@@ -126,8 +139,14 @@ const fetchServices = async (
   const lastFetched = get().servicesFetchedAt;
   const TTL = 5 * 60 * 1000; // 5 хвилин
   if (lastFetched && now - lastFetched < TTL) return; // Якщо послуги вже завантажені, не робимо повторний запит
+  if (get().isFetchingServices) return;
   try {
-    set((state) => ({ ...state, isLoading: true, error: null }));
+    set((state) => ({
+      ...state,
+      isLoading: true,
+      error: null,
+      isFetchingServices: true,
+    }));
     const response = await fetch("/api/services");
     if (!response.ok) {
       throw new Error("Failed to fetch services");
@@ -138,7 +157,6 @@ const fetchServices = async (
       services: Array.isArray(data) ? data : [],
       servicesFetched: true, // Додаємо прапорець для перевірки, чи були послуги завантажені
       servicesFetchedAt: Date.now(),
-      isLoading: false,
     }));
   } catch (error) {
     console.error("Error fetching services:", error);
@@ -146,6 +164,11 @@ const fetchServices = async (
       ...state,
       services: [],
       error: "Не вдалося завантажити послуги",
+    }));
+  } finally {
+    set((state) => ({
+      ...state,
+      isFetchingServices: false,
       isLoading: false,
     }));
   }
@@ -159,8 +182,14 @@ const fetchServiceCategories = async (
   const lastFetched = get().categoriesFetchedAt;
   const TTL = 5 * 60 * 1000;
   if (lastFetched && now - lastFetched < TTL) return; // Якщо категорії вже завантажені, не робимо повторний запит
+  if (get().isFetchingCategories) return;
   try {
-    set((state) => ({ ...state, isLoading: true, error: null }));
+    set((state) => ({
+      ...state,
+      isLoading: true,
+      error: null,
+      isFetchingCategories: true,
+    }));
     const response = await fetch("/api/categories");
     if (!response.ok) {
       throw new Error("Failed to fetch service categories");
@@ -171,7 +200,6 @@ const fetchServiceCategories = async (
       serviceCategories: Array.isArray(data) ? data : [],
       categoriesFetched: true, // Додаємо прапорець для перевірки, чи були категорії завантажені
       categoriesFetchedAt: Date.now(),
-      isLoading: false,
     }));
   } catch (error) {
     console.error("Error fetching service categories:", error);
@@ -179,6 +207,11 @@ const fetchServiceCategories = async (
       ...state,
       serviceCategories: [],
       error: "Не вдалося завантажити категорії",
+    }));
+  } finally {
+    set((state) => ({
+      ...state,
+      isFetchingCategories: false,
       isLoading: false,
     }));
   }
@@ -197,6 +230,9 @@ const useServiceStore = create<ServiceStore>((set, get) => ({
   servicesFetchedAt: null,
   bannersFetchedAt: null,
   categoriesFetchedAt: null,
+  isFetchingServices: false,
+  isFetchingBanners: false,
+  isFetchingCategories: false,
 
   setLoading: (loading: boolean) => set({ isLoading: loading }),
   setError: (error: string | null) => set({ error }),
@@ -424,9 +460,15 @@ const useServiceStore = create<ServiceStore>((set, get) => ({
       activeCategoryId: null,
       isLoading: false,
       error: null,
+      bannersFetched: false,
+      servicesFetched: false,
+      categoriesFetched: false,
       servicesFetchedAt: null,
       bannersFetchedAt: null,
       categoriesFetchedAt: null,
+      isFetchingServices: false,
+      isFetchingBanners: false,
+      isFetchingCategories: false,
     }),
 }));
 

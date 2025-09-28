@@ -17,10 +17,15 @@ export async function POST(request: Request) {
   });
 
   try {
-    const userId = session.data?.user.id;
+    const user = session.data?.user;
+    const userId = user?.id;
 
     if (!userId) {
       return new NextResponse("Unauthenticated", { status: 401 });
+    }
+
+    if (user?.role !== "admin") {
+      return new NextResponse("Forbidden", { status: 403 });
     }
 
     const body = await request.json();

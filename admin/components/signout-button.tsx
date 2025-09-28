@@ -4,6 +4,7 @@ import { authClient } from "@/auth-client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import LoadingButton from "@/components/loading-button";
+import { LogOut, SquareArrowOutUpRight } from "lucide-react";
 
 export default function SignOutButton() {
   const router = useRouter();
@@ -27,7 +28,7 @@ export default function SignOutButton() {
   };
   return (
     <LoadingButton pending={pending} onClick={handleSingOut}>
-      Wyloguj się
+      <SquareArrowOutUpRight />
     </LoadingButton>
   );
 }

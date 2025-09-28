@@ -25,11 +25,6 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     setIsMounted(true);
   }, []);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  // const onUpload = (result: any) => {
-  //   onChange(result.info.secure_url);
-  // };
-
   if (!isMounted) {
     return null;
   }
@@ -79,9 +74,11 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       <CldUploadWidget
         uploadPreset="uiyzaare"
         options={{ multiple: true }}
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        onSuccess={(result: any) => {
-          onChange(result.info.secure_url);
+        onSuccess={(result: unknown) => {
+          const info = (result as { info?: { secure_url?: string } })?.info;
+          if (info?.secure_url) {
+            onChange(info.secure_url);
+          }
         }}
       >
         {({ open }) => (
