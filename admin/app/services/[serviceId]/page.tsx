@@ -1,30 +1,60 @@
+import type { Metadata } from "next";
+import { cache } from "react";
 import { notFound } from "next/navigation";
+import prisma from "@/lib/prisma";
 import Gallery from "@/components/galery-tab";
 import { BackButton } from "@/components/back-button";
-import { NextPage } from "next";
 import ContactForm from "@/components/contact-form";
 import PhoneLink from "@/components/phone-link";
 
-//komponent strony usługi dla telefonów
+type ProductPageParams = Promise<{ serviceId: string }>;
+
 interface ProductPageProps {
-  params: Promise<{ serviceId: string }>;
+  params: ProductPageParams;
 }
-const ProductPage: NextPage<ProductPageProps> = async ({ params }) => {
+
+const getServiceById = cache(async (serviceId: string) => {
+  if (!serviceId) {
+    return null;
+  }
+
+  return prisma.service.findUnique({
+    where: { serviceId },
+    include: {
+      category: true,
+      images: true,
+    },
+  });
+});
+
+export const revalidate = 0;
+
+export async function generateMetadata({
+  params,
+}: ProductPageProps): Promise<Metadata> {
   const { serviceId } = await params;
   if (!serviceId) {
+    return { title: "Usługa nieznaleziona" };
+  }
+
+  const service = await getServiceById(serviceId);
+  if (!service) {
+    return { title: "Usługa nieznaleziona" };
+  }
+
+  return {
+    title: `${service.name} | RumRent`,
+    description: service.description ?? undefined,
+  };
+}
+
+export default async function ProductPage({ params }: ProductPageProps) {
+  const { serviceId } = await params;
+  const service = await getServiceById(serviceId);
+
+  if (!service) {
     return notFound();
   }
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/services/${serviceId}`,
-    {
-      method: "GET",
-      cache: "no-store",
-    }
-  );
-
-  if (!res.ok) return notFound();
-
-  const service = await res.json();
 
   // Local badge to mirror ServiceCard quantity styling
   const QuantityBadge = ({ quantity }: { quantity: number }) => (
@@ -104,7 +134,7 @@ const ProductPage: NextPage<ProductPageProps> = async ({ params }) => {
           <h2 className="text-xl font-semibold mb-3">Skontaktuj się z nami</h2>
           <ContactForm
             productName={service.name}
-            productId={service.serviceId || service.id}
+            productId={service.serviceId}
             productImageUrl={service.images?.[0]?.url}
             receiverEmail={process.env.NEXT_PUBLIC_CONTACT_RECEIVER}
           />
@@ -113,5 +143,4 @@ const ProductPage: NextPage<ProductPageProps> = async ({ params }) => {
       <BackButton />
     </div>
   );
-};
-export default ProductPage;
+}

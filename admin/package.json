@@ -4,10 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "prisma generate --schema=./prisma/schema.prisma && next build",
+    "prisma": " prisma generate",
     "start": "next start",
     "start:prod": "node .next/standalone/server.js",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall": "prisma generate --schema=./prisma/schema.prisma"
   },
   "dependencies": {
     "@better-fetch/fetch": "^1.1.15",
