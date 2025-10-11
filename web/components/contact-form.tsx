@@ -38,7 +38,9 @@ const ContactForm: React.FC<ContactFormProps> = ({
   className,
 }) => {
   const fallbackReceiver = process.env.NEXT_PUBLIC_CONTACT_RECEIVER || "";
-  const toEmail = (receiverEmail || fallbackReceiver || "").trim();
+  const toEmail = (receiverEmail || fallbackReceiver || "")
+    .trim()
+    .toLowerCase();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(contactFormSchema),
@@ -82,7 +84,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
       } else {
         setStatus({
           type: "error",
-          message: "Nie udało się wysłać wiadomości.",
+          message: res?.message || "Nie udało się wysłać wiadomości.",
         });
       }
     } catch (error) {

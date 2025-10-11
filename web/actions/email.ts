@@ -1,55 +1,30 @@
-// "use server";
-// import sgMail from "@sendgrid/mail";
-
-// export async function sendEmail({
-//   to,
-//   subject,
-//   text,
-// }: {
-//   to: string;
-//   subject: string;
-//   text: string;
-// }) {
-//   if (!process.env.SENDGRID_API_KEY) {
-//     throw new Error("SENDGRID_API_KEY environment variable is not set");
-//   }
-//   if (!process.env.EMAIL_FROM) {
-//     throw new Error("EMAIL_FROM environment variable is not set");
-//   }
-
-//   sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-
-//   const message = {
-//     to: to.toLowerCase().trim(),
-//     from: process.env.EMAIL_FROM,
-//     subject: subject.trim(),
-//     text: text.trim(),
-//   };
-
-//   try {
-//     const [response] = await sgMail.send(message);
-
-//     if (response.statusCode !== 202) {
-//       throw new Error(
-//         `SendGrid API returned status code ${response.statusCode}`
-//       );
-//     }
-
-//     return {
-//       success: true,
-//       messageId: response.headers["x-message-id"],
-//     };
-//   } catch (error) {
-//     console.error("Error sending email:", error);
-//     return {
-//       success: false,
-//       message: "Failed to send email. Please try again later.",
-//     };
-//   }
-// }
 "use server";
 
 import nodemailer from "nodemailer";
+
+const MIN_EMAIL_INTERVAL_MS = 1500;
+let lastEmailSentAt: number | null = null;
+
+const sleep = (ms: number) =>
+  new Promise((resolve) => setTimeout(resolve, ms));
+
+const parseEmails = (value: string | undefined) =>
+  (value ?? "")
+    .split(",")
+    .map((email) => email.trim().toLowerCase())
+    .filter(Boolean);
+
+const getAllowedRecipients = () => {
+  const allowList = new Set<string>();
+  parseEmails(process.env.EMAIL_RECIPIENT_ALLOWLIST).forEach((email) =>
+    allowList.add(email)
+  );
+  parseEmails(process.env.NEXT_PUBLIC_CONTACT_RECEIVER).forEach((email) =>
+    allowList.add(email)
+  );
+  parseEmails(process.env.EMAIL_FROM).forEach((email) => allowList.add(email));
+  return Array.from(allowList);
+};
 
 export async function sendEmail({
   to,
@@ -67,6 +42,30 @@ export async function sendEmail({
     throw new Error("EMAIL_FROM environment variable is not set");
   }
 
+  const allowedRecipients = getAllowedRecipients();
+  if (allowedRecipients.length === 0) {
+    throw new Error("No allowed email recipients configured");
+  }
+
+  const normalizedTo = to.toLowerCase().trim();
+  if (!allowedRecipients.includes(normalizedTo)) {
+    console.warn(
+      `Rejected contact form submission to unauthorized recipient: ${normalizedTo}`
+    );
+    return {
+      success: false,
+      message: "Wybrany odbiorca nie jest dozwolony.",
+    };
+  }
+
+  const now = Date.now();
+  if (lastEmailSentAt) {
+    const elapsed = now - lastEmailSentAt;
+    if (elapsed < MIN_EMAIL_INTERVAL_MS) {
+      await sleep(MIN_EMAIL_INTERVAL_MS - elapsed);
+    }
+  }
+
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -77,20 +76,21 @@ export async function sendEmail({
 
   const mailOptions = {
     from: process.env.EMAIL_FROM,
-    to: to.toLowerCase().trim(),
+    to: normalizedTo,
     subject: subject.trim(),
     text: text.trim(),
   };
 
   try {
     const info = await transporter.sendMail(mailOptions);
-
+    lastEmailSentAt = Date.now();
     return {
       success: true,
       messageId: info.messageId,
     };
   } catch (error) {
     console.error("Error sending email:", error);
+    lastEmailSentAt = Date.now();
     return {
       success: false,
       message: "Failed to send email. Please try again later.",

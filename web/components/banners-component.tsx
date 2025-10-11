@@ -45,8 +45,10 @@ const HeroCarousel: React.FC = () => {
   useEffect(() => {
     let mounted = true;
     fetchBannersOnce().then((data) => {
-      if (mounted) setBanners(data);
-      setIsLoading(false);
+      if (mounted) {
+        setBanners(data);
+        setIsLoading(false);
+      }
     });
     return () => {
       mounted = false;
@@ -80,14 +82,14 @@ const HeroCarousel: React.FC = () => {
         modules={[Autoplay, Pagination, Navigation]}
         className="w-full h-full [--swiper-navigation-color:#fe9a00] [--swiper-pagination-color:#fe9a00]"
       >
-        {banners.map((banner) => (
+        {banners.map((banner, index) => (
           <SwiperSlide key={banner.id} className="relative ">
             {banner.imageUrl ? (
               <Image
                 src={banner.imageUrl}
                 alt={banner.title}
                 fill
-                priority
+                priority={index === 0}
                 sizes="80vw"
                 className="object-contain h-72 sm:h-[32rem] bg-amber-50  w-full"
               />

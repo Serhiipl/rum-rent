@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { Banner, ServiceProps } from "./types";
+import { Banner, ServiceProps, ServiceWithCategory } from "./types";
 
 export type Category = {
   id: string;
@@ -153,4 +153,55 @@ export async function getServiceForSeo(serviceId: string): Promise<{
   });
   if (!service) return null;
   return service;
+}
+
+export async function getServiceWithCategory(
+  serviceId: string
+): Promise<ServiceWithCategory | null> {
+  const service = await prisma.service.findUnique({
+    where: { serviceId },
+    select: {
+      serviceId: true,
+      name: true,
+      description: true,
+      rentalPrice: true,
+      deposit: true,
+      quantity: true,
+      rentalPeriod: true,
+      condition: true,
+      available: true,
+      categoryId: true,
+      category: { select: { name: true, slug: true } },
+      images: {
+        select: { id: true, serviceId: true, url: true, createdAt: true },
+      },
+    },
+  });
+
+  if (!service) return null;
+
+  return {
+    serviceId: service.serviceId,
+    name: service.name,
+    description: service.description,
+    rentalPrice: service.rentalPrice,
+    deposit: service.deposit ?? 0,
+    quantity: service.quantity ?? 0,
+    rentalPeriod: service.rentalPeriod ?? 0,
+    condition: service.condition ?? "",
+    images: (service.images ?? []).map((img) => ({
+      id: img.id,
+      serviceId: img.serviceId,
+      url: img.url,
+      createdAt: (img.createdAt as Date).toISOString(),
+    })),
+    available: service.available ?? true,
+    categoryId: service.categoryId ?? "",
+    category: service.category
+      ? {
+          name: service.category.name ?? null,
+          slug: service.category.slug ?? null,
+        }
+      : null,
+  };
 }

@@ -29,3 +29,10 @@ export interface Banner {
   updatedAt: string;
   imageUrl: string;
 }
+
+export interface ServiceWithCategory extends ServiceProps {
+  category?: {
+    name: string | null;
+    slug: string | null;
+  } | null;
+}

@@ -6,7 +6,7 @@ import { BackButton } from "@/components/back-button";
 import { NextPage } from "next";
 import ContactForm from "@/components/contact-form";
 import PhoneLink from "@/components/phone-link";
-import { getServiceForSeo } from "@/lib/prisma-operations";
+import { getServiceForSeo, getServiceWithCategory } from "@/lib/prisma-operations";
 
 export const revalidate = 300; // Cache this page for 5 minutes
 
@@ -57,18 +57,11 @@ const ProductPage: NextPage<ProductPageProps> = async ({ params }) => {
   if (!serviceId) {
     return notFound();
   }
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/services/${serviceId}`,
-    {
-      method: "GET",
-      next: { revalidate: 300 },
-    }
-  );
-
-  if (!res.ok) return notFound();
-
-  const service = await res.json();
-  const seoInfo = await getServiceForSeo(serviceId);
+  const service = await getServiceWithCategory(serviceId);
+  if (!service) {
+    return notFound();
+  }
+  const categoryInfo = service.category;
 
   // Local badge to mirror ServiceCard quantity styling
   const QuantityBadge = ({ quantity }: { quantity: number }) => (
@@ -113,9 +106,7 @@ const ProductPage: NextPage<ProductPageProps> = async ({ params }) => {
               (service.quantity ?? 0) > 0
                 ? "https://schema.org/InStock"
                 : "https://schema.org/OutOfStock",
-            url: `${process.env.NEXT_PUBLIC_BASE_URL || ""}/services/${
-              service.serviceId || service.id
-            }`,
+            url: `${process.env.NEXT_PUBLIC_BASE_URL || ""}/services/${service.serviceId}`,
           },
         })}
       </Script>
@@ -136,23 +127,21 @@ const ProductPage: NextPage<ProductPageProps> = async ({ params }) => {
               name: "Katalog",
               item: `${process.env.NEXT_PUBLIC_BASE_URL || ""}/catalog`,
             },
-            seoInfo?.category?.slug
+            categoryInfo?.slug
               ? {
                   "@type": "ListItem",
                   position: 3,
-                  name: seoInfo.category.name || "Kategoria",
+                  name: categoryInfo.name || "Kategoria",
                   item: `${process.env.NEXT_PUBLIC_BASE_URL || ""}/catalog/${
-                    seoInfo.category.slug
+                    categoryInfo.slug
                   }`,
                 }
               : undefined,
             {
               "@type": "ListItem",
-              position: seoInfo?.category?.slug ? 4 : 3,
+              position: categoryInfo?.slug ? 4 : 3,
               name: service.name,
-              item: `${process.env.NEXT_PUBLIC_BASE_URL || ""}/services/${
-                service.serviceId || service.id
-              }`,
+              item: `${process.env.NEXT_PUBLIC_BASE_URL || ""}/services/${service.serviceId}`,
             },
           ].filter(Boolean),
         })}
@@ -209,7 +198,7 @@ const ProductPage: NextPage<ProductPageProps> = async ({ params }) => {
           <h2 className="text-xl font-semibold mb-3">Skontaktuj się z nami</h2>
           <ContactForm
             productName={service.name}
-            productId={service.serviceId || service.id}
+            productId={service.serviceId}
             productImageUrl={service.images?.[0]?.url}
             receiverEmail={process.env.NEXT_PUBLIC_CONTACT_RECEIVER}
           />

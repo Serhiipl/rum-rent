@@ -22,7 +22,7 @@ const ServiceModalPopup: React.FC<ServiceModalPopupProps> = ({
 }) => {
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="w-full mt-7 sm:max-w-2xl md:max-w-3xl lg:max-w-4xl max-h-9/10  overflow-auto md:my-auto">
+      <DialogContent className="w-full mt-7 sm:max-w-2xl md:max-w-3xl lg:max-w-4xl max-h-[90vh] overflow-auto md:my-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">
             {service.name}
