@@ -6,7 +6,16 @@ import { BackButton } from "@/components/back-button";
 import { NextPage } from "next";
 import ContactForm from "@/components/contact-form";
 import PhoneLink from "@/components/phone-link";
-import { getServiceForSeo, getServiceWithCategory } from "@/lib/prisma-operations";
+import {
+  getServiceForSeo,
+  getServiceWithCategory,
+} from "@/lib/prisma-operations";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 export const revalidate = 300; // Cache this page for 5 minutes
 
@@ -106,7 +115,9 @@ const ProductPage: NextPage<ProductPageProps> = async ({ params }) => {
               (service.quantity ?? 0) > 0
                 ? "https://schema.org/InStock"
                 : "https://schema.org/OutOfStock",
-            url: `${process.env.NEXT_PUBLIC_BASE_URL || ""}/services/${service.serviceId}`,
+            url: `${process.env.NEXT_PUBLIC_BASE_URL || ""}/services/${
+              service.serviceId
+            }`,
           },
         })}
       </Script>
@@ -141,7 +152,9 @@ const ProductPage: NextPage<ProductPageProps> = async ({ params }) => {
               "@type": "ListItem",
               position: categoryInfo?.slug ? 4 : 3,
               name: service.name,
-              item: `${process.env.NEXT_PUBLIC_BASE_URL || ""}/services/${service.serviceId}`,
+              item: `${process.env.NEXT_PUBLIC_BASE_URL || ""}/services/${
+                service.serviceId
+              }`,
             },
           ].filter(Boolean),
         })}
@@ -194,14 +207,31 @@ const ProductPage: NextPage<ProductPageProps> = async ({ params }) => {
           </p>
           <PhoneLink />
         </div>
-        <div className="px-4 pb-6">
-          <h2 className="text-xl font-semibold mb-3">Skontaktuj się z nami</h2>
-          <ContactForm
+        <div className="px-4 mx-auto  pb-6">
+          <Accordion type="single" collapsible>
+            <AccordionItem value="details">
+              <AccordionTrigger>
+                <h2 className="text-xl font-semibold mb-3">
+                  Skontaktuj się z nami
+                </h2>
+              </AccordionTrigger>
+              <AccordionContent>
+                <ContactForm
+                  productName={service.name}
+                  productId={service.serviceId}
+                  productImageUrl={service.images?.[0]?.url}
+                  receiverEmail={process.env.NEXT_PUBLIC_CONTACT_RECEIVER}
+                />
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+          {/* <h2 className="text-xl font-semibold mb-3">Skontaktuj się z nami</h2> */}
+          {/* <ContactForm
             productName={service.name}
             productId={service.serviceId}
             productImageUrl={service.images?.[0]?.url}
             receiverEmail={process.env.NEXT_PUBLIC_CONTACT_RECEIVER}
-          />
+          /> */}
         </div>
       </div>
       <BackButton />

@@ -38,6 +38,11 @@ const nextConfig: NextConfig = {
   /* config options here */
   images: { remotePatterns },
   output: "standalone",
+  allowedDevOrigins: [
+    "local-origin.dev",
+    "*.local-origin.dev",
+    "192.168.8.134",
+  ],
 };
 
 export default nextConfig;
