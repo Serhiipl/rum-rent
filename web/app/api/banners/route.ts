@@ -2,7 +2,9 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
 export const runtime = "nodejs";
-export const revalidate = 300; // 5 minutes
+export const revalidate = 90; // 1,5 minutes
+
+// Function to validate and sanitize URLs
 
 const isSafeHttpUrl = (value: string | null | undefined) => {
   if (!value) return false;
@@ -19,16 +21,7 @@ const isSafeHttpUrl = (value: string | null | undefined) => {
     return false;
   }
 };
-
-// export async function GET() {
-//   try {
-//     const banners = await getBanners();
-//     return NextResponse.json(banners, { status: 200 });
-//   } catch (e) {
-//     console.error("GET /api/banners error", e);
-//     return NextResponse.json({ error: "Failed to load banners" }, { status: 500 });
-//   }
-// }
+// GET /api/banners
 
 export async function GET() {
   try {
@@ -38,12 +31,15 @@ export async function GET() {
     const sanitized = banners.map((banner) => ({
       ...banner,
       imageUrl: isSafeHttpUrl(banner.imageUrl) ? banner.imageUrl.trim() : "",
-      ctaLink: isSafeHttpUrl(banner.ctaLink) ? banner.ctaLink?.trim() : undefined,
+      ctaLink: isSafeHttpUrl(banner.ctaLink)
+        ? banner.ctaLink?.trim()
+        : undefined,
     }));
     const res = NextResponse.json(sanitized, { status: 200 });
+    // Cache for 3 minutes, allow stale content while revalidating for 5 minutes
     res.headers.set(
       "Cache-Control",
-      "public, max-age=300, s-maxage=300, stale-while-revalidate=86400"
+      "public, max-age=180, s-maxage=180, stale-while-revalidate=300"
     );
     return res;
   } catch (error) {

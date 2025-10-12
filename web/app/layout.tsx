@@ -5,6 +5,7 @@ import "./globals.css";
 import Header from "@/components/header";
 import { getCategoriesPrisma } from "@/lib/prisma-operations";
 import { Footer } from "@/components/footer";
+import { PWARegister } from "@/components/pwa-register";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,7 +26,7 @@ const roboto = Roboto({
 
 const siteUrl =
   process.env.NEXT_PUBLIC_BASE_URL?.replace(/\/$/, "") ||
-  "https://www.example.com";
+  "https://www.rumrent.pl";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -54,7 +55,18 @@ export const metadata: Metadata = {
       "Wypożyczalnia narzędzi i sprzętu na Pomorzu. Szybka rezerwacja, atrakcyjne ceny, dostępność od ręki.",
   },
   icons: {
-    icon: "/favicon.ico",
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+    shortcut: [
+      { url: "/android-chrome-192x192.png", sizes: "192x192", type: "image/png" },
+    ],
+    other: [{ rel: "mask-icon", url: "/android-chrome-512x512.png" }],
   },
 };
 
@@ -93,6 +105,7 @@ export default async function RootLayout({
             sameAs: [],
           })}
         </Script>
+        <PWARegister />
         <Header categories={categories} />
         {children}
         <Footer />
