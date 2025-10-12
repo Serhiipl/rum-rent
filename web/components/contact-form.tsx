@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { contactFormSchema } from "@/lib/zod";
@@ -44,8 +45,9 @@ const ContactForm: React.FC<ContactFormProps> = ({
 
   const form = useForm<FormValues>({
     resolver: zodResolver(contactFormSchema),
-    defaultValues: { name: "", email: "", phone: "", info: "" },
+    defaultValues: { name: "", email: "", phone: "", info: "", terms: false },
   });
+  const termsId = React.useId();
 
   const [submitting, setSubmitting] = React.useState(false);
   const [status, setStatus] = React.useState<null | {
@@ -177,7 +179,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
           </div>
 
           <span>Pola email lub telefon są wymagane</span>
-          <div className="grid mt-3 grid-cols-1 sm:grid-cols-2 space-y-4">
+          <div className="grid mt-3 grid-cols-1 gap-4 sm:grid-cols-2">
             <FormField
               control={form.control}
               name="info"
@@ -197,6 +199,47 @@ const ContactForm: React.FC<ContactFormProps> = ({
                       {...field}
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="terms"
+              render={({ field }) => (
+                <FormItem className="px-2">
+                  <div className="flex items-start gap-3 rounded-md border border-gray-300 bg-yellow-50/50 p-4">
+                    <FormControl>
+                      <Checkbox
+                        id={termsId}
+                        checked={field.value === true}
+                        onCheckedChange={(checked) =>
+                          field.onChange(checked === true)
+                        }
+                      />
+                    </FormControl>
+                    <div className="space-y-1">
+                      <FormLabel
+                        htmlFor={termsId}
+                        className="text-sm font-medium text-gray-700 leading-tight"
+                      >
+                        Wyrażam zgodę na kontakt w sprawie zapytania i potwierdzam
+                        zapoznanie się z{" "}
+                        <a
+                          href="/polityka-prywatnosci"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline"
+                        >
+                          polityką prywatności
+                        </a>
+                        .
+                      </FormLabel>
+                      <p className="text-xs text-gray-500">
+                        Zgoda jest wymagana, abyśmy mogli odpowiedzieć na Twoją wiadomość.
+                      </p>
+                    </div>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}

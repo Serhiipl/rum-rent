@@ -90,6 +90,13 @@ export const contactFormSchema = z
     email: z.string().email("Nieprawidłowy email").optional().or(z.literal("")),
     phone: z.string().optional().or(z.literal("")),
     info: z.string().optional().or(z.literal("")),
+    terms: z
+      .boolean({
+        required_error: "Zgoda jest wymagana",
+      })
+      .refine((value) => value === true, {
+        message: "Wyraź zgodę na kontakt.",
+      }),
   })
   .superRefine((data, ctx) => {
     const hasEmail = !!data.email && data.email.trim().length > 0;
