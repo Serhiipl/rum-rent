@@ -1,6 +1,6 @@
 import { Button } from "./ui/button";
 
-const OWNER_NUMBER = "+48 722 285 139";
+const OWNER_NUMBER = process.env.COMPANY_PHONE || "+48 513 424 110";
 
 const PhoneLink: React.FC = () => {
   return (
