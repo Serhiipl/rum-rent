@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import NavLinks from "@/components/nav-links";
-import type { Category } from "@/lib/prisma-operations";
+import type { Category } from "@/lib/mongo-operations";
 import { Roboto } from "next/font/google";
 import { Home } from "lucide-react";
 

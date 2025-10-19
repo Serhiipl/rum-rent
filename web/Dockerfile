@@ -7,9 +7,6 @@ RUN npm ci --no-audit --no-fund
 
 COPY . .
 
-# Generate Prisma Client (MongoDB)
-RUN npx prisma generate
-
 # Build Next.js (uses output: standalone from next.config.ts)
 RUN npm run build
 
@@ -27,9 +24,5 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 
-# Prisma schema (if needed at runtime for introspection/migrations)
-COPY --from=builder /app/prisma ./prisma
-
 EXPOSE 3000
 CMD ["node", "server.js"]
-

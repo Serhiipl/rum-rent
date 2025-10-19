@@ -1,7 +1,7 @@
 import React from "react";
 import ServiceCard from "./product-card";
 // import { get } from "http";
-import { getAllServices } from "@/lib/prisma-operations";
+import { getAllServices } from "@/lib/mongo-operations";
 
 const AllProducts: React.FC = async () => {
   const services = await getAllServices();

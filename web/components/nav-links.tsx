@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import type { Category } from "@/lib/prisma-operations";
+import type { Category } from "@/lib/mongo-operations";
 import { Button } from "@/components/ui/button";
 
 import {

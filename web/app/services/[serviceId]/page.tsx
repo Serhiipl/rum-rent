@@ -9,7 +9,7 @@ import PhoneLink from "@/components/phone-link";
 import {
   getServiceForSeo,
   getServiceWithCategory,
-} from "@/lib/prisma-operations";
+} from "@/lib/mongo-operations";
 import {
   Accordion,
   AccordionContent,

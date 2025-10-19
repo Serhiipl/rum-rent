@@ -3,7 +3,7 @@ import Script from "next/script";
 import { Geist, Geist_Mono, Roboto } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/header";
-import { getCategoriesPrisma } from "@/lib/prisma-operations";
+import { getCategories } from "@/lib/mongo-operations";
 import { Footer } from "@/components/footer";
 import { PWARegister } from "@/components/pwa-register";
 
@@ -84,7 +84,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const categories = await getCategoriesPrisma();
+  const categories = await getCategories();
   return (
     <html lang="pl">
       <body

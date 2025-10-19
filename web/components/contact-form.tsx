@@ -216,6 +216,10 @@ const ContactForm: React.FC<ContactFormProps> = ({
                         onCheckedChange={(checked) =>
                           field.onChange(checked === true)
                         }
+                        aria-label="Zgoda na przetwarzanie danych"
+                        className={
+                          "data-[state=checked]:bg-amber-600 data-[state=checked]:border-amber-600 focus:ring-1 focus:ring-offset-1 focus:ring-amber-500 border-gray-300 h-4 w-4 rounded-sm"
+                        }
                       />
                     </FormControl>
                     <div className="space-y-1">
@@ -223,8 +227,8 @@ const ContactForm: React.FC<ContactFormProps> = ({
                         htmlFor={termsId}
                         className="text-sm font-medium text-gray-700 leading-tight"
                       >
-                        Wyrażam zgodę na kontakt w sprawie zapytania i potwierdzam
-                        zapoznanie się z{" "}
+                        Wyrażam zgodę na kontakt w sprawie zapytania i
+                        potwierdzam zapoznanie się z{" "}
                         <a
                           href="/polityka-prywatnosci"
                           target="_blank"
@@ -236,7 +240,8 @@ const ContactForm: React.FC<ContactFormProps> = ({
                         .
                       </FormLabel>
                       <p className="text-xs text-gray-500">
-                        Zgoda jest wymagana, abyśmy mogli odpowiedzieć na Twoją wiadomość.
+                        Zgoda jest wymagana, abyśmy mogli odpowiedzieć na Twoją
+                        wiadomość.
                       </p>
                     </div>
                   </div>

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { getMongoDb } from "@/lib/mongodb";
 
 export const runtime = "nodejs";
 export const revalidate = 90; // 1,5 minutes
@@ -25,16 +25,31 @@ const isSafeHttpUrl = (value: string | null | undefined) => {
 
 export async function GET() {
   try {
-    const banners = await prisma.banner.findMany({
-      orderBy: { createdAt: "desc" },
+    const db = await getMongoDb();
+    const banners = await db
+      .collection("Banner")
+      .find({})
+      .sort({ createdAt: -1 })
+      .toArray();
+    const sanitized = banners.map((banner) => {
+      const { _id, ...rest } = banner as {
+        _id: unknown;
+        imageUrl: string;
+        ctaLink?: string | null;
+      } & Record<string, unknown>;
+      const imageUrl = isSafeHttpUrl(rest.imageUrl)
+        ? rest.imageUrl.trim()
+        : "";
+      const ctaLink = isSafeHttpUrl(rest.ctaLink)
+        ? rest.ctaLink?.trim()
+        : undefined;
+      return {
+        id: String(_id),
+        ...rest,
+        imageUrl,
+        ctaLink,
+      };
     });
-    const sanitized = banners.map((banner) => ({
-      ...banner,
-      imageUrl: isSafeHttpUrl(banner.imageUrl) ? banner.imageUrl.trim() : "",
-      ctaLink: isSafeHttpUrl(banner.ctaLink)
-        ? banner.ctaLink?.trim()
-        : undefined,
-    }));
     const res = NextResponse.json(sanitized, { status: 200 });
     // Cache for 3 minutes, allow stale content while revalidating for 5 minutes
     res.headers.set(

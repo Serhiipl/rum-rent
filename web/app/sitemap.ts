@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { getAllCategorySlugs } from "@/lib/prisma-operations";
+import { getAllCategorySlugs } from "@/lib/mongo-operations";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = (
