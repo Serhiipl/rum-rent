@@ -1,8 +1,14 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
 import { authClient } from "@/auth-client";
 import { cookies } from "next/headers";
 import { removePolishChars } from "@/lib/utils";
+import {
+  getCategories,
+  insertCategory,
+  findCategoryByName,
+  findCategoryBySlug,
+} from "@/lib/mongo-operations";
+import { randomUUID } from "crypto";
 
 export async function POST(request: Request) {
   const cookieStore = await cookies();
@@ -73,13 +79,11 @@ export async function POST(request: Request) {
     const finalSlug = slug || generatedSlug;
 
     // Покращена перевірка на існування
-    const existingByName = await prisma.category.findFirst({
-      where: { name: { equals: name, mode: "insensitive" } },
-    });
+    const trimmedName = name.trim();
 
-    const existingBySlug = await prisma.category.findFirst({
-      where: { slug: finalSlug },
-    });
+    const existingByName = await findCategoryByName(trimmedName);
+
+    const existingBySlug = await findCategoryBySlug(finalSlug);
 
     if (existingByName) {
       return new NextResponse(
@@ -96,11 +100,10 @@ export async function POST(request: Request) {
     }
 
     // Створення категорії
-    const category = await prisma.category.create({
-      data: {
-        name: name.trim(),
-        slug: finalSlug,
-      },
+    const category = await insertCategory({
+      id: randomUUID(),
+      name: trimmedName,
+      slug: finalSlug,
     });
 
     return NextResponse.json(category, { status: 201 });
@@ -114,11 +117,7 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
-    const categories = await prisma.category.findMany({
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+    const categories = await getCategories();
     return NextResponse.json(categories, { status: 200 });
   } catch (error) {
     console.error("Error fetching categories:", error);

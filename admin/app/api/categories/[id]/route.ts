@@ -1,7 +1,13 @@
 import { NextResponse } from "next/server";
-// import { NextResponse, type NextRequest } from "next/server";
-import prisma from "@/lib/prisma";
 import { removePolishChars } from "@/lib/utils";
+import {
+  getCategoryById,
+  updateCategoryDoc,
+  findCategoryByName,
+  findCategoryBySlug,
+  deleteCategoryDoc,
+  categoryUsedByService,
+} from "@/lib/mongo-operations";
 
 export async function PATCH(
   request: Request,
@@ -21,22 +27,10 @@ export async function PATCH(
       .toLowerCase()
       .replace(/\s+/g, "-");
 
-    const existingCategory = await prisma.category.findFirst({
-      where: {
-        AND: [
-          {
-            OR: [{ name: name }, { slug: generatedSlug }],
-          },
-          {
-            NOT: {
-              id: id,
-            },
-          },
-        ],
-      },
-    });
+    const trimmedName = name.trim();
 
-    if (existingCategory) {
+    const existingByName = await findCategoryByName(trimmedName);
+    if (existingByName && existingByName.id !== id) {
       return new NextResponse(
         "Category with this name or slug already exists",
         {
@@ -45,10 +39,27 @@ export async function PATCH(
       );
     }
 
-    const category = await prisma.category.update({
-      where: { id: id },
-      data: { name, slug: generatedSlug },
+    const existingBySlug = await findCategoryBySlug(generatedSlug);
+    if (existingBySlug && existingBySlug.id !== id) {
+      return new NextResponse(
+        "Category with this name or slug already exists",
+        {
+          status: 409,
+        }
+      );
+    }
+
+    const currentCategory = await getCategoryById(id);
+    if (!currentCategory) {
+      return new NextResponse("Category not found", { status: 404 });
+    }
+
+    await updateCategoryDoc(id, {
+      name: trimmedName,
+      slug: generatedSlug,
     });
+
+    const category = await getCategoryById(id);
 
     return NextResponse.json(category, { status: 200 });
   } catch (error) {
@@ -67,9 +78,12 @@ export async function DELETE(
       return new NextResponse("Category ID is required", { status: 400 });
     }
 
-    const servicesUsingCategory = await prisma.service.findFirst({
-      where: { categoryId: id },
-    });
+    const existing = await getCategoryById(id);
+    if (!existing) {
+      return new NextResponse("Category not found", { status: 404 });
+    }
+
+    const servicesUsingCategory = await categoryUsedByService(id);
 
     if (servicesUsingCategory) {
       return new NextResponse(
@@ -78,11 +92,9 @@ export async function DELETE(
       );
     }
 
-    const category = await prisma.category.delete({
-      where: { id: id },
-    });
+    await deleteCategoryDoc(id);
 
-    return NextResponse.json(category, { status: 200 });
+    return NextResponse.json(existing, { status: 200 });
   } catch (error) {
     console.error("Error deleting category:", error);
     return new NextResponse("Internal server error", { status: 500 });

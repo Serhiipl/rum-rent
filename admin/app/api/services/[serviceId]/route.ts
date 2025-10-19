@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
 import { authClient } from "@/auth-client";
 import { cookies } from "next/headers";
+import {
+  getServiceById,
+  updateServiceDoc,
+  deleteServiceDoc,
+} from "@/lib/mongo-operations";
 
 interface RouteParams {
   params: Promise<{ serviceId: string }>;
@@ -11,13 +15,7 @@ export async function GET(request: Request, { params }: RouteParams) {
   try {
     const { serviceId } = await params;
 
-    const service = await prisma.service.findUnique({
-      where: { serviceId },
-      include: {
-        category: true,
-        images: true,
-      },
-    });
+    const service = await getServiceById(serviceId);
 
     if (!service) {
       return NextResponse.json({ error: "Service not found" }, { status: 404 });
@@ -123,6 +121,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
+    const { serviceId } = await params;
     const body = await request.json();
     const {
       name,
@@ -133,16 +132,29 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       quantity,
       condition,
       available,
+      categoryId,
     } = body;
-    const { serviceId } = await params;
+
+    const existing = await getServiceById(serviceId);
+    if (!existing) {
+      return NextResponse.json(
+        { error: "Service not found" },
+        { status: 404 }
+      );
+    }
+
+    const parsedRentalPrice = Number(rentalPrice);
+    const parsedRentalPeriod = Number(rentalPeriod);
+    const parsedDeposit = Number(deposit);
+    const parsedQuantity = Number(quantity);
 
     if (
       !name ||
       !description ||
-      rentalPrice == null ||
-      !rentalPeriod ||
-      deposit == null ||
-      quantity == null ||
+      Number.isNaN(parsedRentalPrice) ||
+      Number.isNaN(parsedRentalPeriod) ||
+      Number.isNaN(parsedDeposit) ||
+      Number.isNaN(parsedQuantity) ||
       !condition
     ) {
       return NextResponse.json(
@@ -168,21 +180,33 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     //   );
     // }
 
-    const service = await prisma.service.update({
-      where: { serviceId },
-      data: {
-        name,
-        description,
-        rentalPrice,
-        rentalPeriod,
-        deposit,
-        quantity,
-        condition,
-        available,
-      },
+    const normalizedCategoryId =
+      typeof categoryId === "string" && categoryId.trim() !== ""
+        ? categoryId.trim()
+        : existing.categoryId ?? "";
+
+    const normalizedAvailable =
+      typeof available === "boolean"
+        ? available
+        : typeof available === "string"
+        ? available === "true"
+        : existing.available ?? true;
+
+    await updateServiceDoc(serviceId, {
+      name,
+      description,
+      rentalPrice: parsedRentalPrice,
+      rentalPeriod: parsedRentalPeriod,
+      deposit: parsedDeposit,
+      quantity: parsedQuantity,
+      condition,
+      available: normalizedAvailable,
+      categoryId: normalizedCategoryId,
     });
 
-    return NextResponse.json(service);
+    const updated = await getServiceById(serviceId);
+
+    return NextResponse.json(updated);
   } catch (error) {
     console.error("Error updating service:", error);
     return NextResponse.json(
@@ -221,11 +245,17 @@ export async function DELETE(request: Request, { params }: RouteParams) {
       );
     }
 
-    const service = await prisma.service.delete({
-      where: { serviceId },
-    });
+    const existing = await getServiceById(serviceId);
+    if (!existing) {
+      return NextResponse.json(
+        { error: "Service not found" },
+        { status: 404 }
+      );
+    }
 
-    return NextResponse.json(service, { status: 200 });
+    await deleteServiceDoc(serviceId);
+
+    return NextResponse.json(existing, { status: 200 });
   } catch (error) {
     console.error("Error deleting service:", error);
     return NextResponse.json(

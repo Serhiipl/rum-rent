@@ -8,9 +8,6 @@ RUN npm install
 
 COPY . .
 
-# Генерація Prisma Client
-RUN npx prisma generate
-
 # Білд Next.js
 RUN npm run build
 
@@ -27,9 +24,6 @@ COPY --from=builder /app/.next/standalone ./
 # Копіюємо статичні файли (якщо є)
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
-
-# Копіюємо Prisma schema (якщо воно читається у рантаймі)
-COPY --from=builder /app/prisma ./prisma
 
 # У деяких випадках також варто скопіювати .env, якщо він потрібен
 # COPY --from=builder /app/.env ./.env

@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
 import { authClient } from "@/auth-client";
 import { cookies } from "next/headers";
+import {
+  getServices,
+  insertService,
+} from "@/lib/mongo-operations";
+import { randomUUID } from "crypto";
 
 export async function POST(request: Request) {
   const cookieStore = await cookies();
@@ -63,33 +67,38 @@ export async function POST(request: Request) {
       return new NextResponse("Condition is required", { status: 400 });
     }
 
-    const service = await prisma.service.create({
-      data: {
-        name,
-        description,
-        rentalPrice,
-        rentalPeriod,
-        deposit,
-        quantity,
-        condition,
-        available,
-        images:
-          Array.isArray(images) && images.length > 0
-            ? {
-                createMany: {
-                  data: images.map((image: { url: string }) => ({
-                    url: image.url,
-                  })),
-                },
-              }
-            : undefined,
+    const serviceId = randomUUID();
 
-        category: {
-          connect: {
-            id: categoryId,
-          },
-        },
-      },
+    const normalizedImages =
+      Array.isArray(images) && images.length > 0
+        ? images
+            .filter(
+              (image: { url?: string }) =>
+                typeof image?.url === "string" && image.url.trim() !== ""
+            )
+            .map((image: { url: string }) => ({
+              id: randomUUID(),
+              url: image.url.trim(),
+            }))
+        : [];
+
+    const normalizedCategoryId =
+      typeof categoryId === "string" && categoryId.trim() !== ""
+        ? categoryId.trim()
+        : undefined;
+
+    const service = await insertService({
+      serviceId,
+      name,
+      description,
+      rentalPrice,
+      rentalPeriod,
+      deposit,
+      quantity,
+      condition,
+      available: typeof available === "boolean" ? available : true,
+      categoryId: normalizedCategoryId,
+      images: normalizedImages,
     });
 
     return NextResponse.json(service, { status: 201 });
@@ -103,15 +112,7 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
-    const services = await prisma.service.findMany({
-      include: {
-        category: true,
-        images: true,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+    const services = await getServices();
     return NextResponse.json(services, { status: 200 });
   } catch (error) {
     console.error("Error fetching services:", error);

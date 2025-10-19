@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import {
+  getBannerById,
+  updateBannerDoc,
+  deleteBannerDoc,
+} from "@/lib/mongo-operations";
 
 export async function PATCH(
   request: Request,
@@ -16,16 +20,20 @@ export async function PATCH(
       return new NextResponse("Banner ID is required", { status: 400 });
     }
 
-    const banner = await prisma.banner.update({
-      where: { id: bannerId },
-      data: {
-        title: title || "",
-        description: description || "",
-        ctaText: ctaText || "",
-        ctaLink: ctaLink || "",
-        imageUrl,
-      },
+    const existing = await getBannerById(bannerId);
+    if (!existing) {
+      return new NextResponse("Banner not found", { status: 404 });
+    }
+
+    await updateBannerDoc(bannerId, {
+      title,
+      description: description ?? null,
+      ctaText: ctaText ?? null,
+      ctaLink: ctaLink ?? null,
+      imageUrl,
     });
+
+    const banner = await getBannerById(bannerId);
 
     return NextResponse.json(banner, { status: 200 });
   } catch (error) {
@@ -48,11 +56,14 @@ export async function DELETE(
       return NextResponse.json("Service ID is required", { status: 400 });
     }
 
-    const banner = await prisma.banner.delete({
-      where: { id: bannerId },
-    });
+    const existing = await getBannerById(bannerId);
+    if (!existing) {
+      return NextResponse.json("Banner not found", { status: 404 });
+    }
 
-    return NextResponse.json(banner, { status: 200 });
+    await deleteBannerDoc(bannerId);
+
+    return NextResponse.json(existing, { status: 200 });
   } catch (error) {
     console.error("Error deleting banner:", error);
     return NextResponse.json("Internal server error", { status: 500 });

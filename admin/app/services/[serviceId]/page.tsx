@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { cache } from "react";
 import { notFound } from "next/navigation";
-import prisma from "@/lib/prisma";
+import { getServiceById as fetchServiceById } from "@/lib/mongo-operations";
 import Gallery from "@/components/galery-tab";
 import { BackButton } from "@/components/back-button";
 import ContactForm from "@/components/contact-form";
@@ -13,18 +13,12 @@ interface ProductPageProps {
   params: ProductPageParams;
 }
 
-const getServiceById = cache(async (serviceId: string) => {
+const loadServiceById = cache(async (serviceId: string) => {
   if (!serviceId) {
     return null;
   }
 
-  return prisma.service.findUnique({
-    where: { serviceId },
-    include: {
-      category: true,
-      images: true,
-    },
-  });
+  return fetchServiceById(serviceId);
 });
 
 export const revalidate = 0;
@@ -37,7 +31,7 @@ export async function generateMetadata({
     return { title: "Usługa nieznaleziona" };
   }
 
-  const service = await getServiceById(serviceId);
+  const service = await loadServiceById(serviceId);
   if (!service) {
     return { title: "Usługa nieznaleziona" };
   }
@@ -50,7 +44,7 @@ export async function generateMetadata({
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { serviceId } = await params;
-  const service = await getServiceById(serviceId);
+  const service = await loadServiceById(serviceId);
 
   if (!service) {
     return notFound();

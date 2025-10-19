@@ -1,15 +1,15 @@
 import { betterAuth, BetterAuthOptions } from "better-auth";
-import { prismaAdapter } from "better-auth/adapters/prisma";
-import prisma from "@/lib/prisma";
+import { mongodbAdapter } from "better-auth/adapters/mongodb";
+import { getMongoDb } from "@/lib/mongodb";
 import { sendEmail } from "@/actions/email";
 import { openAPI } from "better-auth/plugins";
 import { admin } from "better-auth/plugins";
 import { emailOTP } from "better-auth/plugins";
 
+const mongoDb = await getMongoDb();
+
 export const auth = betterAuth({
-  database: prismaAdapter(prisma, {
-    provider: "mongodb",
-  }),
+  database: mongodbAdapter(mongoDb),
   session: {
     expiresIn: 60 * 60 * 24 * 7, // 7 days
     // BUG: Prob a bug with updateAge method. It throws an error - Argument `where` of type SessionWhereUniqueInput needs at least one of `id` arguments.

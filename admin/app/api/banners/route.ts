@@ -1,14 +1,16 @@
-import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { authClient } from "@/auth-client";
+import {
+  getBanners,
+  insertBanner,
+} from "@/lib/mongo-operations";
+import { randomUUID } from "crypto";
 
 // GET /api/banners
 export async function GET() {
   try {
-    const banners = await prisma.banner.findMany({
-      orderBy: { createdAt: "desc" },
-    });
+    const banners = await getBanners();
     return NextResponse.json(banners, { status: 200 });
   } catch (error) {
     console.error("Error fetching banners:", error);
@@ -42,14 +44,13 @@ export async function POST(request: Request) {
       });
     }
 
-    const newBanner = await prisma.banner.create({
-      data: {
-        title,
-        description: description || null,
-        ctaText: ctaText || null,
-        ctaLink: ctaLink || null,
-        imageUrl,
-      },
+    const newBanner = await insertBanner({
+      id: randomUUID(),
+      title,
+      description: description || undefined,
+      ctaText: ctaText || undefined,
+      ctaLink: ctaLink || undefined,
+      imageUrl,
     });
 
     return NextResponse.json(newBanner, { status: 201 });
