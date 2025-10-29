@@ -5,12 +5,14 @@ export type Category = {
   id: string;
   name: string;
   slug: string;
+  parentId?: string | null;
 };
 
 type CategoryDocument = {
   _id: string;
   name: string;
   slug: string;
+  parentId?: string | null;
 };
 
 type ServiceDocument = {
@@ -54,6 +56,7 @@ const mapCategory = (category: CategoryDocument): Category => ({
   id: String(category._id),
   name: category.name,
   slug: category.slug,
+  parentId: typeof category.parentId === "string" ? category.parentId : null,
 });
 
 const toIsoString = (value: Date | string | undefined | null): string => {
@@ -87,7 +90,7 @@ export async function getCategories(): Promise<Category[]> {
   const db = await getMongoDb();
   const categories = await db
     .collection<CategoryDocument>("Category")
-    .find({}, { projection: { name: 1, slug: 1 } })
+    .find({}, { projection: { name: 1, slug: 1, parentId: 1 } })
     .sort(SORT_BY_NAME_ASC)
     .toArray();
 
@@ -97,18 +100,55 @@ export async function getCategories(): Promise<Category[]> {
 export async function getServicesByCategorySlug(slug: string): Promise<{
   category: Category | null;
   services: ServiceProps[];
+  subcategories: Category[];
+  breadcrumbs: Category[];
 }> {
   const db = await getMongoDb();
-  const categoryDoc = await db
+  const categoryAggregation = await db
     .collection<CategoryDocument>("Category")
-    .findOne({ slug }, { projection: { name: 1, slug: 1 } });
+    .aggregate<
+      CategoryDocument & { descendants: CategoryDocument[] }
+    >([
+      { $match: { slug } },
+      {
+        $graphLookup: {
+          from: "Category",
+          startWith: "$_id",
+          connectFromField: "_id",
+          connectToField: "parentId",
+          as: "descendants",
+        },
+      },
+    ])
+    .next();
 
-  if (!categoryDoc) return { category: null, services: [] };
+  if (!categoryAggregation) {
+    return {
+      category: null,
+      services: [],
+      subcategories: [],
+      breadcrumbs: [],
+    };
+  }
+
+  const category = mapCategory(categoryAggregation);
+  const descendants = categoryAggregation.descendants ?? [];
+  const subcategories = descendants
+    .filter((descendant) => descendant.parentId === categoryAggregation._id)
+    .map(mapCategory);
+
+  const descendantIds = descendants.map((descendant) => String(descendant._id));
+  const categoryIds = [String(categoryAggregation._id), ...descendantIds];
 
   const services = await db
     .collection<ServiceDocument>("Service")
     .aggregate<ServiceWithImages>([
-      { $match: { categoryId: categoryDoc._id, ...AVAILABLE_MATCH } },
+      {
+        $match: {
+          categoryId: { $in: categoryIds },
+          ...AVAILABLE_MATCH,
+        },
+      },
       { $sort: SORT_BY_NAME_ASC },
       {
         $lookup: {
@@ -121,7 +161,33 @@ export async function getServicesByCategorySlug(slug: string): Promise<{
     ])
     .toArray();
 
-  return { category: mapCategory(categoryDoc), services: services.map(mapService) };
+  const breadcrumbs: Category[] = [];
+  let currentParentId =
+    typeof categoryAggregation.parentId === "string"
+      ? categoryAggregation.parentId
+      : null;
+
+  while (currentParentId) {
+    const parentDoc = await db.collection<CategoryDocument>("Category").findOne(
+      { _id: currentParentId },
+      { projection: { _id: 1, name: 1, slug: 1, parentId: 1 } }
+    );
+
+    if (!parentDoc) {
+      break;
+    }
+
+    breadcrumbs.unshift(mapCategory(parentDoc));
+    currentParentId =
+      typeof parentDoc.parentId === "string" ? parentDoc.parentId : null;
+  }
+
+  return {
+    category,
+    services: services.map(mapService),
+    subcategories,
+    breadcrumbs,
+  };
 }
 
 export async function getAllServices(): Promise<ServiceProps[]> {

@@ -7,6 +7,7 @@ import {
   findCategoryBySlug,
   deleteCategoryDoc,
   categoryUsedByService,
+  categoryHasChildren,
 } from "@/lib/mongo-operations";
 
 export async function PATCH(
@@ -54,9 +55,54 @@ export async function PATCH(
       return new NextResponse("Category not found", { status: 404 });
     }
 
+    let normalizedParentId = currentCategory.parentId ?? null;
+    const parentProvided = Object.prototype.hasOwnProperty.call(
+      body,
+      "parentId"
+    );
+
+    if (parentProvided) {
+      const rawParentId = body.parentId;
+      if (typeof rawParentId === "string" && rawParentId.trim().length > 0) {
+        const parentId = rawParentId.trim();
+        if (parentId === id) {
+          return new NextResponse("Category cannot be its own parent", {
+            status: 400,
+          });
+        }
+        const parentCategory = await getCategoryById(parentId);
+        if (!parentCategory) {
+          return new NextResponse("Parent category not found", {
+            status: 400,
+          });
+        }
+
+        // Detect circular references by traversing ancestor chain
+        let ancestorId = parentCategory.parentId ?? null;
+        while (ancestorId) {
+          if (ancestorId === id) {
+            return new NextResponse(
+              "Cannot assign a child category as parent",
+              { status: 400 }
+            );
+          }
+          const ancestorCategory = await getCategoryById(ancestorId);
+          if (!ancestorCategory) {
+            break;
+          }
+          ancestorId = ancestorCategory.parentId ?? null;
+        }
+
+        normalizedParentId = parentCategory.id;
+      } else {
+        normalizedParentId = null;
+      }
+    }
+
     await updateCategoryDoc(id, {
       name: trimmedName,
       slug: generatedSlug,
+      ...(parentProvided ? { parentId: normalizedParentId } : {}),
     });
 
     const category = await getCategoryById(id);
@@ -88,6 +134,14 @@ export async function DELETE(
     if (servicesUsingCategory) {
       return new NextResponse(
         "Cannot delete category because it is used in services",
+        { status: 409 }
+      );
+    }
+
+    const hasChildren = await categoryHasChildren(id);
+    if (hasChildren) {
+      return new NextResponse(
+        "Cannot delete category because it has subcategories",
         { status: 409 }
       );
     }

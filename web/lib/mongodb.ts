@@ -7,7 +7,6 @@ if (!uri) {
 }
 
 declare global {
-  // eslint-disable-next-line no-var
   var _mongoClientPromise: Promise<MongoClient> | undefined;
 }
 
@@ -26,4 +25,3 @@ export async function getMongoDb(dbName?: string): Promise<Db> {
   const connectedClient = await getMongoClient();
   return connectedClient.db(dbName);
 }
-

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "../components/navbar";
+import SiteNavbar from "@/components/site-navbar";
 import { Toaster } from "@/components/ui/toaster";
 import { auth } from "@/auth";
 import { headers } from "next/headers";
@@ -30,15 +30,13 @@ export default async function RootLayout({
   const session = await auth.api.getSession({
     headers: await headers(),
   });
-  console.log(session);
-
   return (
-    <html lang="en">
+    <html lang="pl">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Navbar />
-        <div className="min-h-screen pt-20 sm:max-w-screen-2xl flex flex-col mr-auto ml-auto px-1 sm:px-8 bg-stone-500">
+        <SiteNavbar user={session?.user ?? null} />
+        <div className="min-h-screen sm:max-w-screen-2xl flex flex-col mr-auto ml-auto px-1 sm:px-8 bg-stone-500">
           {children}
         </div>
         {/* {children} */}

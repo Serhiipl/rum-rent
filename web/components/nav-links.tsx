@@ -16,16 +16,14 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import PhoneLink from "./phone-link";
-import { FolderSymlink, Home } from "lucide-react";
+import { FolderSymlink, Home, ChevronDown, ChevronRight } from "lucide-react";
 import {
   NavigationMenu,
   NavigationMenuContent,
-  NavigationMenuIndicator,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-  NavigationMenuViewport,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 
@@ -58,10 +56,26 @@ type Props = { categories: Category[] };
 
 export default function NavLinks({ categories }: Props) {
   const [open, setOpen] = useState(false);
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
+    new Set()
+  );
+
   const categoryTree = useMemo(
     () => buildCategoryTree(categories),
     [categories]
   );
+
+  const toggleCategory = (categoryId: string) => {
+    setExpandedCategories((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(categoryId)) {
+        newSet.delete(categoryId);
+      } else {
+        newSet.add(categoryId);
+      }
+      return newSet;
+    });
+  };
 
   if (!categoryTree || categoryTree.length === 0) return null;
 
@@ -69,42 +83,60 @@ export default function NavLinks({ categories }: Props) {
     nodes: CategoryNode[],
     depth = 0
   ): React.ReactNode => (
-    <ul className="space-y-2">
+    <ul className="space-y-1">
       {nodes.map((node) => (
         <li key={node.id}>
-          <SheetClose asChild>
-            <Link
-              href={`/catalog/${node.slug}`}
-              className="block border-b border-stone-900 pb-2"
-              style={{ paddingLeft: `${depth * 12}px` }}
-            >
-              <FolderSymlink className="inline-block mr-3 mb-1 size-5 text-amber-500" />
-              {node.name}
-            </Link>
-          </SheetClose>
-          {node.children.length > 0 && (
-            <div className="mt-2 ml-3 border-l border-stone-300 pl-3">
-              {renderMobileTree(node.children, depth + 1)}
+          <div className="flex flex-col">
+            <div className="flex items-center justify-between">
+              <SheetClose asChild>
+                <Link
+                  href={`/catalog/${node.slug}`}
+                  className="flex-1 flex items-center py-2 px-3 rounded-md hover:bg-stone-100 transition-colors"
+                  style={{ paddingLeft: `${depth * 16 + 12}px` }}
+                >
+                  <FolderSymlink className="inline-block mr-2 size-4 text-amber-500 flex-shrink-0" />
+                  <span className="text-sm">{node.name}</span>
+                </Link>
+              </SheetClose>
+              {node.children.length > 0 && (
+                <button
+                  onClick={() => toggleCategory(node.id)}
+                  className="p-2 hover:bg-stone-100 rounded-md transition-colors"
+                  aria-label={`Toggle ${node.name} subcategories`}
+                  style={{ marginLeft: "4px" }}
+                >
+                  {expandedCategories.has(node.id) ? (
+                    <ChevronDown className="size-4 text-stone-600" />
+                  ) : (
+                    <ChevronRight className="size-4 text-stone-600" />
+                  )}
+                </button>
+              )}
             </div>
-          )}
+            {node.children.length > 0 && expandedCategories.has(node.id) && (
+              <div className="mt-1 ml-2 border-l-2 border-amber-200 pl-2">
+                {renderMobileTree(node.children, depth + 1)}
+              </div>
+            )}
+          </div>
         </li>
       ))}
     </ul>
   );
 
   const renderDesktopDropdown = (nodes: CategoryNode[], depth = 0) => (
-    <ul className="space-y-1">
+    <ul className="space-y-1 min-w-[180px]">
       {nodes.map((node) => (
-        <li key={node.id}>
+        <li key={node.id} className="relative">
           <Link
             href={`/catalog/${node.slug}`}
-            className="block rounded-md px-3 py-2 text-sm text-stone-700 hover:bg-stone-100"
-            style={{ paddingLeft: depth * 12 }}
+            className="block rounded-md px-2 py-1 text-sm  text-amber-200 hover:text-amber-400 data-[state=open]:text-amber-400 hover:bg-stone-600  transition-all duration-300"
+            style={{ paddingLeft: `${depth * 8 + 8}px` }}
           >
             {node.name}
           </Link>
           {node.children.length > 0 && (
-            <div className="ml-2 border-l border-stone-200 pl-2">
+            <div className="pl-3">
               {renderDesktopDropdown(node.children, depth + 1)}
             </div>
           )}
@@ -120,13 +152,13 @@ export default function NavLinks({ categories }: Props) {
         <NavigationMenu className="ml-5">
           <NavigationMenuList>
             {categoryTree.map((node) => (
-              <NavigationMenuItem key={node.id}>
+              <NavigationMenuItem key={node.id} className="relative">
                 {node.children.length > 0 ? (
                   <>
-                    <NavigationMenuTrigger className="text-amber-200 hover:text-amber-400">
+                    <NavigationMenuTrigger className="text-amber-200 hover:text-amber-400 data-[state=open]:text-amber-400">
                       {node.name}
                     </NavigationMenuTrigger>
-                    <NavigationMenuContent className="p-4">
+                    <NavigationMenuContent className="absolute left-0 top-full mt-2 p-4 bg-stone-500 border border-stone-700 rounded-md z-50">
                       {renderDesktopDropdown(node.children)}
                     </NavigationMenuContent>
                   </>
@@ -144,13 +176,11 @@ export default function NavLinks({ categories }: Props) {
               </NavigationMenuItem>
             ))}
           </NavigationMenuList>
-          <NavigationMenuIndicator />
-          <NavigationMenuViewport />
         </NavigationMenu>
       </div>
 
       {/* Mobile toggle */}
-      <div className="sm:hidden  flex justify-end w-full">
+      <div className="sm:hidden flex justify-end w-full">
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
             <Button

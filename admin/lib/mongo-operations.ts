@@ -4,6 +4,7 @@ export type Category = {
   id: string;
   name: string;
   slug: string;
+  parentId?: string | null;
   createdAt?: string;
   updatedAt?: string;
   deletedAt?: string | null;
@@ -53,6 +54,7 @@ type CategoryDocument = {
   _id: string;
   name: string;
   slug: string;
+  parentId?: string | null;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date | null;
@@ -103,6 +105,7 @@ const mapCategory = (category: CategoryDocument): Category => ({
   id: String(category._id),
   name: category.name,
   slug: category.slug,
+  parentId: typeof category.parentId === "string" ? category.parentId : null,
   createdAt: category.createdAt ? toIsoString(category.createdAt) : undefined,
   updatedAt: category.updatedAt ? toIsoString(category.updatedAt) : undefined,
   deletedAt: category.deletedAt ? toIsoString(category.deletedAt) : null,
@@ -202,6 +205,7 @@ export async function insertCategory(data: {
   id: string;
   name: string;
   slug: string;
+  parentId?: string | null;
 }): Promise<Category> {
   const db = await getMongoDb();
   const now = new Date();
@@ -209,6 +213,7 @@ export async function insertCategory(data: {
     _id: data.id,
     name: data.name,
     slug: data.slug,
+    parentId: data.parentId ?? null,
     createdAt: now,
     updatedAt: now,
   });
@@ -216,6 +221,7 @@ export async function insertCategory(data: {
     id: data.id,
     name: data.name,
     slug: data.slug,
+    parentId: data.parentId ?? null,
     createdAt: now.toISOString(),
     updatedAt: now.toISOString(),
   };
@@ -223,18 +229,20 @@ export async function insertCategory(data: {
 
 export async function updateCategoryDoc(
   id: string,
-  update: { name: string; slug: string }
+  update: { name: string; slug: string; parentId?: string | null }
 ): Promise<void> {
   const db = await getMongoDb();
+  const updateFields: Record<string, unknown> = {
+    name: update.name,
+    slug: update.slug,
+    updatedAt: new Date(),
+  };
+  if (Object.prototype.hasOwnProperty.call(update, "parentId")) {
+    updateFields.parentId = update.parentId ?? null;
+  }
   await db.collection<CategoryDocument>("Category").updateOne(
     { _id: id },
-    {
-      $set: {
-        name: update.name,
-        slug: update.slug,
-        updatedAt: new Date(),
-      },
-    }
+    { $set: updateFields }
   );
 }
 
@@ -251,6 +259,14 @@ export async function categoryUsedByService(
     .collection<ServiceDocument>("Service")
     .findOne({ categoryId });
   return Boolean(service);
+}
+
+export async function categoryHasChildren(categoryId: string): Promise<boolean> {
+  const db = await getMongoDb();
+  const child = await db
+    .collection<CategoryDocument>("Category")
+    .findOne({ parentId: categoryId });
+  return Boolean(child);
 }
 
 export async function getServices(): Promise<Service[]> {

@@ -45,8 +45,19 @@ export default async function CategoryPage({
   params: Promise<Params>;
 }) {
   const { slug } = await params;
-  const { category, services } = await getServicesByCategorySlug(slug);
+  const { category, services, subcategories, breadcrumbs } =
+    await getServicesByCategorySlug(slug);
   if (!category) return notFound();
+
+  const breadcrumbTrail = [
+    { name: "Strona główna", href: "/" },
+    { name: "Katalog", href: "/catalog" },
+    ...breadcrumbs.map((crumb) => ({
+      name: crumb.name,
+      href: `/catalog/${crumb.slug}`,
+    })),
+    { name: category.name, href: `/catalog/${category.slug}` },
+  ];
 
   return (
     <main className="font-sans min-h-screen p-8 sm:p-12">
@@ -70,34 +81,55 @@ export default async function CategoryPage({
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
-            itemListElement: [
-              {
-                "@type": "ListItem",
-                position: 1,
-                name: "Strona główna",
-                item: `${process.env.NEXT_PUBLIC_BASE_URL || ""}/`,
-              },
-              {
-                "@type": "ListItem",
-                position: 2,
-                name: "Katalog",
-                item: `${process.env.NEXT_PUBLIC_BASE_URL || ""}/catalog`,
-              },
-              {
-                "@type": "ListItem",
-                position: 3,
-                name: category.name,
-                item: `${process.env.NEXT_PUBLIC_BASE_URL || ""}/catalog/${
-                  category.slug
-                }`,
-              },
-            ],
+            itemListElement: breadcrumbTrail.map((item, index) => ({
+              "@type": "ListItem",
+              position: index + 1,
+              name: item.name,
+              item: `${process.env.NEXT_PUBLIC_BASE_URL || ""}${item.href}`,
+            })),
           })}
         </Script>
+
+        <nav aria-label="Breadcrumb" className="mb-6 text-sm text-stone-600">
+          <ol className="flex flex-wrap items-center gap-2">
+            {breadcrumbTrail.map((item, index) => (
+              <li key={item.href} className="flex items-center gap-2">
+                {index > 0 && <span aria-hidden="true">/</span>}
+                {index === breadcrumbTrail.length - 1 ? (
+                  <span className="font-medium text-stone-800">
+                    {item.name}
+                  </span>
+                ) : (
+                  <Link className="hover:underline" href={item.href}>
+                    {item.name}
+                  </Link>
+                )}
+              </li>
+            ))}
+          </ol>
+        </nav>
+
+        {subcategories.length > 0 && (
+          <section className="mb-8">
+            <h2 className="text-xl font-semibold mb-3">Podkategorie</h2>
+            <ul className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
+              {subcategories.map((sub) => (
+                <li key={sub.id} className="rounded border bg-white/70 p-4">
+                  <Link className="underline" href={`/catalog/${sub.slug}`}>
+                    {sub.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         {services.length === 0 ? (
           <p className="text-stone-500">
             Brak dostępnych usług w tej kategorii.
+            {subcategories.length > 0
+              ? " Sprawdź dostępne podkategorie, aby znaleźć produkty."
+              : ""}
           </p>
         ) : (
           <ul className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">

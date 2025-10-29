@@ -2,15 +2,7 @@ import { betterFetch } from "@better-fetch/fetch";
 import { NextResponse, type NextRequest } from "next/server";
 import type { Session } from "@/auth";
 
-const publicRoutes = [
-  "/",
-  "/home",
-  "/about",
-  "/contact",
-  "/services",
-  /^\/services\/[^/]+$/, // регулярний вираз для /services/[serviceId]
-  "/categories",
-];
+const publicRoutes: (string | RegExp)[] = [];
 const authRoutes = ["/sign-in", "/sign-up"];
 const passwordRoutes = ["/reset-password", "/forgot-password"];
 const adminPrefix = "/admin";

@@ -2,20 +2,97 @@
 
 import useServiceStore from "@/lib/serviceStore";
 import React, { useEffect, useState, useMemo, useCallback } from "react";
-// import CellAction from "./cellAction";
-import { ServiceCategory, ServiceProps } from "@/lib/serviceStore";
+import {
+  ServiceCategory,
+  ServiceProps,
+} from "@/lib/serviceStore";
 import ServiceCard from "@/components/product-card";
 import EmptyState from "@/components/emptyItemState";
 import LoadingState from "./loadingItemState";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import CellAction from "@/app/(auth)/admin/services/components/cellAction";
+
+type ViewMode = "cards" | "table";
 
 interface ShowServicesProps {
   services: ServiceProps[];
   activeCategoryId?: string | null;
+  viewMode?: ViewMode;
 }
+
+const priceFormatter = new Intl.NumberFormat("pl-PL", {
+  style: "currency",
+  currency: "PLN",
+});
+
+const ServiceTableView: React.FC<{
+  services: ServiceProps[];
+  categoryMap: Record<string, string>;
+}> = ({ services, categoryMap }) => {
+  return (
+    <div className="overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm">
+      <Table>
+        <TableHeader className="bg-stone-100/90">
+          <TableRow>
+            <TableHead>Nazwa</TableHead>
+            <TableHead>Kategoria</TableHead>
+            <TableHead className="whitespace-nowrap">Cena / dzień</TableHead>
+            <TableHead>Kaucja</TableHead>
+            <TableHead>Ilość</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead className="text-right">Akcje</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {services.map((service) => {
+            const categoryName = categoryMap[service.categoryId] ?? "Brak";
+            const availabilityClass = service.available
+              ? "bg-emerald-100 text-emerald-700"
+              : "bg-rose-100 text-rose-700";
+
+            return (
+              <TableRow key={service.serviceId} className="bg-white/90">
+                <TableCell className="font-semibold text-stone-800">
+                  {service.name}
+                </TableCell>
+                <TableCell>{categoryName}</TableCell>
+                <TableCell>
+                  {priceFormatter.format(service.rentalPrice ?? 0)}
+                </TableCell>
+                <TableCell>
+                  {priceFormatter.format(service.deposit ?? 0)}
+                </TableCell>
+                <TableCell>{service.quantity ?? 0}</TableCell>
+                <TableCell>
+                  <span
+                    className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${availabilityClass}`}
+                  >
+                    {service.available ? "Dostępny" : "Niedostępny"}
+                  </span>
+                </TableCell>
+                <TableCell className="text-right">
+                  <CellAction data={service} />
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </div>
+  );
+};
 
 const ShowServices: React.FC<ShowServicesProps> = ({
   services,
   activeCategoryId: activeCategoryIdProp = null,
+  viewMode = "cards",
 }) => {
   const {
     serviceCategories,
@@ -107,15 +184,22 @@ const ShowServices: React.FC<ShowServicesProps> = ({
       {isLoading ? (
         <LoadingState />
       ) : servicesToDisplay.length > 0 ? (
-        <ul className="grid grid-cols-1 place-items-center  items-center md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {servicesToDisplay.map((service: ServiceProps) => (
-            <ServiceCard
-              key={service.serviceId}
-              service={service}
-              categoryName={categoryMap[service.categoryId]}
-            />
-          ))}
-        </ul>
+        viewMode === "table" ? (
+          <ServiceTableView
+            services={servicesToDisplay}
+            categoryMap={categoryMap}
+          />
+        ) : (
+          <ul className="grid grid-cols-1 place-items-center items-center gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {servicesToDisplay.map((service: ServiceProps) => (
+              <ServiceCard
+                key={service.serviceId}
+                service={service}
+                categoryName={categoryMap[service.categoryId]}
+              />
+            ))}
+          </ul>
+        )
       ) : (
         <EmptyState />
       )}

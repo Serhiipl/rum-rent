@@ -7,6 +7,7 @@ import CategoryFilter from "./components/categoryFilter";
 import ShowServices from "@/components/showServices";
 import ServiceForm from "./components/serviceForm";
 import ServiceCategoryForm from "./components/serviceCategory";
+import { Button } from "@/components/ui/button";
 
 // Komponent dla stanu ładowania
 const LoadingState = () => (
@@ -28,6 +29,7 @@ const AddServicePage = () => {
 
   // Lokalny stan dla filtrowanych usług
   const [filteredServices, setFilteredServices] = useState<ServiceProps[]>([]);
+  const [viewMode, setViewMode] = useState<"cards" | "table">("cards");
 
   // Завантажуємо дані при монтуванні компонента
   useEffect(() => {
@@ -93,8 +95,25 @@ const AddServicePage = () => {
         />
       )}
 
+      <div className="flex flex-wrap items-center justify-end gap-2">
+        <Button
+          size="sm"
+          variant={viewMode === "cards" ? "default" : "outline"}
+          onClick={() => setViewMode("cards")}
+        >
+          Widok kart
+        </Button>
+        <Button
+          size="sm"
+          variant={viewMode === "table" ? "default" : "outline"}
+          onClick={() => setViewMode("table")}
+        >
+          Widok tabeli
+        </Button>
+      </div>
+
       {/* Список послуг - передаємо відфільтровані послуги */}
-      <ShowServices services={filteredServices} />
+      <ShowServices services={filteredServices} viewMode={viewMode} />
 
       {/* Дебаг інформація (тільки в режимі розробки) */}
       {process.env.NODE_ENV === "development" && (

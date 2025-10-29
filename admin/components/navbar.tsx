@@ -1,16 +1,7 @@
-"use client";
-import Link from "next/link";
-import AuthButtons from "@/components/auth-buttons";
-import NavLinks from "./nav-links";
-
-export default function Navbar() {
+export default function navbar() {
   return (
-    <nav className="flex justify-between items-baseline py-3 px-4 fixed top-0 left-0 right-0 z-50 bg-stone-500">
-      <Link href="/" className="hidden sm:flex text-xl font-bold">
-        Główna
-      </Link>
-      <NavLinks />
-      <AuthButtons />
+    <nav className="fixed top-0 left-0 right-0 z-40 bg-stone-800/90 backdrop-blur border-b border-stone-700">
+      <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-4 py-3"></div>
     </nav>
   );
 }

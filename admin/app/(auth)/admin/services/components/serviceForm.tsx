@@ -1,13 +1,14 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import toast from "react-hot-toast";
-import useServiceStore from "@/lib/serviceStore";
+import useServiceStore, { ServiceCategory } from "@/lib/serviceStore";
+import { cn } from "@/lib/utils";
 import {
   Form,
   FormField,
@@ -20,13 +21,22 @@ import { serviceFormSchema } from "@/lib/zod";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 import ImageUpload from "@/components/image-upload";
 
 type ServiceFormValues = z.infer<typeof serviceFormSchema>;
+type CategoryOption = {
+  id: string;
+  name: string;
+  depth: number;
+  isParent?: boolean;
+};
 // type ServiceFormValues = z.infer<typeof serviceFormSchema> & {};
 
 const ServiceForm = () => {
@@ -37,6 +47,59 @@ const ServiceForm = () => {
     fetchServiceCategories();
   }, [fetchServiceCategories]);
 
+  const groupedCategoryOptions = useMemo<
+    Array<{ parent: ServiceCategory; options: CategoryOption[] }>
+  >(() => {
+    if (serviceCategories.length === 0) {
+      return [];
+    }
+
+    const childrenMap = serviceCategories.reduce<
+      Record<string, ServiceCategory[]>
+    >((acc, category) => {
+      if (category.parentId) {
+        if (!acc[category.parentId]) {
+          acc[category.parentId] = [];
+        }
+        acc[category.parentId].push(category);
+      }
+      return acc;
+    }, {});
+
+    const sortByName = (list: ServiceCategory[]) =>
+      [...list].sort((a, b) =>
+        a.name.localeCompare(b.name, "pl", { sensitivity: "base" })
+      );
+
+    const buildChildOptions = (
+      parentId: string,
+      depth: number
+    ): CategoryOption[] => {
+      const children = sortByName(childrenMap[parentId] ?? []);
+      return children.flatMap((child) => [
+        { id: child.id, name: child.name, depth },
+        ...buildChildOptions(child.id, depth + 1),
+      ]);
+    };
+
+    const rootCategories = sortByName(
+      serviceCategories.filter((category) => !category.parentId)
+    );
+
+    return rootCategories.map((parentCategory) => ({
+      parent: parentCategory,
+      options: [
+        {
+          id: parentCategory.id,
+          name: parentCategory.name,
+          depth: 0,
+          isParent: true,
+        },
+        ...buildChildOptions(parentCategory.id, 1),
+      ],
+    }));
+  }, [serviceCategories]);
+
   const form = useForm<ServiceFormValues>({
     resolver: zodResolver(serviceFormSchema),
     defaultValues: {
@@ -44,8 +107,8 @@ const ServiceForm = () => {
       description: "",
       rentalPrice: 0,
       deposit: 0,
-      quantity: 1,
-      rentalPeriod: 1,
+      quantity: 0,
+      rentalPeriod: 0,
       condition: "",
       available: true,
       categoryId: "",
@@ -74,7 +137,7 @@ const ServiceForm = () => {
   };
 
   return (
-    <div className="flex flex-col items-center sm:items-start justify-center my-3 rounded-md w-full bg-slate-100 sm:py-4 sm:px-3 text-zinc-600">
+    <div className="flex flex-col items-center sm:items-start justify-center my-3 rounded-md w-full bg-stone-600 sm:py-4 sm:px-3 text-black">
       <h2 className="text-base sm:text-xl m-2 font-semibold">Dodaj Element</h2>
       <p className="text-center text-sm text-muted-foreground m-2">
         Wypełnij poniższe dane i kliknij <b>Dodaj!</b>
@@ -89,7 +152,7 @@ const ServiceForm = () => {
             name="images"
             render={({ field }) => (
               <FormItem className="relative p-2 border  border-gray-300 w-full rounded-sm">
-                <FormLabel className="absolute -top-3 left-2 px-1  bg-slate-100 text-sm font-medium text-gray-600">
+                <FormLabel className="absolute -top-3 left-2 px-1  bg-stone-600 text-sm font-medium text-white">
                   Zdjęcia towaru
                 </FormLabel>
                 <FormControl>
@@ -113,17 +176,21 @@ const ServiceForm = () => {
               </FormItem>
             )}
           />
-          <div className="flex flex-wrap bg-gray-100 sm:flex-row gap-3">
+          <div className="flex flex-wrap b bg-stone-600 sm:flex-row gap-3">
             <FormField
               name="name"
               control={form.control}
               render={({ field }) => (
-                <FormItem className="relative p-2 border  border-gray-300 rounded-sm w-1/2  ">
-                  <FormLabel className="absolute -top-3 left-2 px-1  bg-slate-100 text-sm font-medium text-gray-600 ">
+                <FormItem className="relative p-2 border  border-gray-300 rounded-sm w-full sm:w-1/2  ">
+                  <FormLabel className="absolute -top-3 left-2 px-1   bg-stone-600 text-sm font-medium text-white ">
                     Nazwa towaru
                   </FormLabel>
-                  <FormControl>
-                    <Input placeholder="Nazwa towaru" {...field} />
+                  <FormControl className="text-white">
+                    <Input
+                      className="bg-stone-300 text-black"
+                      placeholder="Nazwa towaru"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -135,12 +202,12 @@ const ServiceForm = () => {
               control={form.control}
               render={({ field }) => (
                 <FormItem className="w-full relative p-2 border  border-gray-300 rounded-sm md:w-1/4">
-                  <FormLabel className="absolute -top-3 left-2 px-1  bg-slate-100 text-sm font-medium text-gray-600">
+                  <FormLabel className="absolute -top-3 left-2 px-1  bg-stone-600 text-sm font-medium text-white">
                     Cena za dzień (zł)
                   </FormLabel>
                   <FormControl>
                     <Input
-                      className="text-xs"
+                      className="bg-stone-300 text-black text-xs"
                       type="text"
                       placeholder="Wpisz cene"
                       {...field}
@@ -157,12 +224,12 @@ const ServiceForm = () => {
               control={form.control}
               render={({ field }) => (
                 <FormItem className="w-full relative p-1 border  border-gray-300 rounded-sm md:w-1/4">
-                  <FormLabel className="text-xs/3 absolute -top-3 left-2 px-1 bg-slate-100 sm:text-sm font-medium text-gray-600">
+                  <FormLabel className="text-xs/3 absolute -top-3 left-2 px-1 bg-stone-600 sm:text-sm font-medium text-white">
                     Kaucja (zł)
                   </FormLabel>
                   <FormControl>
                     <Input
-                      className="text-xs"
+                      className="bg-stone-300 text-black text-xs"
                       type="text"
                       placeholder="Kaucja (zł)"
                       {...field}
@@ -179,16 +246,16 @@ const ServiceForm = () => {
               control={form.control}
               render={({ field }) => (
                 <FormItem className="w-full relative p-1 border  border-gray-300 rounded-sm md:w-1/4">
-                  <FormLabel className="text-xs/3 absolute -top-3 left-2 px-1 bg-slate-100 sm:text-sm font-medium text-gray-600">
+                  <FormLabel className="text-xs/3 absolute -top-3 left-2 px-1 bg-stone-600 sm:text-sm font-medium text-white">
                     Ilość w magazynie
                   </FormLabel>
                   <FormControl>
                     <Input
-                      className="text-xs"
-                      type="number"
+                      className="bg-stone-300 text-black text-xs"
+                      type="text"
                       placeholder="Ilość na stanie"
                       {...field}
-                      value={field.value as number} // показувати пустий string замість 0
+                      value={field.value || ""} // показувати пустий string замість 0
                       onChange={(e) => field.onChange(e.target.value)}
                     />
                   </FormControl>
@@ -201,15 +268,16 @@ const ServiceForm = () => {
               control={form.control}
               render={({ field }) => (
                 <FormItem className="w-full  relative p-1 border  border-gray-300 rounded-sm md:min-w-fit md:w-1/4">
-                  <FormLabel className="text-xs/3 absolute -top-3 left-2 px-1 bg-slate-100 sm:text-sm font-medium text-gray-600">
+                  <FormLabel className="text-xs/3 absolute -top-3 left-2 px-1 bg-stone-600 sm:text-sm font-medium text-white">
                     Min. Czas wynajmu (dni)
                   </FormLabel>
                   <FormControl>
                     <Input
-                      type="number"
+                      type="text"
+                      className="bg-stone-300 text-black text-xs"
                       placeholder="Min. Czas wynajmu (dni)"
                       {...field}
-                      value={field.value as number} // показувати пустий string замість 0
+                      value={field.value || ""} // pokazuj pusty string gdy brak wartości
                       onChange={(e) => field.onChange(e.target.value)}
                     />
                   </FormControl>
@@ -222,11 +290,15 @@ const ServiceForm = () => {
               control={form.control}
               render={({ field }) => (
                 <FormItem className="w-full relative p-1 border  border-gray-300 rounded-sm md:w-1/2">
-                  <FormLabel className="text-xs/3 absolute -top-3 left-2 px-1 bg-slate-100 sm:text-sm font-medium text-gray-600">
+                  <FormLabel className="text-xs/3 absolute -top-3 left-2 px-1 bg-stone-600 sm:text-sm font-medium text-white">
                     Stan towaru
                   </FormLabel>
                   <FormControl>
-                    <Input placeholder="Stan towaru:" {...field} />
+                    <Input
+                      className="bg-stone-300 text-black text-xs"
+                      placeholder="Stan towaru:"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -256,23 +328,70 @@ const ServiceForm = () => {
               control={form.control}
               name="categoryId"
               render={({ field }) => (
-                <FormItem className="w-full  md:w-1/2">
+                <FormItem className="w-full bg-stone-300 border  border-gray-300 rounded-sm  md:w-1/2">
                   {/* <FormLabel>Kategoria</FormLabel> */}
                   <Select
                     onValueChange={field.onChange}
                     value={field.value || ""}
                   >
                     <FormControl>
-                      <SelectTrigger className="bg-white">
+                      <SelectTrigger className="bg-stone-300 text-black w-full border  border-gray-300 rounded-sm">
                         <SelectValue placeholder="Wybierz kategorię" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {serviceCategories.map((cat) => (
-                        <SelectItem key={cat.id} value={cat.id}>
-                          {cat.name}
-                        </SelectItem>
-                      ))}
+                      {groupedCategoryOptions.length > 0 ? (
+                        groupedCategoryOptions.map(
+                          ({ parent, options }, index) => (
+                            <React.Fragment key={parent.id}>
+                              <SelectGroup>
+                                {/* <SelectLabel className="text-gray-500">
+                                  {parent.name}
+                                </SelectLabel> */}
+                                {options.map((option) => (
+                                  <SelectItem
+                                    key={option.id}
+                                    value={option.id}
+                                    style={{
+                                      paddingLeft: `${
+                                        Math.min(option.depth, 4) * 12 + 8
+                                      }px`,
+                                    }}
+                                    className={cn(
+                                      "text-sm",
+                                      option.depth === 0
+                                        ? "font-medium text-gray-900"
+                                        : "text-gray-700"
+                                    )}
+                                  >
+                                    {option.isParent ? (
+                                      <SelectLabel className="text-gray-500">
+                                        {option.name} (główna)
+                                      </SelectLabel>
+                                    ) : (
+                                      option.name
+                                    )}
+                                  </SelectItem>
+                                ))}
+                              </SelectGroup>
+                              {index < groupedCategoryOptions.length - 1 && (
+                                <SelectSeparator />
+                              )}
+                            </React.Fragment>
+                          )
+                        )
+                      ) : (
+                        <SelectGroup>
+                          <SelectLabel>Brak kategorii</SelectLabel>
+                          <SelectItem
+                            value="__empty"
+                            disabled
+                            className="text-muted-foreground"
+                          >
+                            Brak kategorii do wyboru
+                          </SelectItem>
+                        </SelectGroup>
+                      )}
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -292,7 +411,7 @@ const ServiceForm = () => {
                     {...field}
                     placeholder="Opis towaru..."
                     rows={4}
-                    className="w-full rounded-sm px-2 py-1 resize-none shadow-md focus:outline-none focus:border-black-400 border border-gray-300"
+                    className="w-full rounded-sm px-2 py-1 resize-none shadow-md focus:outline-none focus:border-black-400 border border-gray-300 bg-stone-300 text-black"
                   />
                 </FormControl>
                 <FormMessage />

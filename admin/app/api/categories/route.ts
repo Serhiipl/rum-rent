@@ -7,6 +7,7 @@ import {
   insertCategory,
   findCategoryByName,
   findCategoryBySlug,
+  getCategoryById,
 } from "@/lib/mongo-operations";
 import { randomUUID } from "crypto";
 
@@ -35,7 +36,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { name, slug } = body;
+    const { name, slug, parentId } = body;
 
     if (!name) {
       return new NextResponse("Name is required", { status: 400 });
@@ -99,11 +100,27 @@ export async function POST(request: Request) {
       );
     }
 
+    let normalizedParentId: string | null = null;
+    if (
+      typeof parentId === "string" ||
+      (typeof parentId === "object" && parentId !== null)
+    ) {
+      const parentIdString = String(parentId).trim();
+      if (parentIdString.length > 0) {
+        const parentCategory = await getCategoryById(parentIdString);
+        if (!parentCategory) {
+          return new NextResponse("Parent category not found", { status: 400 });
+        }
+        normalizedParentId = parentCategory.id;
+      }
+    }
+
     // Створення категорії
     const category = await insertCategory({
       id: randomUUID(),
       name: trimmedName,
       slug: finalSlug,
+      parentId: normalizedParentId,
     });
 
     return NextResponse.json(category, { status: 201 });

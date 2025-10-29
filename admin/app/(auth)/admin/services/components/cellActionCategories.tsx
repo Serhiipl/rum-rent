@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import useServiceStore, { ServiceCategory } from "@/lib/serviceStore";
 import { Button } from "@/components/ui/button";
-import { LucideEdit3, MoreHorizontal, Trash2 } from "lucide-react";
+import { FolderPlus, LucideEdit3, MoreHorizontal, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
@@ -16,6 +16,7 @@ import {
 import toast from "react-hot-toast";
 import { AlertModal } from "@/components/modals/alertModal";
 import { ServiceCategoryChangeModal } from "@/components/modals/serviceCategoryModal";
+import { ServiceSubcategoryModal } from "@/components/modals/serviceSubcategoryModal";
 
 interface CellActionProps {
   className?: string;
@@ -26,6 +27,7 @@ const CellActionCategory: React.FC<CellActionProps> = ({ className, data }) => {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
   const deleteServiceCategory = useServiceStore(
     (state) => state.deleteServiceCategory
   );
@@ -36,8 +38,10 @@ const CellActionCategory: React.FC<CellActionProps> = ({ className, data }) => {
       await deleteServiceCategory(data.id);
       toast.success("Kategoria usunięta.");
     } catch (error) {
-      toast.error("Something went wrong");
-      console.error("Error deleting service:", error);
+      const message =
+        error instanceof Error ? error.message : "Something went wrong";
+      toast.error(message);
+      console.error("Error deleting category:", error);
     } finally {
       setLoading(false);
       setOpen(false);
@@ -57,6 +61,11 @@ const CellActionCategory: React.FC<CellActionProps> = ({ className, data }) => {
         onClose={() => setEditOpen(false)}
         categoryData={data}
       />
+      <ServiceSubcategoryModal
+        isOpen={createOpen}
+        onClose={() => setCreateOpen(false)}
+        parentCategory={data}
+      />
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -71,6 +80,10 @@ const CellActionCategory: React.FC<CellActionProps> = ({ className, data }) => {
           <DropdownMenuItem onClick={() => setEditOpen(true)}>
             <LucideEdit3 className="mr-2 h-4 w-4" />
             Edycja kategorii...
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setCreateOpen(true)}>
+            <FolderPlus className="mr-2 h-4 w-4" />
+            Dodaj podkategorię...
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setOpen(true)}>
             <Trash2 className="mr-2 h-4 w-4" />

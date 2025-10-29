@@ -36,6 +36,7 @@ export interface ServiceCategory {
   id: string;
   name: string;
   slug: string;
+  parentId?: string | null;
 }
 export interface Banner {
   id: string;
@@ -77,7 +78,10 @@ interface ServiceStore {
   addService: (newService: CreateServiceData) => Promise<void>;
   deleteService: (serviceId: string) => Promise<void>;
   updateService: (updatedService: ServiceProps) => Promise<void>;
-  addServiceCategory: (newCategory: ServiceCategory) => Promise<void>;
+  addServiceCategory: (newCategory: {
+    name: string;
+    parentId?: string | null;
+  }) => Promise<void>;
   addBanner: (newBanner: CreateBannerData) => Promise<void>;
   deleteBanner: (bannerId: string) => Promise<void>;
   updateBanner: (updatedBanner: Banner) => Promise<void>;
@@ -137,7 +141,7 @@ const fetchServices = async (
 ) => {
   const now = Date.now();
   const lastFetched = get().servicesFetchedAt;
-  const TTL = 5 * 60 * 1000; // 5 хвилин
+  const TTL = 3 * 60 * 1000; // 3 хвилини
   if (lastFetched && now - lastFetched < TTL) return; // Якщо послуги вже завантажені, не робимо повторний запит
   if (get().isFetchingServices) return;
   try {
@@ -180,7 +184,7 @@ const fetchServiceCategories = async (
 ) => {
   const now = Date.now();
   const lastFetched = get().categoriesFetchedAt;
-  const TTL = 5 * 60 * 1000;
+  const TTL = 3 * 60 * 1000;
   if (lastFetched && now - lastFetched < TTL) return; // Якщо категорії вже завантажені, не робимо повторний запит
   if (get().isFetchingCategories) return;
   try {
@@ -389,10 +393,14 @@ const useServiceStore = create<ServiceStore>((set, get) => ({
   },
   addServiceCategory: async (newCategory) => {
     try {
+      const payload = {
+        name: newCategory.name,
+        parentId: newCategory.parentId ?? null,
+      };
       const response = await fetch("/api/categories", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newCategory),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -414,7 +422,8 @@ const useServiceStore = create<ServiceStore>((set, get) => ({
       });
 
       if (!response.ok) {
-        throw new Error("Failed to delete category");
+        const errorText = await response.text();
+        throw new Error(errorText || "Failed to delete category");
       }
 
       set((state) => ({
@@ -430,22 +439,21 @@ const useServiceStore = create<ServiceStore>((set, get) => ({
 
   updateServiceCategory: async (updatedCategory) => {
     try {
+      const payload = {
+        name: updatedCategory.name,
+        parentId: updatedCategory.parentId ?? null,
+      };
       const response = await fetch(`/api/categories/${updatedCategory.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: updatedCategory.name }),
-        // body: JSON.stringify(updatedCategory),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
         throw new Error("Failed to update category");
       }
 
-      set((state) => ({
-        serviceCategories: state.serviceCategories.map((category) =>
-          category.id === updatedCategory.id ? updatedCategory : category
-        ),
-      }));
+      await fetchServiceCategories(set, get);
     } catch (error) {
       console.error("Error updating service category:", error);
       throw error;

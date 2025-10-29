@@ -15,10 +15,6 @@ export default function Home() {
 
   const [filteredServices, setFilteredServices] = useState<ServiceProps[]>([]);
 
-  // const handleFilteredServicesChange = (filtered: ServiceProps[]) => {
-  //   setFilteredServices(Array.isArray(filtered) ? filtered : []);
-  // };
-
   useEffect(() => {
     const loadData = async () => {
       try {
