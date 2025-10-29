@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import type { Category } from "@/lib/mongo-operations";
 import { Button } from "@/components/ui/button";
+import { buildCategoryTree, type CategoryNode } from "@/lib/category-tree";
+import { cn } from "@/lib/utils";
 
 import {
   Sheet,
@@ -15,6 +17,17 @@ import {
 } from "@/components/ui/sheet";
 import PhoneLink from "./phone-link";
 import { FolderSymlink, Home } from "lucide-react";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuIndicator,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  NavigationMenuViewport,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu";
 
 function Hamburger({ open }: { open: boolean }) {
   return (
@@ -45,21 +58,95 @@ type Props = { categories: Category[] };
 
 export default function NavLinks({ categories }: Props) {
   const [open, setOpen] = useState(false);
-  if (!categories || categories.length === 0) return null;
+  const categoryTree = useMemo(
+    () => buildCategoryTree(categories),
+    [categories]
+  );
+
+  if (!categoryTree || categoryTree.length === 0) return null;
+
+  const renderMobileTree = (
+    nodes: CategoryNode[],
+    depth = 0
+  ): React.ReactNode => (
+    <ul className="space-y-2">
+      {nodes.map((node) => (
+        <li key={node.id}>
+          <SheetClose asChild>
+            <Link
+              href={`/catalog/${node.slug}`}
+              className="block border-b border-stone-900 pb-2"
+              style={{ paddingLeft: `${depth * 12}px` }}
+            >
+              <FolderSymlink className="inline-block mr-3 mb-1 size-5 text-amber-500" />
+              {node.name}
+            </Link>
+          </SheetClose>
+          {node.children.length > 0 && (
+            <div className="mt-2 ml-3 border-l border-stone-300 pl-3">
+              {renderMobileTree(node.children, depth + 1)}
+            </div>
+          )}
+        </li>
+      ))}
+    </ul>
+  );
+
+  const renderDesktopDropdown = (nodes: CategoryNode[], depth = 0) => (
+    <ul className="space-y-1">
+      {nodes.map((node) => (
+        <li key={node.id}>
+          <Link
+            href={`/catalog/${node.slug}`}
+            className="block rounded-md px-3 py-2 text-sm text-stone-700 hover:bg-stone-100"
+            style={{ paddingLeft: depth * 12 }}
+          >
+            {node.name}
+          </Link>
+          {node.children.length > 0 && (
+            <div className="ml-2 border-l border-stone-200 pl-2">
+              {renderDesktopDropdown(node.children, depth + 1)}
+            </div>
+          )}
+        </li>
+      ))}
+    </ul>
+  );
 
   return (
     <div className="relative flex justify-center">
       {/* Desktop nav */}
-      <div className="hidden ml-5 text-md lg:text-lg bg-transparent sm:flex flex-row gap-2 sm:gap-4 sm:z-20">
-        {categories.map((c) => (
-          <Link
-            key={c.id}
-            href={`/catalog/${c.slug}`}
-            className=" text-amber-500 font-medium border-b-2 border-transparent hover:border-amber-500 transition"
-          >
-            {c.name}
-          </Link>
-        ))}
+      <div className="hidden sm:flex">
+        <NavigationMenu className="ml-5">
+          <NavigationMenuList>
+            {categoryTree.map((node) => (
+              <NavigationMenuItem key={node.id}>
+                {node.children.length > 0 ? (
+                  <>
+                    <NavigationMenuTrigger className="text-amber-200 hover:text-amber-400">
+                      {node.name}
+                    </NavigationMenuTrigger>
+                    <NavigationMenuContent className="p-4">
+                      {renderDesktopDropdown(node.children)}
+                    </NavigationMenuContent>
+                  </>
+                ) : (
+                  <NavigationMenuLink
+                    asChild
+                    className={cn(
+                      navigationMenuTriggerStyle(),
+                      "text-amber-200 hover:text-amber-400"
+                    )}
+                  >
+                    <Link href={`/catalog/${node.slug}`}>{node.name}</Link>
+                  </NavigationMenuLink>
+                )}
+              </NavigationMenuItem>
+            ))}
+          </NavigationMenuList>
+          <NavigationMenuIndicator />
+          <NavigationMenuViewport />
+        </NavigationMenu>
       </div>
 
       {/* Mobile toggle */}
@@ -90,18 +177,7 @@ export default function NavLinks({ categories }: Props) {
                   Strona główna
                 </Link>
               </SheetClose>
-              {categories.map((cat) => (
-                <SheetClose asChild key={cat.id}>
-                  <Link
-                    key={cat.id}
-                    href={`/catalog/${cat.slug}`}
-                    className="hover:underline border-b border-stone-900 "
-                  >
-                    <FolderSymlink className="inline-block mr-3 mb-1 size-5 text-amber-500" />
-                    {cat.name}
-                  </Link>
-                </SheetClose>
-              ))}
+              {renderMobileTree(categoryTree)}
               <div className="mt-6 flex flex-col items-center gap-3">
                 <hr className="my-2 border-t border-stone-500" />
                 <p className="text-sm text-center text-gray-500">
