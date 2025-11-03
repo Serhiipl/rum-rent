@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 
-export const useIsMobile = () => {
+export const useIsMobile = (): boolean => {
   const [isMobile, setIsMobile] = useState(false);
+
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
     check();

@@ -29,7 +29,7 @@ export default async function AuthLayout({
     <div className="min-h-screen sm:max-w-screen-2xl flex flex-col mr-auto ml-auto px-1 sm:px-8 bg-stone-500">
       <div className="flex-1">{children}</div>
       <Toaster />
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }

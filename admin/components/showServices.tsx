@@ -2,10 +2,7 @@
 
 import useServiceStore from "@/lib/serviceStore";
 import React, { useEffect, useState, useMemo, useCallback } from "react";
-import {
-  ServiceCategory,
-  ServiceProps,
-} from "@/lib/serviceStore";
+import { ServiceCategory, ServiceProps } from "@/lib/serviceStore";
 import ServiceCard from "@/components/product-card";
 import EmptyState from "@/components/emptyItemState";
 import LoadingState from "./loadingItemState";
@@ -18,6 +15,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import CellAction from "@/app/(auth)/admin/services/components/cellAction";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 type ViewMode = "cards" | "table";
 
@@ -36,18 +34,20 @@ const ServiceTableView: React.FC<{
   services: ServiceProps[];
   categoryMap: Record<string, string>;
 }> = ({ services, categoryMap }) => {
+  const isMobile = useIsMobile();
+
   return (
     <div className="overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm">
       <Table>
         <TableHeader className="bg-stone-100/90">
           <TableRow>
             <TableHead>Nazwa</TableHead>
-            <TableHead>Kategoria</TableHead>
-            <TableHead className="whitespace-nowrap">Cena / dzień</TableHead>
-            <TableHead>Kaucja</TableHead>
+            {!isMobile && <TableHead>Kategoria</TableHead>}
+            <TableHead className="whitespace-nowrap">Cena/dzień</TableHead>
+            {!isMobile && <TableHead>Kaucja</TableHead>}
             <TableHead>Ilość</TableHead>
             <TableHead>Status</TableHead>
-            <TableHead className="text-right">Akcje</TableHead>
+            <TableHead className="text-right">Opcje</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -62,19 +62,27 @@ const ServiceTableView: React.FC<{
                 <TableCell className="font-semibold text-stone-800">
                   {service.name}
                 </TableCell>
-                <TableCell>{categoryName}</TableCell>
+                {!isMobile && <TableCell>{categoryName}</TableCell>}
                 <TableCell>
                   {priceFormatter.format(service.rentalPrice ?? 0)}
                 </TableCell>
-                <TableCell>
-                  {priceFormatter.format(service.deposit ?? 0)}
-                </TableCell>
+                {!isMobile && (
+                  <TableCell>
+                    {priceFormatter.format(service.deposit ?? 0)}
+                  </TableCell>
+                )}
                 <TableCell>{service.quantity ?? 0}</TableCell>
                 <TableCell>
                   <span
                     className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${availabilityClass}`}
                   >
-                    {service.available ? "Dostępny" : "Niedostępny"}
+                    {service.available
+                      ? isMobile
+                        ? "D"
+                        : "Dostępny"
+                      : isMobile
+                      ? "N"
+                      : "Niedostępny"}
                   </span>
                 </TableCell>
                 <TableCell className="text-right">
