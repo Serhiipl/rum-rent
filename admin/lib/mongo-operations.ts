@@ -1,4 +1,5 @@
 import { getMongoDb } from "@/lib/mongodb";
+import { extractPublicIdFromUrl, getCloudinary } from "@/lib/cloudinary";
 
 export type Category = {
   id: string;
@@ -424,6 +425,32 @@ export async function updateServiceDoc(
 
 export async function deleteServiceDoc(serviceId: string): Promise<void> {
   const db = await getMongoDb();
+  const images = await db
+    .collection<ImageDocument>("Image")
+    .find({ serviceId })
+    .toArray();
+
+  const cloudinary = getCloudinary();
+
+  if (cloudinary && images.length > 0) {
+    const publicIds = images
+      .map((image) => extractPublicIdFromUrl(image.url))
+      .filter((publicId): publicId is string => Boolean(publicId));
+
+    await Promise.all(
+      publicIds.map(async (publicId) => {
+        try {
+          await cloudinary.uploader.destroy(publicId, { invalidate: true });
+        } catch (error) {
+          console.error(
+            `Failed to delete Cloudinary asset for service ${serviceId}:`,
+            error
+          );
+        }
+      })
+    );
+  }
+
   await db.collection<ServiceDocument>("Service").deleteOne({ _id: serviceId });
   await db.collection<ImageDocument>("Image").deleteMany({ serviceId });
 }

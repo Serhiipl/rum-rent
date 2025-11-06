@@ -210,7 +210,7 @@ const fetchServiceCategories = async (
     set((state) => ({
       ...state,
       serviceCategories: [],
-      error: "Не вдалося завантажити категорії",
+      error: "Błąd podczas ładowania kategorii usług",
     }));
   } finally {
     set((state) => ({
@@ -269,7 +269,7 @@ const useServiceStore = create<ServiceStore>((set, get) => ({
       set((state) => ({
         ...state,
         isLoading: false,
-        error: "Не вдалося додати послугу",
+        error: "Błąd podczas dodawania usługi",
       }));
       throw error;
     }

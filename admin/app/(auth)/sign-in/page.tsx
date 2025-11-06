@@ -22,13 +22,13 @@ import { authClient } from "@/auth-client";
 import { useRouter } from "next/navigation";
 import { ErrorContext } from "@better-fetch/fetch";
 import { useToast } from "@/hooks/use-toast";
-import { GithubIcon } from "lucide-react";
+// import { GithubIcon } from "lucide-react";
 
 export default function SingIn() {
   const router = useRouter();
   const { toast } = useToast();
   const [pendingCredentials, setPendingCredentials] = useState(false);
-  const [pendingGithub, setPendingGithub] = useState(false);
+  // const [pendingGithub, setPendingGithub] = useState(false);
 
   const form = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
@@ -65,30 +65,30 @@ export default function SingIn() {
     );
     setPendingCredentials(false);
   };
-  const handleSignInWithGithub = async () => {
-    await authClient.signIn.social(
-      {
-        provider: "github",
-      },
-      {
-        onRequest: () => {
-          setPendingGithub(true);
-        },
-        onSuccess: async () => {
-          router.push("/");
-          router.refresh();
-        },
-        onError: (ctx: ErrorContext) => {
-          toast({
-            title: "Coś poszło nie tak =(",
-            description: ctx.error.message ?? "Coś poszło nie tak =(",
-            variant: "destructive",
-          });
-        },
-      }
-    );
-    setPendingGithub(false);
-  };
+  // const handleSignInWithGithub = async () => {
+  //   await authClient.signIn.social(
+  //     {
+  //       provider: "github",
+  //     },
+  //     {
+  //       onRequest: () => {
+  //         setPendingGithub(true);
+  //       },
+  //       onSuccess: async () => {
+  //         router.push("/");
+  //         router.refresh();
+  //       },
+  //       onError: (ctx: ErrorContext) => {
+  //         toast({
+  //           title: "Coś poszło nie tak =(",
+  //           description: ctx.error.message ?? "Coś poszło nie tak =(",
+  //           variant: "destructive",
+  //         });
+  //       },
+  //     }
+  //   );
+  //   setPendingGithub(false);
+  // };
 
   const fieldNames = {
     email: "Adres e-mail",
@@ -145,7 +145,7 @@ export default function SingIn() {
               </LoadingButton>
             </form>
           </Form>
-          <div className="mt-4">
+          {/* <div className="mt-4">
             <LoadingButton
               pending={pendingGithub}
               onClick={handleSignInWithGithub}
@@ -153,7 +153,7 @@ export default function SingIn() {
               <GithubIcon className="w-4 h-4 mr-2" />
               Kontynuuj z Github
             </LoadingButton>
-          </div>
+          </div> */}
           <div className="mt-4 text-center text-sm">
             <Link
               href="/forgot-password"

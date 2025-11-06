@@ -72,7 +72,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         }}
       </CldUploadWidget> */}
       <CldUploadWidget
-        uploadPreset="uiyzaare"
+        uploadPreset="gqsaa04a"
+        // uploadPreset="uiyzaare"
         options={{ multiple: true }}
         onSuccess={(result: unknown) => {
           const info = (result as { info?: { secure_url?: string } })?.info;
