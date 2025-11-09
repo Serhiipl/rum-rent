@@ -51,7 +51,6 @@ const AddServicePage = () => {
 
   // Обробник зміни фільтрованих послуг
   const handleFilteredServicesChange = (filtered: ServiceProps[]) => {
-    console.log("Фільтровані послуги:", filtered); // Для дебагу
     setFilteredServices(Array.isArray(filtered) ? filtered : []);
   };
 
@@ -98,12 +97,22 @@ const AddServicePage = () => {
       <div className="flex flex-wrap items-center justify-end gap-2">
         <Button
           size="sm"
+          className={
+            viewMode === "cards"
+              ? "border border-amber-600 bg-stone-800 text-white"
+              : ""
+          }
           variant={viewMode === "cards" ? "default" : "outline"}
           onClick={() => setViewMode("cards")}
         >
           Widok kart
         </Button>
         <Button
+          className={
+            viewMode === "table"
+              ? "border border-amber-600 bg-stone-800 text-white"
+              : ""
+          }
           size="sm"
           variant={viewMode === "table" ? "default" : "outline"}
           onClick={() => setViewMode("table")}
