@@ -12,6 +12,7 @@ import {
 // import { User } from "@prisma/client";
 import { useEffect, useState } from "react";
 import ImpersonateUser from "./impersonate-user";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 type AuthUser = {
   id: string;
@@ -28,6 +29,7 @@ export default function UsersTable() {
   const [users, setUsers] = useState<AuthUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -58,6 +60,7 @@ export default function UsersTable() {
       </div>
     );
   }
+
   if (error) {
     return (
       <div className="flex justify-center items-center p-4">
@@ -70,12 +73,12 @@ export default function UsersTable() {
       <TableHeader>
         <TableRow>
           <TableHead>Name</TableHead>
-          <TableHead>Email</TableHead>
+          {!isMobile && <TableHead>Email</TableHead>}
           <TableHead>Role</TableHead>
           <TableHead>Verified</TableHead>
           <TableHead>Premium</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Joined</TableHead>
+          {!isMobile && <TableHead>Status</TableHead>}
+          {!isMobile && <TableHead>Joined</TableHead>}
           <TableHead>Actions</TableHead>
         </TableRow>
       </TableHeader>
@@ -83,7 +86,7 @@ export default function UsersTable() {
         {users.map((user) => (
           <TableRow key={user.id}>
             <TableCell>{user.name}</TableCell>
-            <TableCell>{user.email}</TableCell>
+            {!isMobile && <TableCell>{user.email}</TableCell>}
             <TableCell>{user.role}</TableCell>
             <TableCell>{user.emailVerified ? "Yes" : "No"}</TableCell>
             <TableCell>
@@ -93,12 +96,16 @@ export default function UsersTable() {
                 <span className="text-green-500">Active</span>
               )}
             </TableCell>
-            <TableCell>
-              {new Date(user.createdAt).toLocaleDateString()}
-            </TableCell>
-            <TableCell>
-              <ImpersonateUser userId={user.id} />{" "}
-            </TableCell>
+            {!isMobile && (
+              <TableCell>
+                {new Date(user.createdAt).toLocaleDateString()}
+              </TableCell>
+            )}
+            {!isMobile && (
+              <TableCell>
+                <ImpersonateUser userId={user.id} />{" "}
+              </TableCell>
+            )}
           </TableRow>
         ))}
       </TableBody>

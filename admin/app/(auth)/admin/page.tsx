@@ -47,7 +47,7 @@ export default function AdminPage() {
           categories={serviceCategories}
           services={services || []}
           onFilteredServicesChange={handleFilteredServicesChange}
-          className="mb-6"
+          className="mb-3"
         />
       )}
       <ShowServices services={filteredServices} />

@@ -23,8 +23,8 @@ const CategoryBadge: React.FC<{
   <div
     className={`inline-flex max-w-fit items-center gap-2 px-3 py-2 rounded-full text-sm font-medium cursor-pointer transition-all duration-200 ${
       isSelected
-        ? "bg-blue-600 text-white shadow-md"
-        : "bg-white text-gray-700 border border-gray-200 hover:border-blue-300 hover:bg-blue-50"
+        ? "bg-stone-700 text-white shadow-md"
+        : "bg-white text-gray-700 border border-gray-200 hover:border-stone-300 hover:bg-stone-100"
     }`}
     onClick={onClick}
   >
@@ -32,7 +32,7 @@ const CategoryBadge: React.FC<{
     {count !== undefined && (
       <span
         className={`px-2 py-0.5 rounded-full text-xs ${
-          isSelected ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-600"
+          isSelected ? "bg-stone-600 text-white" : "bg-gray-200 text-gray-600"
         }`}
       >
         {count}
@@ -44,7 +44,7 @@ const CategoryBadge: React.FC<{
           e.stopPropagation();
           onRemove();
         }}
-        className="ml-1 hover:bg-blue-500 rounded-full p-0.5 transition-colors"
+        className="ml-1 hover:bg-stone-600 rounded-full p-0.5 transition-colors"
       >
         <X size={14} />
       </button>
@@ -198,7 +198,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
 
   return (
     <div
-      className={`bg-white rounded-lg shadow-sm border border-gray-200 p-4 ${className}`}
+      className={`bg-stone-200 rounded-lg shadow-sm border border-gray-200 p-4 ${className}`}
     >
       {/* Заголовок та кнопки управління */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
@@ -219,7 +219,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
           {isAdmin && (
             <button
               onClick={() => setIsExpanded(!isExpanded)}
-              className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors"
+              className="flex items-center gap-1 text-sm text-stone-600 hover:text-stone-700 font-medium transition-colors"
             >
               {isExpanded ? "Zwiń" : "Rozwiń"}
               <ChevronDown
@@ -284,7 +284,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
                 placeholder="Wyszukiwanie kategorii..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-600 focus:border-transparent"
               />
               {searchQuery && (
                 <button
@@ -307,7 +307,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
                 placeholder="Wyszukiwanie po nazwie usługi..."
                 value={searchQueryByName}
                 onChange={(e) => setSearchQueryByName(e.target.value)}
-                className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-600 focus:border-transparent"
               />
               {searchQueryByName && (
                 <button
@@ -330,7 +330,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
                 placeholder="Wyszukiwanie po opisie usługi..."
                 value={searchQueryDescription}
                 onChange={(e) => setSearchQueryDescription(e.target.value)}
-                className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-700 focus:border-transparent"
               />
               {searchQueryDescription && (
                 <button
@@ -347,7 +347,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
           <div className="flex flex-wrap gap-2">
             <button
               onClick={selectAllCategories}
-              className="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors"
+              className="px-3 py-1 text-sm bg-blue-100 text-stone-800 rounded-md hover:bg-stone-300 transition-colors"
             >
               Zaznacz wszystkie
             </button>
@@ -403,7 +403,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
           {categories.length > 5 && (
             <button
               onClick={() => setIsExpanded(true)}
-              className="px-3 py-2 text-sm text-blue-600 border border-blue-200 rounded-full hover:bg-blue-50 transition-colors"
+              className="px-3 py-2 text-sm text-stone-700 border border-stone-200 rounded-full hover:bg-stone-100 transition-colors"
             >
               +{categories.length - 5} więcej
             </button>
