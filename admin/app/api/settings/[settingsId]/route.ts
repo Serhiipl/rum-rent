@@ -70,9 +70,6 @@ export async function PATCH(
     }
 
     const updated = await updateSettingsDoc(params.settingsId, parsed.data);
-    if (!updated) {
-      return new NextResponse("Settings not found", { status: 404 });
-    }
     return NextResponse.json(updated, { status: 200 });
   } catch (error) {
     console.error("Error updating settings:", error);

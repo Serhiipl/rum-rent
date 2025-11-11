@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useIsMobile } from "@/hooks/useIsMobile";
@@ -37,7 +38,15 @@ const DEFAULT_VALUES: SettingsFormFields = {
 };
 
 const SettingsForm: React.FC = () => {
-  const { isLoading, addSettings } = useServiceStore();
+  const {
+    isLoading,
+    settings,
+    fetchSettings,
+    settingsFetched,
+    isFetchingSettings,
+    addSettings,
+    updateSettings,
+  } = useServiceStore();
 
   const isMobile = useIsMobile();
 
@@ -46,11 +55,43 @@ const SettingsForm: React.FC = () => {
     defaultValues: DEFAULT_VALUES,
   });
 
+  useEffect(() => {
+    if (!settingsFetched && !isFetchingSettings) {
+      fetchSettings().catch((error) =>
+        console.error("Failed to load settings", error)
+      );
+    }
+  }, [fetchSettings, isFetchingSettings, settingsFetched]);
+
+  useEffect(() => {
+    if (settings) {
+      form.reset({
+        company_name: settings.company_name ?? "",
+        company_address: settings.company_address ?? "",
+        company_phone: settings.company_phone ?? "",
+        company_nip: settings.company_nip ?? "",
+        smtp_user_emailFrom: settings.smtp_user_emailFrom ?? "",
+        email_receiver: settings.email_receiver ?? "",
+        motto_description: settings.motto_description ?? "",
+      });
+    } else {
+      form.reset(DEFAULT_VALUES);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [settings]);
+
   const onSubmit = async (values: SettingsFormFields) => {
     try {
       const parsedValues = settingsFormSchema.parse(values);
-      await addSettings(parsedValues);
-      form.reset(DEFAULT_VALUES);
+      if (settings) {
+        await updateSettings({
+          ...settings,
+          ...parsedValues,
+        });
+      } else {
+        await addSettings(parsedValues);
+      }
+      // form.reset(DEFAULT_VALUES);
 
       toast.success("Dodano dane! 🎉", {
         duration: 3000,
@@ -58,7 +99,7 @@ const SettingsForm: React.FC = () => {
         icon: "👏",
       });
     } catch (error) {
-      console.error("Error adding settings:", error);
+      console.error("Error saving settings:", error);
       toast.error("Wystąpił błąd podczas dodawania dannych.", {
         position: "top-center",
         duration: 3000,
@@ -222,7 +263,7 @@ const SettingsForm: React.FC = () => {
           type="submit"
           disabled={isLoading}
         >
-          {isLoading ? "Dodawanie..." : "Dodaj!"}
+          {isLoading ? "Dodawanie..." : "Dodaj lub zmień dane"}
         </Button>
       </form>
     </Form>
@@ -239,11 +280,13 @@ const SettingsForm: React.FC = () => {
         >
           <AccordionItem value="service-form">
             <AccordionTrigger className="flex justify-around items-center border border-stone-800 bg-stone-300 ">
-              <h2 className="text-base sm:text-xl font-semibold">Ustawienia</h2>
+              <h2 className="text-base sm:text-xl font-semibold">
+                Ustawienia systemowe
+              </h2>
             </AccordionTrigger>
             <AccordionContent>
               <p className="text-center text-sm text-muted-foreground m-2">
-                Wypełnij poniższe dane i kliknij <b>Dodaj!</b>
+                Wypełnij poniższe dane i kliknij <b>Dodaj lub zmień dane</b>
               </p>
               {renderForm()}
             </AccordionContent>
@@ -252,10 +295,10 @@ const SettingsForm: React.FC = () => {
       ) : (
         <>
           <h2 className="text-base sm:text-xl m-2 font-semibold">
-            Dodaj Element
+            Dodaj ustawienia systemowe
           </h2>
           <p className="text-center text-sm text-muted-foreground m-2">
-            Wypełnij poniższe dane i kliknij <b>Dodaj!</b>
+            Wypełnij poniższe dane i kliknij <b>Dodaj lub zmień dane</b>
           </p>
           {renderForm()}
         </>

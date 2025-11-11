@@ -620,8 +620,9 @@ export async function insertSettings(data: {
 export async function updateSettingsDoc(
   id: string,
   update: SettingsFormData
-): Promise<Settings | null> {
+): Promise<Settings> {
   const db = await getMongoDb();
+  const now = new Date();
   const set: Partial<SettingsDocument> = {
     company_name: update.company_name,
     company_address: update.company_address,
@@ -633,16 +634,29 @@ export async function updateSettingsDoc(
     smtp_user_emailFrom: update.smtp_user_emailFrom,
     email_receiver: update.email_receiver,
     motto_description: update.motto_description,
-    updatedAt: new Date(),
+    updatedAt: now,
   };
 
   const result = await db.collection<SettingsDocument>("Settings").findOneAndUpdate(
     { _id: id },
-    { $set: set },
-    { returnDocument: "after" }
+    {
+      $set: set,
+      $setOnInsert: {
+        createdAt: now,
+      },
+    },
+    { returnDocument: "after", upsert: true }
   );
 
-  return result.value ? mapSettings(result.value) : null;
+  if (!result.value) {
+    const fetched = await getSettingsById(id);
+    if (!fetched) {
+      throw new Error("Failed to fetch updated settings");
+    }
+    return fetched;
+  }
+
+  return mapSettings(result.value);
 }
 
 export async function deleteSettingsDoc(id: string): Promise<void> {
