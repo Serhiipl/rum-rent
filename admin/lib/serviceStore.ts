@@ -20,7 +20,7 @@ export interface CreateServiceData {
   rentalPrice: number;
   deposit: number;
   quantity: number;
-  rentalPeriod: number; //
+  rentalPeriod: number; 
   condition: string;
   images: { url: string }[];
   available: boolean;
@@ -56,26 +56,50 @@ export interface CreateBannerData {
   imageUrl: string;
 }
 
+export interface SettingsFormData {
+  company_name: string;
+  company_address: string;
+  company_phone: string;
+  company_nip?: string | null;
+  smtp_user_emailFrom: string;
+  email_receiver: string;
+  motto_description: string;
+}
+
+export interface Settings extends SettingsFormData {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 interface ServiceStore {
   banners: Banner[];
   services: ServiceProps[];
+  settings: Settings | null;
   serviceCategories: ServiceCategory[];
   activeCategoryId: string | null;
   setActiveCategoryId: (id: string | null) => void;
   fetchBanners: () => Promise<void>;
   fetchServices: () => Promise<void>;
+  fetchSettings: () => Promise<void>;
   servicesFetched: boolean; // Додаємо прапорець для перевірки, чи були послуги завантажені
   bannersFetched: boolean;
   categoriesFetched: boolean;
+  settingsFetched: boolean;
   servicesFetchedAt: number | null;
   bannersFetchedAt: number | null;
   categoriesFetchedAt: number | null;
+  settingsFetchedAt: number | null;
   isFetchingServices: boolean;
   isFetchingBanners: boolean;
   isFetchingCategories: boolean;
+  isFetchingSettings: boolean;
   fetchServiceCategories: () => Promise<void>;
   // addService: (newService: ServiceProps) => Promise<void>;
   addService: (newService: CreateServiceData) => Promise<void>;
+  addSettings: (newSettings: SettingsFormData) => Promise<void>;
+  deleteSettings: (settingsId: string) => Promise<void>;
+  updateSettings: (updatedSettings: Settings) => Promise<void>;
   deleteService: (serviceId: string) => Promise<void>;
   updateService: (updatedService: ServiceProps) => Promise<void>;
   addServiceCategory: (newCategory: {
@@ -221,31 +245,177 @@ const fetchServiceCategories = async (
   }
 };
 
+const fetchSettings = async (
+  set: (partial: (state: ServiceStore) => Partial<ServiceStore>) => void,
+  get: () => ServiceStore
+) => {
+  const now = Date.now();
+  const lastFetched = get().settingsFetchedAt;
+  const TTL = 5 * 60 * 1000;
+  if (lastFetched && now - lastFetched < TTL) return;
+  if (get().isFetchingSettings) return;
+  try {
+    set((state) => ({
+      ...state,
+      isLoading: true,
+      error: null,
+      isFetchingSettings: true,
+    }));
+
+    const response = await fetch("/api/settings");
+    if (!response.ok) {
+      throw new Error("Failed to fetch settings");
+    }
+
+    const data = await response.json();
+
+    const parsedSettings = Array.isArray(data)
+      ? data.length > 0
+        ? data[0]
+        : null
+      : data;
+
+    set((state) => ({
+      ...state,
+      settings: parsedSettings,
+      settingsFetched: true,
+      settingsFetchedAt: Date.now(),
+    }));
+  } catch (error) {
+    console.error("Error fetching settings:", error);
+    set((state) => ({
+      ...state,
+      settings: null,
+      error: "Nie udało się załadować ustawień",
+    }));
+  } finally {
+    set((state) => ({
+      ...state,
+      isFetchingSettings: false,
+      isLoading: false,
+    }));
+  }
+};
+
 const useServiceStore = create<ServiceStore>((set, get) => ({
+  settings: null,
   banners: [],
   services: [],
   serviceCategories: [],
   activeCategoryId: null,
   isLoading: false,
   error: null,
+  settingsFetched: false,
   bannersFetched: false, // Додаємо прапорець для перевірки, чи були банери завантажені
   servicesFetched: false,
   categoriesFetched: false, // Додаємо прапорець для перевірки, чи були категорії завантажені
   servicesFetchedAt: null,
   bannersFetchedAt: null,
   categoriesFetchedAt: null,
+  settingsFetchedAt: null,
   isFetchingServices: false,
   isFetchingBanners: false,
   isFetchingCategories: false,
+  isFetchingSettings: false,
 
   setLoading: (loading: boolean) => set({ isLoading: loading }),
   setError: (error: string | null) => set({ error }),
   setActiveCategoryId: (id: string | null) => set({ activeCategoryId: id }),
 
+  fetchSettings: () => fetchSettings(set, get),
   fetchBanners: () => fetchBanners(set, get),
   fetchServices: () => fetchServices(set, get),
   fetchServiceCategories: () => fetchServiceCategories(set, get),
 
+  addSettings: async (newSettings) => {
+    try {
+      set((state) => ({ ...state, isLoading: true, error: null }));
+
+      const response = await fetch("/api/settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newSettings),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Failed to add settings");
+      }
+
+      const data = (await response.json()) as Settings;
+
+      set((state) => ({
+        ...state,
+        settings: data,
+        settingsFetched: true,
+        settingsFetchedAt: Date.now(),
+        isLoading: false,
+      }));
+    } catch (error) {
+      console.error("Error adding settings:", error);
+      set((state) => ({
+        ...state,
+        isLoading: false,
+        error: "Błąd podczas dodawania ustawień",
+      }));
+      throw error;
+    }
+  },
+  updateSettings: async (updatedSettings) => {
+    try {
+      const { id, createdAt, updatedAt, ...payload } = updatedSettings;
+      if (!id) {
+        throw new Error("Settings ID is required");
+      }
+      const response = await fetch(`/api/settings/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Failed to update settings");
+      }
+
+      const data = (await response.json()) as Settings;
+
+      set((state) => ({
+        ...state,
+        settings: data,
+        settingsFetched: true,
+        settingsFetchedAt: Date.now(),
+      }));
+    } catch (error) {
+      console.error("Error updating settings:", error);
+      throw error;
+    }
+  },
+  deleteSettings: async (settingsId) => {
+    try {
+      if (!settingsId) {
+        throw new Error("Settings ID is required");
+      }
+      const response = await fetch(`/api/settings/${settingsId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Failed to delete settings");
+      }
+
+      set((state) => ({
+        ...state,
+        settings: null,
+        settingsFetched: false,
+        settingsFetchedAt: null,
+      }));
+    } catch (error) {
+      console.error("Error deleting settings:", error);
+      throw error;
+    }
+  },
   addService: async (newService) => {
     try {
       set((state) => ({ ...state, isLoading: true, error: null }));
@@ -465,20 +635,24 @@ const useServiceStore = create<ServiceStore>((set, get) => ({
       banners: [],
       services: [],
       serviceCategories: [],
+      settings: null,
       activeCategoryId: null,
       isLoading: false,
       error: null,
       bannersFetched: false,
       servicesFetched: false,
       categoriesFetched: false,
+      settingsFetched: false,
       servicesFetchedAt: null,
       bannersFetchedAt: null,
       categoriesFetchedAt: null,
+      settingsFetchedAt: null,
       isFetchingServices: false,
       isFetchingBanners: false,
       isFetchingCategories: false,
+      isFetchingSettings: false,
     }),
 }));
 
 export default useServiceStore;
-export { fetchBanners, fetchServices, fetchServiceCategories };
+export { fetchBanners, fetchServices, fetchServiceCategories, fetchSettings };

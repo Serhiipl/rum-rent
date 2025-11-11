@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import ServiceModalPopup from "./modals/serviceModalPopup";
 import { Button } from "./ui/button";
+import { Separator } from "./ui/separator";
 // Use public asset path to avoid Turbopack static import issues
 const NO_IMAGE_SRC = "/no-image.jpg";
 
@@ -102,6 +103,7 @@ const ServiceCard: React.FC<{
             <h3 className="text-lg ml-1 mt-3 font-semibold text-gray-900 truncate ">
               {service.name}
             </h3>
+            <Separator className="w-full bg-gray-400" />
             <div className="flex justify-between bg-yellow-50  w-full items-center">
               <ItemQuantity service={service} />
               <p className="text-sm font-normal text-slate-950">

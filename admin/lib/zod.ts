@@ -108,3 +108,20 @@ export const contactFormSchema = z
       });
     }
   });
+
+export const settingsFormSchema = object({
+  company_name: string().min(1, "Nazwa jest wymagana"),
+  company_address: string().min(1, "Adres jest wymagany"),
+  company_phone: string().min(1, "Telefon jest wymagany"),
+  company_nip: string().min(1, "Nip jest wymagany").optional(),
+  smtp_user_emailFrom: string()
+    .email("Nieprawidłowy email")
+    .min(1, "Email nadawcy jest wymagany"),
+  // smtp_user_password: string().min(1, "Hasło emaila jest wymagane"),
+  // smtp_host: string().min(1, "Host SMTP jest wymagany"),
+  // smtp_port: string().min(1, "Port SMTP jest wymagany"),
+  email_receiver: string()
+    .email("Nieprawidłowy email")
+    .min(1, "Email odbiorcy jest wymagany"),
+  motto_description: string().min(1, "Opis stanu jest wymagany"),
+});
