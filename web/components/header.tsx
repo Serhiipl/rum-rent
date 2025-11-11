@@ -12,11 +12,15 @@ type Props = { categories: Category[] };
 export default function Header({ categories }: Props) {
   return (
     <nav
-      className={`${roboto.variable} flex flex-row items-center justify-center w-full py-3 px-4 fixed top-0 left-0 right-0 z-50 bg-stone-500`}
+      className={`${roboto.variable} flex flex-row items-center justify-center  w-full py-2 px-2 fixed top-0 mx-auto z-50 bg-transparent`}
     >
-      <div className="flex max-w-7xl w-full items-center justify-between sm:justify-center gap-6 mx-auto">
+      {/* <nav
+      className={`${roboto.variable} flex flex-row items-center justify-center w-full py-4 px-4 fixed top-0 left-0 right-0 z-50 bg-stone-500`}
+    > */}
+      <div className="flex max-w-7xl w-full  items-center justify-between sm:justify-center gap-6 mx-auto bg-stone-300/30 backdrop-blur-sm py-4 sm:py-2 px-4 rounded-2xl">
+        {/* <div className="flex max-w-7xl w-full items-center justify-between sm:justify-center gap-6 mx-auto"> */}
         <Link href="/" className="text-xl font-bold">
-          <Home className="inline-block ml-4 mb-1 size-9 text-amber-500" />
+          <Home className="inline-block ml-4 mb-1 size-7 text-amber-500" />
         </Link>
         <NavLinks categories={categories} />
       </div>

@@ -3,7 +3,7 @@ export const Footer = () => {
   const OWNER_EMAIL = process.env.COMPANY_EMAIL || "biuro.rumrent@gmail.com";
 
   return (
-    <footer className="w-full bg-stone-500 text-stone-200 py-4 mt-10">
+    <footer className="w-full bg-stone-500 text-stone-200 py-4 mt-1">
       <div className="max-w-7xl mx-auto px-4 text-center">
         <p className="text-sm">
           &copy; {new Date().getFullYear()} RumRent. Wszelkie prawa zastrzeżone.
