@@ -19,8 +19,12 @@ export default function Header({ categories }: Props) {
     > */}
       <div className="flex max-w-7xl w-full  items-center justify-between sm:justify-center gap-6 mx-auto bg-stone-300/30 backdrop-blur-sm py-4 sm:py-2 px-4 rounded-2xl">
         {/* <div className="flex max-w-7xl w-full items-center justify-between sm:justify-center gap-6 mx-auto"> */}
-        <Link href="/" className="text-xl font-bold">
-          <Home className="inline-block ml-4 mb-1 size-7 text-amber-500" />
+        <Link
+          href="/"
+          className="text-xl text-amber-500 font-bold flex items-center"
+        >
+          <Home className="inline-block ml-4 mb-1 mr-3 size-7 text-amber-500" />
+          Rum Rent
         </Link>
         <NavLinks categories={categories} />
       </div>
