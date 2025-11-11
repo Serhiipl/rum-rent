@@ -10,12 +10,8 @@ import useServiceStore from "@/lib/serviceStore";
 import { useEffect } from "react";
 
 const ShowSettings: React.FC = () => {
-  const {
-    settings,
-    fetchSettings,
-    settingsFetched,
-    isFetchingSettings,
-  } = useServiceStore();
+  const { settings, fetchSettings, settingsFetched, isFetchingSettings } =
+    useServiceStore();
 
   useEffect(() => {
     if (!settingsFetched && !isFetchingSettings) {
@@ -34,19 +30,17 @@ const ShowSettings: React.FC = () => {
   }
 
   return (
-    <div className="my-6">
+    <div className="my-6 mx-auto w-full px-2">
       <h2>Ustawienia Aplikacji</h2>
-      <Accordion
-        type="single"
-        collapsible
-        className="w-full"
-        defaultValue="item-1"
-      >
+      <Accordion type="single" collapsible className="w-full px-2">
         <AccordionItem value="item-1">
           <AccordionTrigger>
-            Nazwa firmy: {settings.company_name}
+            <p className="flex gap-3 no-underline">
+              <span className="font-semibold">Nazwa firmy: </span>
+              {settings.company_name}
+            </p>
           </AccordionTrigger>
-          <AccordionContent className="flex flex-col gap-4 text-balance">
+          <AccordionContent className="flex w-full px-2 text-balance">
             <p>
               Nazwa firmy lub imie i nazwisko właściciela ktore będą wyświetlane
               jako dane kontaktowe na stronie internetowej.
@@ -71,7 +65,7 @@ const ShowSettings: React.FC = () => {
           <AccordionContent className="flex flex-col gap-4 text-balance">
             <p>
               Numer telefonu firmy lub właściciela, który będzie wyświetlany
-              jako dane kontaktowe na stronie internetowej.
+              jako telefon kontaktowy na stronie internetowej.
             </p>
           </AccordionContent>
         </AccordionItem>

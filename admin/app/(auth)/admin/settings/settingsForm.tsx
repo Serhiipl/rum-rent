@@ -239,9 +239,7 @@ const SettingsForm: React.FC = () => {
         >
           <AccordionItem value="service-form">
             <AccordionTrigger className="flex justify-around items-center border border-stone-800 bg-stone-300 ">
-              <h2 className="text-base sm:text-xl font-semibold">
-                Dodaj Element
-              </h2>
+              <h2 className="text-base sm:text-xl font-semibold">Ustawienia</h2>
             </AccordionTrigger>
             <AccordionContent>
               <p className="text-center text-sm text-muted-foreground m-2">
