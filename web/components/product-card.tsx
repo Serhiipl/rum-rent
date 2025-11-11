@@ -71,8 +71,10 @@ const ServiceCard: React.FC<{
   };
   return (
     <>
-      <li className="group bg-yellow-50 space-y-5 p-4 rounded-lg inset-shadow-md inset-shadow-stone-400  shadow-sm shadow-yellow-400 hover:shadow-lg transition-shadow duration-200 overflow-hidden border border-amber-500">
-        <div className="aspect-square w-full rounded-xl  bg-yellow-50  relative ">
+      <li className="group bg-yellow-50 space-y-5 rounded-lg inset-shadow-md inset-shadow-stone-400  shadow-sm shadow-yellow-400 hover:shadow-lg transition-shadow duration-200 overflow-hidden border border-amber-500">
+        {/* <li className="group bg-yellow-50 space-y-5 p-4 rounded-lg inset-shadow-md inset-shadow-stone-400  shadow-sm shadow-yellow-400 hover:shadow-lg transition-shadow duration-200 overflow-hidden border border-amber-500"> */}
+        <div className="rounded-xl mx-auto bg-yellow-50  relative">
+          {/* <div className="aspect-square w-full rounded-xl  bg-yellow-50  relative "> */}
           {/* Зображення послуги */}
           {service.images.length > 0 ? (
             <Image
@@ -80,7 +82,9 @@ const ServiceCard: React.FC<{
               alt={service.name}
               width={300}
               height={200}
-              className="aspect-square object-cover rounded-lg mx-auto transition-transform duration-300 group-hover:scale-105"
+              priority
+              className="aspect-[4/3] w-full object-cover rounded-lg transition-transform duration-300 group-hover:scale-105"
+              // className="aspect-square object-cover rounded-lg mx-auto transition-transform duration-300 group-hover:scale-105"
             />
           ) : (
             <div className="flex items-center justify-center w-full h-48 sm:h-64 md:h-72 rounded-lg mx-auto bg-yellow-50 ">
@@ -94,20 +98,20 @@ const ServiceCard: React.FC<{
             </div>
           )}
           {/* info */}
-          <div className="flex flex-col bg-yellow-50  gap-2 items-start mb-2">
+          <div className="flex flex-col bg-yellow-50 px-3  gap-2 items-start mb-2">
             <h3 className="text-lg ml-1 mt-3 font-semibold text-gray-900 truncate ">
               {service.name}
             </h3>
             <div className="flex justify-between bg-yellow-50  w-full items-center">
               <ItemQuantity service={service} />
               <p className="text-sm font-normal text-slate-950">
-                Cena za dzień
                 <span className="font-bold"> {service.rentalPrice} PLN</span>
+                /dzień
               </p>
             </div>
           </div>
           {/* button */}
-          <div className="flex justify-center bg-yellow-50  mt-auto w-full">
+          <div className="flex justify-center bg-yellow-50 mb-3 mt-auto w-full">
             {isMobile ? (
               <Button
                 onClick={handleClick}

@@ -121,6 +121,9 @@ const ProductPage: NextPage<ProductPageProps> = async ({ params }) => {
           },
         })}
       </Script>
+
+      {/* Breadcrumb structured data */}
+
       <Script id="ld-breadcrumb-product" type="application/ld+json">
         {JSON.stringify({
           "@context": "https://schema.org",
@@ -189,7 +192,7 @@ const ProductPage: NextPage<ProductPageProps> = async ({ params }) => {
           )}
           {service.rentalPeriod !== undefined && (
             <p>
-              <strong>Okres wynajmu:</strong> {service.rentalPeriod} dni
+              <strong>Min. okres wynajmu:</strong> {service.rentalPeriod} dni
             </p>
           )}
           {service.condition && (

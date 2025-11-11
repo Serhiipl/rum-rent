@@ -18,8 +18,8 @@ export default function DashboardLayout({
 
   if (error) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-muted/40">
-        <div className="rounded-md border bg-background px-6 py-8 text-center shadow-sm">
+      <div className="flex min-h-screen w-full items-center justify-center bg-muted/40">
+        <div className="rounded-md w-full border bg-background px-2 py-8 text-center shadow-sm">
           <h1 className="text-lg font-semibold">Nie udało się wczytać sesji</h1>
           <p className="mt-2 text-sm text-muted-foreground">
             Spróbuj ponownie odświeżyć stronę.
@@ -50,11 +50,11 @@ export default function DashboardLayout({
     <Providers>
       <div className="flex min-h-screen w-full flex-col bg-muted/40">
         <AdminNavbar />
-        <div className="flex flex-col sm:gap-4 sm:py-4 pt-20">
-          <main className="grid flex-1 items-start gap-1 p-2 sm:px-6 sm:py-0 md:gap-4 bg-muted/40">
-            {children}
-          </main>
-        </div>
+        {/* <div className="flex flex-col sm:gap-4 sm:py-4 pt-20"> */}
+        <main className="pt-20 grid w-full flex-1 items-start gap-1 sm:px-6  md:gap-4 bg-muted/40">
+          {children}
+        </main>
+        {/* </div> */}
         <Toaster />
       </div>
     </Providers>

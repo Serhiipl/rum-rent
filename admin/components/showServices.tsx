@@ -162,9 +162,9 @@ const ShowServices: React.FC<ShowServicesProps> = ({
   }
 
   return (
-    <div className="bg-stone-600 p-2 rounded-xl border-[2px] border-yellow-500">
+    <div className="bg-stone-600 w-full rounded-xl border border-yellow-500">
       {/* <div className="bg-slate-50 p-2 rounded-xl"> */}
-      <h2 className="text-2xl text-yellow-400 mb-4 font-semibold">
+      <h2 className="text-2xl text-yellow-400 m-4 font-semibold">
         Lista usług
       </h2>
 
@@ -198,7 +198,7 @@ const ShowServices: React.FC<ShowServicesProps> = ({
             categoryMap={categoryMap}
           />
         ) : (
-          <ul className="grid grid-cols-1 place-items-center items-center gap-6 md:grid-cols-2 xl:grid-cols-3">
+          <ul className="grid grid-cols-1 w-full p-2 items-center gap-2 md:grid-cols-2 xl:grid-cols-3 ">
             {servicesToDisplay.map((service: ServiceProps) => (
               <ServiceCard
                 key={service.serviceId}

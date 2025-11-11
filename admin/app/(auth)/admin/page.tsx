@@ -39,7 +39,7 @@ export default function AdminPage() {
 
   // Показуємо фільтр категорій та послуги
   return (
-    <div className="flex flex-col gap-2 sm:gap-4 p-2 sm:p-4">
+    <div className="flex flex-col gap-1 sm:gap-4 sm:p-4">
       <h1 className="text-2xl font-bold">Panel usług</h1>
       {/* Фільтр категорій - показуємо тільки якщо є категорії */}
       {serviceCategories && serviceCategories.length > 0 && (
