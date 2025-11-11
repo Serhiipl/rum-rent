@@ -13,6 +13,7 @@ import {
   SheetTrigger,
   SheetHeader,
   SheetTitle,
+  SheetDescription,
   SheetClose,
 } from "@/components/ui/sheet";
 import PhoneLink from "./phone-link";
@@ -31,7 +32,7 @@ function Hamburger({ open }: { open: boolean }) {
   return (
     <span
       aria-hidden
-      className="relative inline-flex h-5 w-6 items-center justify-center text-black"
+      className="relative inline-flex h-6 w-7 items-center justify-center text-amber-500"
     >
       <span
         className={`absolute block h-0.5 w-6 bg-current transition-transform duration-300 ease-in-out ${
@@ -90,6 +91,7 @@ export default function NavLinks({ categories }: Props) {
             <div className="flex items-center justify-between">
               <SheetClose asChild>
                 <Link
+                  // onClick={() => setOpen(false)}
                   href={`/catalog/${node.slug}`}
                   className="flex-1 flex items-center py-2 px-3 rounded-md hover:bg-stone-100 transition-colors"
                   style={{ paddingLeft: `${depth * 16 + 12}px` }}
@@ -187,7 +189,7 @@ export default function NavLinks({ categories }: Props) {
               variant="ghost"
               aria-expanded={open}
               aria-controls="mobile-nav"
-              className="flex bg-amber-500 border border-stone-900 text-white items-center"
+              className="flex text-white items-center"
             >
               <Hamburger open={open} />
               <span className="sr-only">Menu</span>
@@ -196,6 +198,9 @@ export default function NavLinks({ categories }: Props) {
           <SheetContent side="left" id="mobile-nav">
             <SheetHeader>
               <SheetTitle className="sr-only">Kategorie</SheetTitle>
+              <SheetDescription className="sr-only">
+                Menu nawigacyjne z kategoriami produktów i kontaktami.
+              </SheetDescription>
             </SheetHeader>
             <div className="flex flex-col mx-5 space-y-3 mt-4">
               <SheetClose asChild>
