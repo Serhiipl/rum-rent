@@ -276,7 +276,6 @@ const SettingsForm: React.FC = () => {
           collapsible
           className="w-full"
           defaultValue={isMobile ? undefined : "service-form"}
-          // key={isMobile ? "mobile-service-form" : "desktop-service-form"}
         >
           <AccordionItem value="service-form">
             <AccordionTrigger className="flex justify-around items-center border border-stone-800 bg-stone-300 ">
