@@ -648,7 +648,7 @@ export async function updateSettingsDoc(
     { returnDocument: "after", upsert: true }
   );
 
-  if (!result.value) {
+  if (!result) {
     const fetched = await getSettingsById(id);
     if (!fetched) {
       throw new Error("Failed to fetch updated settings");
@@ -656,7 +656,7 @@ export async function updateSettingsDoc(
     return fetched;
   }
 
-  return mapSettings(result.value);
+  return mapSettings(result);
 }
 
 export async function deleteSettingsDoc(id: string): Promise<void> {

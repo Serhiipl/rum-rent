@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { authClient } from "@/auth-client";
 import {
@@ -30,12 +30,26 @@ async function requireAdminAccess(): Promise<AccessResult> {
   return {};
 }
 
-export async function GET(
-  _request: Request,
-  { params }: { params: { settingsId: string } }
-) {
+interface RouteParams {
+  params: Promise<{ settingsId: string }>;
+}
+
+async function getSettingsId(params: RouteParams["params"]) {
+  const { settingsId } = await params;
+  if (!settingsId) {
+    return null;
+  }
+  return settingsId;
+}
+
+export async function GET(_request: NextRequest, { params }: RouteParams) {
+  const settingsId = await getSettingsId(params);
+  if (!settingsId) {
+    return new NextResponse("Invalid settings id", { status: 400 });
+  }
+
   try {
-    const settings = await getSettingsById(params.settingsId);
+    const settings = await getSettingsById(settingsId);
     if (!settings) {
       return new NextResponse("Settings not found", { status: 404 });
     }
@@ -49,13 +63,15 @@ export async function GET(
   }
 }
 
-export async function PATCH(
-  request: Request,
-  { params }: { params: { settingsId: string } }
-) {
+export async function PATCH(request: NextRequest, { params }: RouteParams) {
   const access = await requireAdminAccess();
   if (access.response) {
     return access.response;
+  }
+
+  const settingsId = await getSettingsId(params);
+  if (!settingsId) {
+    return new NextResponse("Invalid settings id", { status: 400 });
   }
 
   try {
@@ -69,7 +85,7 @@ export async function PATCH(
       );
     }
 
-    const updated = await updateSettingsDoc(params.settingsId, parsed.data);
+    const updated = await updateSettingsDoc(settingsId, parsed.data);
     return NextResponse.json(updated, { status: 200 });
   } catch (error) {
     console.error("Error updating settings:", error);
@@ -81,16 +97,21 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  _request: Request,
-  { params }: { params: { settingsId: string } }
+  _request: NextRequest,
+  { params }: RouteParams
 ) {
   const access = await requireAdminAccess();
   if (access.response) {
     return access.response;
   }
 
+  const settingsId = await getSettingsId(params);
+  if (!settingsId) {
+    return new NextResponse("Invalid settings id", { status: 400 });
+  }
+
   try {
-    await deleteSettingsDoc(params.settingsId);
+    await deleteSettingsDoc(settingsId);
     return new NextResponse(null, { status: 204 });
   } catch (error) {
     console.error("Error deleting settings:", error);

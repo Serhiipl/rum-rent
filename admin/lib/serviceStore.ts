@@ -363,7 +363,12 @@ const useServiceStore = create<ServiceStore>((set, get) => ({
   },
   updateSettings: async (updatedSettings) => {
     try {
-      const { id, createdAt, updatedAt, ...payload } = updatedSettings;
+      const {
+        id,
+        createdAt: _createdAt,
+        updatedAt: _updatedAt,
+        ...payload
+      } = updatedSettings;
       if (!id) {
         throw new Error("Settings ID is required");
       }
