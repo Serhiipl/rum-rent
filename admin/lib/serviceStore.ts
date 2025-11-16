@@ -20,7 +20,7 @@ export interface CreateServiceData {
   rentalPrice: number;
   deposit: number;
   quantity: number;
-  rentalPeriod: number; 
+  rentalPeriod: number;
   condition: string;
   images: { url: string }[];
   available: boolean;
@@ -58,11 +58,13 @@ export interface CreateBannerData {
 
 export interface SettingsFormData {
   company_name: string;
+  owner_name: string;
   company_address: string;
   company_phone: string;
   company_nip?: string | null;
   smtp_user_emailFrom: string;
   email_receiver: string;
+  h1_title: string;
   motto_description: string;
 }
 
@@ -365,8 +367,8 @@ const useServiceStore = create<ServiceStore>((set, get) => ({
     try {
       const {
         id,
-        createdAt: _createdAt,
-        updatedAt: _updatedAt,
+        // createdAt: _createdAt,
+        // updatedAt: _updatedAt,
         ...payload
       } = updatedSettings;
       if (!id) {

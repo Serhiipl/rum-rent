@@ -6,13 +6,15 @@ import ShowSettings from "./showSettings";
 
 const SettingsPage = () => {
   return (
-    <>
-      <Container>
-        <h1 className="text-3xl font-bold mb-6 mt-10">Ustawienia</h1>
+    <Container>
+      <div className="max-w-3xl mx-auto">
+        <h1 className="text-3xl text-center font-bold mb-6 mt-10">
+          Ustawienia
+        </h1>
         <ShowSettings />
         <SettingsForm />
-      </Container>
-    </>
+      </div>
+    </Container>
   );
 };
 

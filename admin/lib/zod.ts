@@ -111,6 +111,7 @@ export const contactFormSchema = z
 
 export const settingsFormSchema = object({
   company_name: string().min(1, "Nazwa jest wymagana"),
+  owner_name: string().min(1, "Nazwa właściciela jest wymagana"),
   company_address: string().min(1, "Adres jest wymagany"),
   company_phone: string().min(1, "Telefon jest wymagany"),
   company_nip: string().min(1, "Nip jest wymagany").optional(),
@@ -123,5 +124,6 @@ export const settingsFormSchema = object({
   email_receiver: string()
     .email("Nieprawidłowy email")
     .min(1, "Email odbiorcy jest wymagany"),
-  motto_description: string().min(1, "Opis stanu jest wymagany"),
+  h1_title: string().min(1, "Tytuł H1 jest wymagany"),
+  motto_description: string(),
 });

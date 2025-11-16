@@ -53,11 +53,13 @@ export type Banner = {
 
 export interface SettingsFormData {
   company_name: string;
+  owner_name: string;
   company_address: string;
   company_phone: string;
   company_nip?: string | null;
   smtp_user_emailFrom: string;
   email_receiver: string;
+  h1_title: string;
   motto_description: string;
 }
 
@@ -179,9 +181,7 @@ export async function getCategories(): Promise<Category[]> {
   return categories.map(mapCategory);
 }
 
-export async function getCategoryById(
-  id: string
-): Promise<Category | null> {
+export async function getCategoryById(id: string): Promise<Category | null> {
   const db = await getMongoDb();
   const category = await db
     .collection<CategoryDocument>("Category")
@@ -195,10 +195,7 @@ export async function findCategoryByName(
   const db = await getMongoDb();
   const category = await db
     .collection<CategoryDocument>("Category")
-    .findOne(
-      { name },
-      { collation: { locale: "en", strength: 2 } }
-    );
+    .findOne({ name }, { collation: { locale: "en", strength: 2 } });
   return category ? mapCategory(category) : null;
 }
 
@@ -251,10 +248,9 @@ export async function updateCategoryDoc(
   if (Object.prototype.hasOwnProperty.call(update, "parentId")) {
     updateFields.parentId = update.parentId ?? null;
   }
-  await db.collection<CategoryDocument>("Category").updateOne(
-    { _id: id },
-    { $set: updateFields }
-  );
+  await db
+    .collection<CategoryDocument>("Category")
+    .updateOne({ _id: id }, { $set: updateFields });
 }
 
 export async function deleteCategoryDoc(id: string): Promise<void> {
@@ -272,7 +268,9 @@ export async function categoryUsedByService(
   return Boolean(service);
 }
 
-export async function categoryHasChildren(categoryId: string): Promise<boolean> {
+export async function categoryHasChildren(
+  categoryId: string
+): Promise<boolean> {
   const db = await getMongoDb();
   const child = await db
     .collection<CategoryDocument>("Category")
@@ -531,9 +529,7 @@ export async function deleteBannerDoc(bannerId: string): Promise<void> {
   await db.collection<BannerDocument>("Banner").deleteOne({ _id: bannerId });
 }
 
-export async function getBannerById(
-  bannerId: string
-): Promise<Banner | null> {
+export async function getBannerById(bannerId: string): Promise<Banner | null> {
   const db = await getMongoDb();
   const banner = await db
     .collection<BannerDocument>("Banner")
@@ -544,11 +540,13 @@ export async function getBannerById(
 type SettingsDocument = {
   _id: string;
   company_name: string;
+  owner_name: string;
   company_address: string;
   company_phone: string;
   company_nip?: string | null;
   smtp_user_emailFrom: string;
   email_receiver: string;
+  h1_title: string;
   motto_description: string;
   createdAt: Date;
   updatedAt: Date;
@@ -563,11 +561,13 @@ export interface Settings extends SettingsFormData {
 const mapSettings = (settings: SettingsDocument): Settings => ({
   id: String(settings._id),
   company_name: settings.company_name,
+  owner_name: settings.owner_name,
   company_address: settings.company_address,
   company_phone: settings.company_phone,
   company_nip: settings.company_nip ?? undefined,
   smtp_user_emailFrom: settings.smtp_user_emailFrom,
   email_receiver: settings.email_receiver,
+  h1_title: settings.h1_title,
   motto_description: settings.motto_description,
   createdAt: toIsoString(settings.createdAt),
   updatedAt: toIsoString(settings.updatedAt),
@@ -583,9 +583,7 @@ export async function getSettings(): Promise<Settings[]> {
   return settings.map(mapSettings);
 }
 
-export async function getSettingsById(
-  id: string
-): Promise<Settings | null> {
+export async function getSettingsById(id: string): Promise<Settings | null> {
   const db = await getMongoDb();
   const settings = await db
     .collection<SettingsDocument>("Settings")
@@ -593,14 +591,17 @@ export async function getSettingsById(
   return settings ? mapSettings(settings) : null;
 }
 
-export async function insertSettings(data: {
-  settingsId: string;
-} & SettingsFormData): Promise<Settings> {
+export async function insertSettings(
+  data: {
+    settingsId: string;
+  } & SettingsFormData
+): Promise<Settings> {
   const db = await getMongoDb();
   const now = new Date();
   const document: SettingsDocument = {
     _id: data.settingsId,
     company_name: data.company_name,
+    owner_name: data.owner_name,
     company_address: data.company_address,
     company_phone: data.company_phone,
     company_nip:
@@ -609,6 +610,7 @@ export async function insertSettings(data: {
         : null,
     smtp_user_emailFrom: data.smtp_user_emailFrom,
     email_receiver: data.email_receiver,
+    h1_title: data.h1_title.trim(),
     motto_description: data.motto_description,
     createdAt: now,
     updatedAt: now,
@@ -625,6 +627,7 @@ export async function updateSettingsDoc(
   const now = new Date();
   const set: Partial<SettingsDocument> = {
     company_name: update.company_name,
+    owner_name: update.owner_name,
     company_address: update.company_address,
     company_phone: update.company_phone,
     company_nip:
@@ -633,20 +636,23 @@ export async function updateSettingsDoc(
         : null,
     smtp_user_emailFrom: update.smtp_user_emailFrom,
     email_receiver: update.email_receiver,
+    h1_title: update.h1_title.trim(),
     motto_description: update.motto_description,
     updatedAt: now,
   };
 
-  const result = await db.collection<SettingsDocument>("Settings").findOneAndUpdate(
-    { _id: id },
-    {
-      $set: set,
-      $setOnInsert: {
-        createdAt: now,
+  const result = await db
+    .collection<SettingsDocument>("Settings")
+    .findOneAndUpdate(
+      { _id: id },
+      {
+        $set: set,
+        $setOnInsert: {
+          createdAt: now,
+        },
       },
-    },
-    { returnDocument: "after", upsert: true }
-  );
+      { returnDocument: "after", upsert: true }
+    );
 
   if (!result) {
     const fetched = await getSettingsById(id);

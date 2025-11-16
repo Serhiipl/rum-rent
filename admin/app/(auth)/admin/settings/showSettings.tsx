@@ -41,13 +41,24 @@ const ShowSettings: React.FC = () => {
             </p>
           </AccordionTrigger>
           <AccordionContent className="flex w-full px-2 text-balance">
-            <p>
-              Nazwa firmy lub imie i nazwisko właściciela ktore będą wyświetlane
-              jako dane kontaktowe na stronie internetowej.
-            </p>
+            <p>Nazwa firmy ktora będzie wyświetlana na stronie internetowej.</p>
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="item-2">
+          <AccordionTrigger>
+            <p className="flex gap-3 no-underline">
+              <span className="font-semibold">Dane właściciela: </span>
+              {settings.owner_name}
+            </p>
+          </AccordionTrigger>
+          <AccordionContent className="flex w-full px-2 text-balance">
+            <p>
+              Imie i nazwisko właściciela ktore będą wyświetlane jako dane
+              kontaktowe na stronie internetowej.
+            </p>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-3">
           <AccordionTrigger>
             Adres firmy: {settings.company_address}
           </AccordionTrigger>
@@ -58,7 +69,7 @@ const ShowSettings: React.FC = () => {
             </p>
           </AccordionContent>
         </AccordionItem>
-        <AccordionItem value="item-3">
+        <AccordionItem value="item-4">
           <AccordionTrigger>
             Telefon firmy: {settings.company_phone}
           </AccordionTrigger>
@@ -69,7 +80,7 @@ const ShowSettings: React.FC = () => {
             </p>
           </AccordionContent>
         </AccordionItem>
-        <AccordionItem value="item-4">
+        <AccordionItem value="item-5">
           <AccordionTrigger>NIP firmy: {settings.company_nip}</AccordionTrigger>
           <AccordionContent className="flex flex-col gap-4 text-balance">
             <p>
@@ -78,7 +89,7 @@ const ShowSettings: React.FC = () => {
             </p>
           </AccordionContent>
         </AccordionItem>
-        <AccordionItem value="item-5">
+        <AccordionItem value="item-6">
           <AccordionTrigger>
             Email ustawień smtp: {settings.smtp_user_emailFrom}
           </AccordionTrigger>
@@ -92,7 +103,7 @@ const ShowSettings: React.FC = () => {
             </p>
           </AccordionContent>
         </AccordionItem>
-        <AccordionItem value="item-6">
+        <AccordionItem value="item-7">
           <AccordionTrigger>
             Email odbiorcy: {settings.email_receiver}
           </AccordionTrigger>
@@ -103,14 +114,27 @@ const ShowSettings: React.FC = () => {
             </p>
           </AccordionContent>
         </AccordionItem>
-        <AccordionItem value="item-7">
+        <AccordionItem value="item-8">
+          <AccordionTrigger>Nagłówek H1: {settings.h1_title}</AccordionTrigger>
+          <AccordionContent className="flex flex-col gap-4 text-balance">
+            <p>
+              Nagłówek H1 jest potrzebny, aby nadać stronie główny tytuł, który
+              jest kluczowy dla struktury strony, zrozumienia przez użytkowników
+              i pozycjonowania w wyszukiwarkach (SEO). Jest to najważniejszy
+              nagłówek, który informuje zarówno czytelników, jak i roboty
+              wyszukiwarek, o czym jest dana strona, co pomaga w jej trafności w
+              wynikach wyszukiwania
+            </p>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-9">
           <AccordionTrigger>
             Motto: {settings.motto_description}
           </AccordionTrigger>
           <AccordionContent className="flex flex-col gap-4 text-balance">
             <p>
-              Krótkie hasło lub motto firmy, które może być wyświetlane na
-              stronie internetowej jako główny zagłówek H1.
+              Krótkie hasło lub motto firmy, które może być dodatkowo
+              wyświetlane na stronie internetowej.
             </p>
           </AccordionContent>
         </AccordionItem>

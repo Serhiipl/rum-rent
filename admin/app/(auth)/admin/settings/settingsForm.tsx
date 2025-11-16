@@ -29,11 +29,13 @@ type SettingsFormFields = z.infer<typeof settingsFormSchema>;
 
 const DEFAULT_VALUES: SettingsFormFields = {
   company_name: "",
+  owner_name: "",
   company_address: "",
   company_phone: "",
   company_nip: "",
   smtp_user_emailFrom: "",
   email_receiver: "",
+  h1_title: "",
   motto_description: "",
 };
 
@@ -67,11 +69,13 @@ const SettingsForm: React.FC = () => {
     if (settings) {
       form.reset({
         company_name: settings.company_name ?? "",
+        owner_name: settings.owner_name ?? "",
         company_address: settings.company_address ?? "",
         company_phone: settings.company_phone ?? "",
         company_nip: settings.company_nip ?? "",
         smtp_user_emailFrom: settings.smtp_user_emailFrom ?? "",
         email_receiver: settings.email_receiver ?? "",
+        h1_title: settings.h1_title ?? "",
         motto_description: settings.motto_description ?? "",
       });
     } else {
@@ -121,7 +125,27 @@ const SettingsForm: React.FC = () => {
             render={({ field }) => (
               <FormItem className="relative p-2 border border-gray-300 rounded-sm w-full lg:w-1/2">
                 <FormLabel className="absolute -top-3 left-2 px-1 bg-stone-600 text-sm sm:font-medium text-white">
-                  Dane właściciela/firmy
+                  Dane firmy
+                </FormLabel>
+                <FormControl className="text-white">
+                  <Input
+                    className="bg-stone-300 text-black"
+                    placeholder="Uzupełnij dane"
+                    {...field}
+                    value={field.value ?? ""}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            name="owner_name"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem className="relative p-2 border border-gray-300 rounded-sm w-full lg:w-1/2">
+                <FormLabel className="absolute -top-3 left-2 px-1 bg-stone-600 text-sm sm:font-medium text-white">
+                  Dane właściciela
                 </FormLabel>
                 <FormControl className="text-white">
                   <Input
@@ -236,14 +260,36 @@ const SettingsForm: React.FC = () => {
               </FormItem>
             )}
           />
+          <FormField
+            name="h1_title"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem className="w-full relative p-1 border border-gray-300 rounded-sm lg:w-1/2">
+                <FormLabel className="absolute -top-3 left-2 px-1 bg-stone-600 text-sm font-medium text-white">
+                  Tytuł H1
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    className="bg-stone-300 text-black text-xs"
+                    placeholder="wpisz tytuł h1"
+                    {...field}
+                    value={field.value ?? ""}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
 
         <FormField
           name="motto_description"
           control={form.control}
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Główne motto</FormLabel>
+            <FormItem className="w-full relative p-1 border border-gray-300 rounded-sm lg:w-1/2">
+              <FormLabel className="absolute -top-3 left-2 px-1 bg-stone-600 text-sm font-medium text-white">
+                Motto Firmy
+              </FormLabel>
               <FormControl>
                 <textarea
                   {...field}
@@ -259,11 +305,11 @@ const SettingsForm: React.FC = () => {
         />
 
         <Button
-          className="w-full font-semibold text-lg sm:w-44 ml-auto"
+          className="w-full px-1 font-semibold text-lg sm:w-44 ml-auto"
           type="submit"
           disabled={isLoading}
         >
-          {isLoading ? "Dodawanie..." : "Dodaj lub zmień dane"}
+          {isLoading ? "Dodawanie..." : !settings ? "Dodaj dane" : "Zmień dane"}
         </Button>
       </form>
     </Form>
