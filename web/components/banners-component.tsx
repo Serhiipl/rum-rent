@@ -8,9 +8,10 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Banner } from "@/lib/types";
+// export const dynamic = "force-dynamic";
 
 // In-memory cache with TTL + in-flight dedupe to reduce API requests
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const CACHE_TTL = 1 * 30 * 1000; // 30 seconds
 let cache: { ts: number; data: Banner[] } | null = null;
 let inflight: Promise<Banner[]> | null = null;
 
@@ -18,7 +19,7 @@ async function fetchBannersOnce(): Promise<Banner[]> {
   const now = Date.now();
   if (cache && now - cache.ts < CACHE_TTL) return cache.data;
   if (inflight) return inflight;
-  inflight = fetch("/api/banners", { cache: "force-cache" })
+  inflight = fetch("/api/banners", { cache: "no-store" }) // no-store to always get fresh data
     .then((res) => {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       return res.json() as Promise<Banner[]>;

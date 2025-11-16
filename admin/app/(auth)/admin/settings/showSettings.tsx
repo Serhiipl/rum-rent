@@ -99,7 +99,7 @@ const ShowSettings: React.FC = () => {
               pomocą protokołu SMTP. Dodatkowo może być używany jako adres
               nadawcy w wysyłanych wiadomościach e-mail. Hasło do tego adresu
               email jest przechowywane w ustawieniach SMTP w pliku ENV
-              aplikacji.
+              aplikacji. <b>Nie może być taki sam jak email odbiorcy.</b>
             </p>
           </AccordionContent>
         </AccordionItem>
@@ -109,8 +109,9 @@ const ShowSettings: React.FC = () => {
           </AccordionTrigger>
           <AccordionContent className="flex flex-col gap-4 text-balance">
             <p>
-              Adres email odbiorcy wiadomości wysyłanych z formularza
-              kontaktowego na stronie internetowej.
+              Adres email odbiorcy na który lecą wiadomości wysyłane z
+              formularza kontaktowego na stronie internetowej.{" "}
+              <b>Nie może być taki sam jak Email ustawień smtp!</b>
             </p>
           </AccordionContent>
         </AccordionItem>

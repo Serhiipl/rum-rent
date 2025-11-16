@@ -46,6 +46,36 @@ type BannerDocument = {
   updatedAt: Date;
 };
 
+type SettingsDocument = {
+  _id: string;
+  company_name: string;
+  owner_name: string;
+  company_address: string;
+  company_phone: string;
+  company_nip?: string | null;
+  smtp_user_emailFrom: string;
+  email_receiver: string;
+  h1_title: string;
+  motto_description: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export interface Settings {
+  id: string;
+  company_name: string;
+  owner_name: string;
+  company_address: string;
+  company_phone: string;
+  company_nip?: string;
+  smtp_user_emailFrom: string;
+  email_receiver: string;
+  h1_title: string;
+  motto_description: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 type ServiceWithImages = ServiceDocument & { images?: ImageDocument[] };
 
 const AVAILABLE_MATCH = { available: true };
@@ -84,6 +114,21 @@ const mapService = (service: ServiceWithImages): ServiceProps => ({
   images: (service.images ?? []).map(mapImage),
   available: service.available ?? true,
   categoryId: service.categoryId ? String(service.categoryId) : "",
+});
+
+const mapSettings = (settings: SettingsDocument): Settings => ({
+  id: String(settings._id),
+  company_name: settings.company_name,
+  owner_name: settings.owner_name,
+  company_address: settings.company_address,
+  company_phone: settings.company_phone,
+  company_nip: settings.company_nip ?? undefined,
+  smtp_user_emailFrom: settings.smtp_user_emailFrom,
+  email_receiver: settings.email_receiver,
+  h1_title: settings.h1_title,
+  motto_description: settings.motto_description,
+  createdAt: toIsoString(settings.createdAt),
+  updatedAt: toIsoString(settings.updatedAt),
 });
 
 export async function getCategories(): Promise<Category[]> {
@@ -239,6 +284,14 @@ export async function getBanners(): Promise<Banner[]> {
     createdAt: toIsoString(banner.createdAt),
     updatedAt: toIsoString(banner.updatedAt),
   }));
+}
+
+export async function getSettings(): Promise<Settings | null> {
+  const db = await getMongoDb();
+  const settings = await db
+    .collection<SettingsDocument>("Settings")
+    .findOne({}, { sort: { createdAt: -1 } });
+  return settings ? mapSettings(settings) : null;
 }
 
 export async function getServiceForSeo(serviceId: string): Promise<{

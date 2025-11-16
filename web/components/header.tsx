@@ -4,12 +4,14 @@ import NavLinks from "@/components/nav-links";
 import type { Category } from "@/lib/mongo-operations";
 import { Roboto } from "next/font/google";
 import { Home } from "lucide-react";
+import { useCompanyName } from "@/components/settings-provider";
 
 const roboto = Roboto({ subsets: ["latin"], variable: "--font-roboto" });
 
 type Props = { categories: Category[] };
 
 export default function Header({ categories }: Props) {
+  const companyName = useCompanyName();
   return (
     <nav
       className={`${roboto.variable} flex flex-row items-center justify-center  w-full py-2 px-2 fixed top-0 mx-auto z-50 bg-transparent`}
@@ -24,7 +26,7 @@ export default function Header({ categories }: Props) {
           className="text-xl text-amber-500 font-bold flex items-center"
         >
           <Home className="inline-block ml-4 mb-1 mr-3 size-7 text-amber-500" />
-          Rum Rent
+          {companyName}
         </Link>
         <NavLinks categories={categories} />
       </div>

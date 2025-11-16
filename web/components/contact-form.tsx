@@ -20,6 +20,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { contactFormSchema } from "@/lib/zod";
+import { useSettings } from "@/components/settings-provider";
 
 type FormValues = z.infer<typeof contactFormSchema>;
 
@@ -38,8 +39,10 @@ const ContactForm: React.FC<ContactFormProps> = ({
   receiverEmail,
   className,
 }) => {
+  const settings = useSettings();
   const fallbackReceiver = process.env.NEXT_PUBLIC_CONTACT_RECEIVER || "";
-  const toEmail = (receiverEmail || fallbackReceiver || "")
+  const settingsReceiver = settings?.email_receiver ?? "";
+  const toEmail = (receiverEmail || settingsReceiver || fallbackReceiver || "")
     .trim()
     .toLowerCase();
 

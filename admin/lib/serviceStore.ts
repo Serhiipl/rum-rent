@@ -126,7 +126,7 @@ const fetchBanners = async (
 ) => {
   const now = Date.now();
   const lastFetched = get().bannersFetchedAt;
-  const TTL = 5 * 60 * 1000;
+  const TTL = 1 * 60 * 1000;
   if (lastFetched && now - lastFetched < TTL) return; // Якщо банери вже завантажені, не робимо повторний запит
   if (get().isFetchingBanners) return;
   try {

@@ -1,9 +1,13 @@
 import { NextResponse } from "next/server";
 import { getMongoDb } from "@/lib/mongodb";
 
+/**
+ * Sets the runtime environment for this API route to Node.js.
+ * This ensures the route executes in a Node.js runtime rather than Edge runtime.
+ */
 export const runtime = "nodejs";
-export const revalidate = 90; // 1,5 minutes
-
+// export const revalidate = 90; // 1,5 minutes
+export const dynamic = "force-dynamic";
 // Function to validate and sanitize URLs
 
 const isSafeHttpUrl = (value: string | null | undefined) => {
@@ -37,9 +41,7 @@ export async function GET() {
         imageUrl: string;
         ctaLink?: string | null;
       } & Record<string, unknown>;
-      const imageUrl = isSafeHttpUrl(rest.imageUrl)
-        ? rest.imageUrl.trim()
-        : "";
+      const imageUrl = isSafeHttpUrl(rest.imageUrl) ? rest.imageUrl.trim() : "";
       const ctaLink = isSafeHttpUrl(rest.ctaLink)
         ? rest.ctaLink?.trim()
         : undefined;
@@ -52,10 +54,11 @@ export async function GET() {
     });
     const res = NextResponse.json(sanitized, { status: 200 });
     // Cache for 3 minutes, allow stale content while revalidating for 5 minutes
-    res.headers.set(
-      "Cache-Control",
-      "public, max-age=180, s-maxage=180, stale-while-revalidate=300"
-    );
+    // res.headers.set(
+    //   "Cache-Control",
+    //   "no-store"
+    //   // "public, max-age=18, s-maxage=18, stale-while-revalidate=30"
+    // );
     return res;
   } catch (error) {
     console.error("Error fetching banners:", error);

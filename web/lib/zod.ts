@@ -67,8 +67,7 @@ export const serviceFormSchema = object({
       (val) => !isNaN(val) && val > 0,
       "Czas najmu musi być co najmniej 1 dzień"
     ),
-  condition: string().min(1, "Nazwa jest wymagana"),
-  // images: object({ url: string() }).array(),
+  condition: string().min(1, "Opis stanu jest wymagany"),
   images: z
     .array(
       z.object({

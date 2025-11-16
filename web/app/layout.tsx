@@ -3,9 +3,10 @@ import Script from "next/script";
 import { Geist, Geist_Mono, Roboto } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/header";
-import { getCategories } from "@/lib/mongo-operations";
+import { getSettings, getCategories } from "@/lib/mongo-operations";
 import { Footer } from "@/components/footer";
 import { PWARegister } from "@/components/pwa-register";
+import { SettingsProvider } from "@/components/settings-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -64,7 +65,11 @@ export const metadata: Metadata = {
       { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
     ],
     shortcut: [
-      { url: "/android-chrome-192x192.png", sizes: "192x192", type: "image/png" },
+      {
+        url: "/android-chrome-192x192.png",
+        sizes: "192x192",
+        type: "image/png",
+      },
     ],
     other: [{ rel: "mask-icon", url: "/android-chrome-512x512.png" }],
   },
@@ -84,7 +89,12 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const categories = await getCategories();
+  const [categories, settings] = await Promise.all([
+    getCategories(),
+    getSettings(),
+  ]);
+
+  // const categories = await getCategories();
   return (
     <html lang="pl">
       <body
@@ -99,16 +109,20 @@ export default async function RootLayout({
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Organization",
-            name: "RumRent",
+            name: `RumRent${
+              settings?.company_name ? ` - ${settings.owner_name}` : ""
+            }`,
             url: siteUrl,
             logo: `${siteUrl}/favicon.ico`,
             sameAs: [],
           })}
         </Script>
         <PWARegister />
-        <Header categories={categories} />
-        {children}
-        <Footer />
+        <SettingsProvider settings={settings}>
+          <Header categories={categories} />
+          {children}
+          <Footer />
+        </SettingsProvider>
       </body>
     </html>
   );
