@@ -30,8 +30,10 @@ const ShowSettings: React.FC = () => {
   }
 
   return (
-    <div className="my-6 mx-auto w-full px-2">
-      <h2>Ustawienia Aplikacji</h2>
+    <div className="py-6 bg-stone-600 rounded-md mx-auto w-full px-2">
+      <p className="border border-amber-600 p-2 text-center rounded-md mb-4 bg-amber-50 text-amber-900">
+        Tu wyswietlane są aktualne ustawienia Aplikacji
+      </p>
       <Accordion type="single" collapsible className="w-full px-2">
         <AccordionItem value="item-1">
           <AccordionTrigger>
@@ -60,7 +62,10 @@ const ShowSettings: React.FC = () => {
         </AccordionItem>
         <AccordionItem value="item-3">
           <AccordionTrigger>
-            Adres firmy: {settings.company_address}
+            <p className="flex gap-3 no-underline">
+              <span className="font-semibold">Adres siedziby:</span>
+              {settings.company_address}
+            </p>
           </AccordionTrigger>
           <AccordionContent className="flex flex-col gap-4 text-balance">
             <p>
@@ -71,7 +76,10 @@ const ShowSettings: React.FC = () => {
         </AccordionItem>
         <AccordionItem value="item-4">
           <AccordionTrigger>
-            Telefon firmy: {settings.company_phone}
+            <p className="flex gap-3 no-underline">
+              <span className="font-semibold">Telefon firmy:</span>
+              {settings.company_phone}
+            </p>
           </AccordionTrigger>
           <AccordionContent className="flex flex-col gap-4 text-balance">
             <p>
@@ -81,7 +89,12 @@ const ShowSettings: React.FC = () => {
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="item-5">
-          <AccordionTrigger>NIP firmy: {settings.company_nip}</AccordionTrigger>
+          <AccordionTrigger>
+            <p className="flex gap-3 no-underline">
+              <span className="font-semibold">NIP firmy:</span>
+              {settings.company_nip}
+            </p>
+          </AccordionTrigger>
           <AccordionContent className="flex flex-col gap-4 text-balance">
             <p>
               Numer identyfikacji podatkowej (NIP) firmy, który może być
@@ -91,7 +104,10 @@ const ShowSettings: React.FC = () => {
         </AccordionItem>
         <AccordionItem value="item-6">
           <AccordionTrigger>
-            Email ustawień smtp: {settings.smtp_user_emailFrom}
+            <p className="flex gap-3 no-underline">
+              <span className="font-semibold">Email ustawień smtp:</span>
+              {settings.smtp_user_emailFrom}
+            </p>
           </AccordionTrigger>
           <AccordionContent className="flex flex-col gap-4 text-balance">
             <p>
@@ -105,7 +121,10 @@ const ShowSettings: React.FC = () => {
         </AccordionItem>
         <AccordionItem value="item-7">
           <AccordionTrigger>
-            Email odbiorcy: {settings.email_receiver}
+            <p className="flex gap-3 no-underline">
+              <span className="font-semibold">Email odbiorcy:</span>
+              {settings.email_receiver}
+            </p>
           </AccordionTrigger>
           <AccordionContent className="flex flex-col gap-4 text-balance">
             <p>
@@ -116,7 +135,12 @@ const ShowSettings: React.FC = () => {
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="item-8">
-          <AccordionTrigger>Nagłówek H1: {settings.h1_title}</AccordionTrigger>
+          <AccordionTrigger>
+            <p className="flex gap-3 no-underline">
+              <span className="font-semibold">Nagłówek H1:</span>
+              {settings.h1_title}
+            </p>
+          </AccordionTrigger>
           <AccordionContent className="flex flex-col gap-4 text-balance">
             <p>
               Nagłówek H1 jest potrzebny, aby nadać stronie główny tytuł, który
@@ -130,7 +154,10 @@ const ShowSettings: React.FC = () => {
         </AccordionItem>
         <AccordionItem value="item-9">
           <AccordionTrigger>
-            Motto: {settings.motto_description}
+            <p className="flex gap-3 no-underline">
+              <span className="font-semibold">Motto:</span>
+              {settings.motto_description}
+            </p>
           </AccordionTrigger>
           <AccordionContent className="flex flex-col gap-4 text-balance">
             <p>

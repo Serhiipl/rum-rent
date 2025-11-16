@@ -246,7 +246,7 @@ const SettingsForm: React.FC = () => {
             render={({ field }) => (
               <FormItem className="w-full relative p-1 border border-gray-300 rounded-sm lg:w-1/2">
                 <FormLabel className="absolute -top-3 left-2 px-1 bg-stone-600 text-sm font-medium text-white">
-                  Email odbiorcy wiadomości z formularza kontaktowego
+                  Email odbiorcy do formularza kontaktowego
                 </FormLabel>
                 <FormControl>
                   <Input
