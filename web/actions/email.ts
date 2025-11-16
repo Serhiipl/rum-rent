@@ -1,12 +1,16 @@
 "use server";
-
+import { getSettings } from "@/lib/mongo-operations";
 import nodemailer from "nodemailer";
 
 const MIN_EMAIL_INTERVAL_MS = 1500;
 let lastEmailSentAt: number | null = null;
 
-const sleep = (ms: number) =>
-  new Promise((resolve) => setTimeout(resolve, ms));
+const settings = await Promise.resolve(getSettings());
+
+const emailReceiver = settings?.email_receiver;
+const userAndEmailFrom = settings?.smtp_user_emailFrom;
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const parseEmails = (value: string | undefined) =>
   (value ?? "")
@@ -19,10 +23,11 @@ const getAllowedRecipients = () => {
   parseEmails(process.env.EMAIL_RECIPIENT_ALLOWLIST).forEach((email) =>
     allowList.add(email)
   );
-  parseEmails(process.env.NEXT_PUBLIC_CONTACT_RECEIVER).forEach((email) =>
+  parseEmails(emailReceiver).forEach((email) =>
+    // parseEmails(process.env.NEXT_PUBLIC_CONTACT_RECEIVER).forEach((email) =>
     allowList.add(email)
   );
-  parseEmails(process.env.EMAIL_FROM).forEach((email) => allowList.add(email));
+  parseEmails(userAndEmailFrom).forEach((email) => allowList.add(email));
   return Array.from(allowList);
 };
 
@@ -35,10 +40,10 @@ export async function sendEmail({
   subject: string;
   text: string;
 }) {
-  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+  if (!userAndEmailFrom || !process.env.SMTP_PASS) {
     throw new Error("SMTP_USER or SMTP_PASS environment variable is not set");
   }
-  if (!process.env.EMAIL_FROM) {
+  if (!userAndEmailFrom) {
     throw new Error("EMAIL_FROM environment variable is not set");
   }
 
@@ -69,13 +74,13 @@ export async function sendEmail({
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: process.env.SMTP_USER,
+      user: userAndEmailFrom,
       pass: process.env.SMTP_PASS,
     },
   });
 
   const mailOptions = {
-    from: process.env.EMAIL_FROM,
+    from: userAndEmailFrom,
     to: normalizedTo,
     subject: subject.trim(),
     text: text.trim(),
