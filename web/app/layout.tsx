@@ -82,7 +82,7 @@ export const viewport = {
 };
 
 export const runtime = "nodejs";
-export const revalidate = 60;
+export const revalidate = 30; // revalidate layout every 30s
 
 export default async function RootLayout({
   children,
