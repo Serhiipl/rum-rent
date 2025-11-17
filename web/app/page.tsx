@@ -5,7 +5,8 @@ import H1 from "@/components/h1";
 import Motto from "@/components/motto";
 
 export const runtime = "nodejs";
-export const revalidate = 20; // revalidate categories every 20s
+//export const revalidate = 20; // revalidate categories every 20s
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
   return (
