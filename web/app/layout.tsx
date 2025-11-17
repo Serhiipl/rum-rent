@@ -82,8 +82,8 @@ export const viewport = {
 };
 
 export const runtime = "nodejs";
-export const revalidate = 30; // revalidate layout every 30s
-
+//export const revalidate = 30; // revalidate layout every 30s
+export const dynamic = "force-dynamic";
 export default async function RootLayout({
   children,
 }: Readonly<{
