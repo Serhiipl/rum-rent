@@ -24,8 +24,8 @@ self.addEventListener("activate", (event) => {
       .then((keys) =>
         Promise.all(
           keys
-          .filter((key) => key !== CACHE_NAME)
-          .map((key) => caches.delete(key))
+            .filter((key) => key !== CACHE_NAME)
+            .map((key) => caches.delete(key))
         )
       )
       .then(() => self.clients.claim())
@@ -35,20 +35,20 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
 
-  event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
+  const requestUrl = new URL(event.request.url);
+  const isSameOrigin = requestUrl.origin === self.location.origin;
+  const isPrecachedAsset = ASSETS.includes(requestUrl.pathname);
 
-      return fetch(event.request)
-        .then((response) => {
-          const clone = response.clone();
-          caches
-            .open(CACHE_NAME)
-            .then((cache) => cache.put(event.request, clone))
-            .catch(() => undefined);
-          return response;
-        })
-        .catch(() => cached);
-    })
-  );
+  if (isPrecachedAsset) {
+    event.respondWith(
+      caches.match(event.request).then((cached) => cached ?? fetch(event.request))
+    );
+    return;
+  }
+
+  if (event.request.mode === "navigate" && isSameOrigin) {
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match("/"))
+    );
+  }
 });
